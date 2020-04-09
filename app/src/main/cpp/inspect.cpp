@@ -31,7 +31,6 @@ JInspect::JInspect(const ajni::JClass &clz)
     AJNI_CLASS_CONSTRUCT()
 
     JVariant t = gs_reflect_class.ForName(clz._clazzname);
-    //d_ptr->rclass =
 }
 
 JInspect::~JInspect() {

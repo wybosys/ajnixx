@@ -17,20 +17,6 @@ jobject JClassGetInstance(JClass& jc) {
     return jc._instance;
 }
 
-JVariant::JVariant(JVariant& r)
-: _typ(r._typ),
-_vobj(r._vobj),
-_vbl(r._vbl),
-_vc(r._vc),
-_vb(r._vb),
-_vs(r._vs),
-_vi(r._vi),
-_vl(r._vl),
-_vf(r._vf),
-_vd(r._vd),
-_vss(r._vss) {
-}
-
 JVariant::JVariant(JClass& r)
 : _typ(JVariant::OBJECT), _vobj(JClassGetInstance(r)) {
 }
@@ -74,6 +60,44 @@ JVariant::JVariant(const string& v)
 JClass::JClass(const ajni::JClassName &name)
 : _clazzname(name), _instance(nullptr) {
     _clazz = gs_env->FindClass(_clazzname.c_str());
+}
+
+JVariant JMethod::operator ()() {
+    return invoke(vector<const JVariant*>());
+}
+
+JVariant JMethod::operator ()(JVariant const& v) {
+    return invoke(vector<const JVariant*>({
+        &v
+    }));
+}
+
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1) {
+    return invoke(vector<const JVariant*>({
+        &v, &v1
+    }));
+}
+
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2) {
+    return invoke(vector<const JVariant*>({
+        &v, &v1, &v2
+    }));
+}
+
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3) {
+    return invoke(vector<const JVariant*>({
+        &v, &v1, &v2, &v3
+    }));
+}
+
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3, const JVariant& v4) {
+    return invoke(vector<const JVariant*>({
+        &v, &v1, &v2, &v3, &v4
+    }));
+}
+
+JVariant JMethod::invoke(const vector<const JVariant*>& args) {
+    return JVariant();
 }
 
 JClass::~JClass() {

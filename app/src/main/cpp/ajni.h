@@ -67,7 +67,7 @@ using namespace ::std;
 JNIEnv *Env();
 
 // 定义java类的名称类型，例如 com/google/gson/Gson
-typedef string JClassName;
+typedef ::std::string JClassName;
 
 // java的类型
 namespace jt {
@@ -81,7 +81,7 @@ class JVariant {
 public:
     typedef enum { UNKNOWN, OBJECT, BOOLEAN, BYTE, CHAR, SHORT, INT, LONG, FLOAT, DOUBLE, STRING } TYPE;
 
-    JVariant(JVariant&r);
+    JVariant() = default;
     JVariant(JClass&r);
     JVariant(bool);
     JVariant(jchar);
@@ -91,7 +91,7 @@ public:
     JVariant(jlong);
     JVariant(jfloat);
     JVariant(jdouble);
-    JVariant(const string&);
+    JVariant(const ::std::string&);
 
 #define _JVARIANT_GET_IMPL(typ, obj) \
 inline operator typ() { return obj; } \
@@ -106,7 +106,7 @@ inline operator const typ() const { return obj; }
     _JVARIANT_GET_IMPL(jlong, _vl)
     _JVARIANT_GET_IMPL(jfloat, _vf)
     _JVARIANT_GET_IMPL(jdouble, _vd)
-    _JVARIANT_GET_IMPL(string, _vss)
+    _JVARIANT_GET_IMPL(::std::string, _vss)
 
 private:
     TYPE _typ = UNKNOWN;
@@ -119,7 +119,7 @@ private:
     jlong _vl;
     jfloat _vf;
     jdouble _vd;
-    string _vss;
+    ::std::string _vss;
 };
 
 class JMethod {
@@ -136,7 +136,12 @@ public:
 
     // 执行java函数
     JVariant operator ()();
-    JVariant operator ()(JVariant const&);
+    JVariant operator ()(const JVariant&);
+    JVariant operator ()(const JVariant&, const JVariant&);
+    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&);
+    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&);
+    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&, const JVariant&);
+    JVariant invoke(const vector<const JVariant*>&);
 
 protected:
 
