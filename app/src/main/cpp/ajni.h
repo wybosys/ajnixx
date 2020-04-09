@@ -2,11 +2,20 @@
 #define _AJNI_H
 
 #include <jni.h>
+#include <android/log.h>
 #include <string>
 #include <exception>
 
 #define AJNI_BEGIN namespace ajni {
 #define AJNI_END }
+#define AJNI_USE using namespace ajni;
+
+#define _AJNI_LOG_IDR "ajni"
+#define AJNI_LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,_AJNI_LOG_IDR,__VA_ARGS__)
+#define AJNI_LOGI(...)  __android_log_print(ANDROID_LOG_INFO,_AJNI_LOG_IDR,__VA_ARGS__)
+#define AJNI_LOGW(...)  __android_log_print(ANDROID_LOG_WARN,_AJNI_LOG_IDR,__VA_ARGS__)
+#define AJNI_LOGE(...)  __android_log_print(ANDROID_LOG_ERROR,_AJNI_LOG_IDR,__VA_ARGS__)
+#define AJNI_LOGF(...)  __android_log_print(ANDROID_LOG_FATAL,_AJNI_LOG_IDR,__VA_ARGS__)
 
 #define AJNI_API(ret) extern "C" JNIEXPORT ret JNICALL
 #define AJNI_FUNC(name) Java_com_wybosys_ajni_##name

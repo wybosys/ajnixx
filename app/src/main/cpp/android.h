@@ -3,7 +3,10 @@
 
 AJNI_BEGIN
 
-class Activity {
+class JActivity: public JClass {
+public:
+
+    JActivity(const JClassName& name);
 
 };
 
