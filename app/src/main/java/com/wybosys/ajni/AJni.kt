@@ -15,6 +15,6 @@ object AJni {
 
     init {
         // 自动加载so
-        System.loadLibrary("ajni")
+        System.loadLibrary("ajni-test")
     }
 }

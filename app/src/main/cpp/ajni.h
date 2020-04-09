@@ -51,6 +51,8 @@ private:
     JClassName _clazzname;
     jclass _clazz;
     jobject _instance;
+
+    friend class JInspect;
 };
 
 AJNI_END

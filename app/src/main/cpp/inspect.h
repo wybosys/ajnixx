@@ -3,6 +3,16 @@
 
 AJNI_BEGIN
 
+class JInspect
+{
+public:
+
+    JInspect(const JClass&);
+
+private:
+    const JClass& _clz;
+};
+
 AJNI_END
 
 #endif
