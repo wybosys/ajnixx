@@ -6,7 +6,7 @@ import android.widget.FrameLayout
 
 open class BlockView : FrameLayout {
 
-    constructor(ctx: Context, attrs: AttributeSet?) : super(ctx, attrs) {
+    constructor(ctx: Context, attrs: AttributeSet? = null) : super(ctx, attrs) {
         // pass
     }
 }

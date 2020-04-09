@@ -1,8 +1,10 @@
 package com.wybosys.ajni
 
+import android.graphics.Color
 import android.os.Bundle
+import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
+import androidx.constraintlayout.widget.ConstraintLayout
 
 class MainActivity : AppCompatActivity {
 
@@ -14,20 +16,17 @@ class MainActivity : AppCompatActivity {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        // Example of a call to a native method
-        sample_text.text = stringFromJNI()
-    }
+        AJni.Main()
 
-    /**
-     * A native method that is implemented by the 'native-lib' native library,
-     * which is packaged with this application.
-     */
-    external fun stringFromJNI(): String
+        // 测试函数
+        AJni.Test()
 
-    companion object {
-        // Used to load the 'native-lib' library on application startup.
-        init {
-            System.loadLibrary("native-lib")
-        }
+        val bv = BlockView(this)
+        bv.setBackgroundColor(Color.RED)
+
+        val lyr = findViewById<ConstraintLayout>(R.id.main)
+        lyr.addView(bv, ViewGroup.LayoutParams(100, 100))
+
+        // sample_text.text = stringFromJNI()
     }
 }
