@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity {
         AJni.Main()
 
         // 测试函数
-        AJni.Test()
+        AJni.Test(this)
 
         val bv = BlockView(this)
         bv.setBackgroundColor(Color.RED)

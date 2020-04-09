@@ -1,5 +1,7 @@
 package com.wybosys.ajni
 
+import android.app.Activity
+
 object AJni {
 
     // 初始化
@@ -9,7 +11,7 @@ object AJni {
     external fun Main()
 
     // 测试入口
-    external fun Test()
+    external fun Test(act:Activity)
 
     init {
         // 自动加载so
