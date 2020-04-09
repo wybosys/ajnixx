@@ -1,0 +1,9 @@
+#ifndef _AJNI_INSPECT_H
+#define _AJNI_INSPECT_H
+
+AJNI_BEGIN
+
+AJNI_END
+
+#endif
+

@@ -4,6 +4,7 @@ add_library(ajni
         SHARED
         ajni.cpp
         android.cpp
+        inspect.cpp
         test.cpp)
 
 find_library(log-lib
