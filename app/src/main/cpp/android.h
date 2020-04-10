@@ -4,6 +4,7 @@
 AJNI_BEGIN_NS(jt)
 extern const string Context;
 extern const string AttributeSet;
+extern const string View;
 AJNI_END_NS
 
 AJNI_BEGIN_NS(android)
@@ -11,7 +12,7 @@ AJNI_BEGIN_NS(android)
 class Activity: public JClass {
 public:
 
-    Activity(const JClassPath&);
+    Activity(const JClassPath& = "androidx/appcompat/app/AppCompatActivity");
 
     JMethod findViewById;
 };
@@ -19,7 +20,7 @@ public:
 class View: public JClass {
 public:
 
-    View(const JClassPath&);
+    View(const JClassPath& = "android/view/View");
 
     JMethod setBackgroundColor;
 };

@@ -345,7 +345,9 @@ JVariant JMethod::invoke(const vector<const JVariant*>& args) const {
         } else if (returntyp == jt::Double) {
             return gs_env->CallStaticDoubleMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::String) {
-            return (jstring)gs_env->CallStaticObjectMethodA(_cls.clazz(), mid, jpargs);
+            return (jstring) gs_env->CallStaticObjectMethodA(_cls.clazz(), mid, jpargs);
+        } else if (returntyp == jt::Void) {
+            gs_env->CallStaticVoidMethodA(_cls.clazz(), mid, jpargs);
         } else {
             return gs_env->CallStaticObjectMethodA(_cls.clazz(), mid, jpargs);
         }
@@ -385,6 +387,8 @@ JVariant JMethod::invoke(jobject obj, const vector<const JVariant*>& args) const
             return gs_env->CallDoubleMethodA(obj, mid, jpargs);
         } else if (returntyp == jt::String) {
             return (jstring) gs_env->CallObjectMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Void) {
+            gs_env->CallVoidMethodA(obj, mid, jpargs);
         } else {
             return gs_env->CallObjectMethodA(obj, mid, jpargs);
         }

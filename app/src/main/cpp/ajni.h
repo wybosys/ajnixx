@@ -212,7 +212,7 @@ public:
 
     string name; // 变量名
     string typ; // 变量类型
-    bool is_static; // 是否是静态变量
+    bool is_static = false; // 是否是静态变量
 
     // 获取数据
     JVariant operator()() const;
@@ -231,8 +231,8 @@ public:
 
     string name; // 函数名
     string returntyp; // 返回类型
-    bool is_static; // 是否是静态函数
-    bool is_construct; // 是否是构造函数
+    bool is_static = false; // 是否是静态函数
+    bool is_construct = false; // 是否是构造函数
 
     // 参数类型, 设置则代表不使用自动推导，手动指定入参表
     vector<string> argtyps;

@@ -34,5 +34,7 @@ void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
     blockview->setBackgroundColor(blockview, (int)0xFFFF0000);
 
     R_id rid;
+    auto act = JEntry<android::Activity>::Attach(activity);
+    JVariant t = (*act)->findViewById(*act, (int)rid.main());
     //int main = rid.main();
 }
