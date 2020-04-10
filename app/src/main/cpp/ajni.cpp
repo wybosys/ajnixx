@@ -1,4 +1,5 @@
 #include "ajni.h"
+#include "stlext.h"
 
 AJNI_BEGIN
 
@@ -22,10 +23,6 @@ JNIEnv *Env() {
     return gs_env;
 }
 
-jobject JClassGetInstance(JClass& jc) {
-    return jc._instance;
-}
-
 JObject::JObject(jobject obj, bool attach)
 : _obj(obj) {
     if (!attach && _obj) {
@@ -45,6 +42,17 @@ JObject::~JObject() {
         gs_env->DeleteLocalRef(_obj);
 }
 
+JString::JString(jstring v, bool attach) {
+    jboolean cp = false;
+    size_t sl = gs_env->GetStringUTFLength(v);
+    _str = string(gs_env->GetStringUTFChars(v, &cp), sl);
+    if (!attach) {
+        _obj = gs_env->NewStringUTF(_str.c_str());
+    } else {
+        _obj = v;
+    }
+}
+
 JString::JString(const std::string& str): _str(str) {
     _obj = gs_env->NewStringUTF(str.c_str());
 }
@@ -53,14 +61,9 @@ JString::~JString() {
     gs_env->ReleaseStringChars(_obj, nullptr);
 }
 
-JVariant::JVariant(JClass& r)
-: _typ(JVariant::OBJECT) {
-    _v.obj = JClassGetInstance(r);
-}
-
 JVariant::JVariant(bool v)
 : _typ(JVariant::BOOLEAN) {
-    _v.bl = v ? 1 : 0;
+    _v.z = v ? 1 : 0;
 }
 
 JVariant::JVariant(jchar v)
@@ -85,7 +88,7 @@ JVariant::JVariant(jint v)
 
 JVariant::JVariant(jlong v)
 : _typ(JVariant::LONG) {
-    _v.l = v;
+    _v.j = v;
 }
 
 JVariant::JVariant(jfloat v)
@@ -98,9 +101,22 @@ JVariant::JVariant(jdouble v)
     _v.d = v;
 }
 
+JVariant::JVariant(jobject v)
+: _typ(JVariant::OBJECT) {
+    _vo = make_shared<JObject>(v, true);
+    _v.l = *_vo;
+}
+
+JVariant::JVariant(jstring v)
+: _typ(JVariant::STRING) {
+    _vs = make_shared<JString>(v);
+    _v.l = v;
+}
+
 JVariant::JVariant(const string& v)
 : _typ(JVariant::STRING) {
-    _vss = make_shared<JString>(v);
+    _vs = make_shared<JString>(v);
+    _v.l = (jstring)*_vs;
 }
 
 string JVariant::jt() const {
@@ -122,7 +138,9 @@ string JVariant::jt() const {
 
 JClass::JClass(const ajni::JClassName &name)
 : _clazzname(name), _instance(nullptr) {
-    _clazz = gs_env->FindClass(_clazzname.c_str());
+    if (!name.empty()) {
+        _clazz = gs_env->FindClass(_clazzname.c_str());
+    }
 }
 
 JVariant JMethod::operator ()() {
@@ -164,19 +182,45 @@ string JMethod::signature(const vector<const JVariant*>& args) const {
     for (auto& e:args) {
         ps.emplace_back(e->jt());
     }
-    string sig = "(" + accumulate(ps.begin(), ps.end(), string(";")) + ")" + returntyp;
+    string sig = "(" + join(ps.begin(), ps.end(), ";") + ")" + returntyp;
     return sig;
 }
 
 JVariant JMethod::invoke(const vector<const JVariant*>& args) {
     string sig = signature(args);
+    vector<jvalue> jargs;
+    for (auto& e: args) {
+        jargs.emplace_back(e->jv());
+    }
     if (is_static) {
         auto mid = gs_env->GetStaticMethodID(_cls._clazz, name.c_str(), sig.c_str());
-        if (mid)
+        if (!mid)
             throw "没有找到函数 " + name + sig;
-        //gs_env->CallStaticObjectMethod(_cls._clazz, mid, )
+        if (returntyp == jt::Boolean) {
+            return gs_env->CallStaticBooleanMethodA(_cls._clazz, mid, (jvalue*)&jargs);
+        } else if (returntyp == jt::Byte) {
+            return gs_env->CallStaticByteMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else if (returntyp == jt::Char) {
+            return gs_env->CallStaticCharMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else if (returntyp == jt::Short) {
+            return gs_env->CallStaticShortMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else if (returntyp == jt::Int) {
+            return gs_env->CallStaticIntMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else if (returntyp == jt::Long) {
+            return gs_env->CallStaticLongMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else if (returntyp == jt::Float) {
+            return gs_env->CallStaticFloatMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else if (returntyp == jt::Double) {
+            return gs_env->CallStaticDoubleMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else if (returntyp == jt::String) {
+            return (jstring)gs_env->CallStaticObjectMethodA(_cls._clazz, mid, (jvalue*)&args);
+        } else {
+            return gs_env->CallStaticObjectMethodA(_cls._clazz, mid, (jvalue*)&args);
+        }
     } else {
-
+        auto mid = gs_env->GetMethodID(_cls._clazz, name.c_str(), sig.c_str());
+        if (!mid)
+            throw "没有找到函数 " + name + sig;
     }
     return JVariant();
 }

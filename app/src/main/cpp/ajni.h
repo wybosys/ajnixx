@@ -8,7 +8,7 @@
 #include <map>
 #include <exception>
 #include <algorithm>
-#include <numeric>
+#include <functional>
 
 #define AJNI_BEGIN namespace ajni {
 #define AJNI_END }
@@ -123,6 +123,7 @@ protected:
 class JString: public _JObject<jstring>
 {
 public:
+    JString(jstring, bool attach=true);
     JString(const string&);
     ~JString();
 
@@ -139,7 +140,6 @@ public:
     typedef enum { UNKNOWN, OBJECT, BOOLEAN, BYTE, CHAR, SHORT, INT, LONG, FLOAT, DOUBLE, STRING } TYPE;
 
     JVariant() = default;
-    JVariant(JClass&r);
     JVariant(bool);
     JVariant(jchar);
     JVariant(jbyte);
@@ -148,41 +148,39 @@ public:
     JVariant(jlong);
     JVariant(jfloat);
     JVariant(jdouble);
+    JVariant(jobject);
+    JVariant(jstring);
     JVariant(const ::std::string&);
 
 #define _JVARIANT_GET_IMPL(typ, obj) \
 inline operator typ() { return obj; } \
 inline operator const typ() const { return obj; }
 
-    _JVARIANT_GET_IMPL(jobject, _v.obj)
-    _JVARIANT_GET_IMPL(jboolean, _v.bl)
+    _JVARIANT_GET_IMPL(jobject, _v.l)
+    _JVARIANT_GET_IMPL(jboolean, _v.z)
     _JVARIANT_GET_IMPL(jchar, _v.c)
     _JVARIANT_GET_IMPL(jbyte, _v.b)
     _JVARIANT_GET_IMPL(jshort, _v.s)
     _JVARIANT_GET_IMPL(jint, _v.i)
-    _JVARIANT_GET_IMPL(jlong, _v.l)
+    _JVARIANT_GET_IMPL(jlong, _v.j)
     _JVARIANT_GET_IMPL(jfloat, _v.f)
     _JVARIANT_GET_IMPL(jdouble, _v.d)
-    _JVARIANT_GET_IMPL(::std::string, *_vss)
+    _JVARIANT_GET_IMPL(::std::string, *_vs)
+    _JVARIANT_GET_IMPL(jstring, *_vs)
 
     // 返回jni类型定义
     string jt() const;
 
+    // 返回jni数据
+    inline jvalue jv() const {
+        return _v;
+    }
+
 private:
     TYPE _typ = UNKNOWN;
-
-    union {
-        jobject obj;
-        jboolean bl;
-        jchar c;
-        jbyte b;
-        jshort s;
-        jint i;
-        jlong l;
-        jfloat f;
-        jdouble d;
-    } _v;
-    shared_ptr<JString> _vss;
+    jvalue _v;
+    shared_ptr<JString> _vs;
+    shared_ptr<JObject> _vo;
 };
 
 class JMethod {
@@ -225,7 +223,7 @@ public:
 
     typedef shared_ptr<JClass> instance_type;
 
-    JClass(const JClassName &name);
+    JClass(const JClassName &name = "");
     virtual ~JClass();
 
     // 实例化
@@ -239,7 +237,7 @@ protected:
 
     friend class JInspect;
     friend class JMethod;
-    friend jobject JClassGetInstance(JClass&);
+    friend class JVariant;
 };
 
 AJNI_END
