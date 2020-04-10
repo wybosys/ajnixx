@@ -10,10 +10,9 @@ void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
 
     JActivity blockview("com/wybosys/ajni/BlockView");
     JInspect isp(blockview);
-
     try {
         blockview.instance();
-    } catch (exception e) {
-        AJNI_LOGE("实例化blockview失败");
+    } catch (exception err) {
+        AJNI_LOGE("%s", err.what());
     }
 }

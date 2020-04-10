@@ -29,7 +29,11 @@ JInspect::JInspect(const ajni::JClass &clz)
     AJNI_CLASS_CONSTRUCT()
 
     JReflectClass Class;
-    JVariant t = Class.ForName(clz._clazzname);
+    try {
+        JVariant t = Class.ForName(clz.name());
+    } catch (exception) {
+
+    }
 }
 
 JInspect::~JInspect() {

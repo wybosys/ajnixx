@@ -4,9 +4,9 @@
 AJNI_BEGIN
 
 namespace jt {
-    const string Class = "L/java/lang/Class;";
-    const string String = "L/java/lang/String;";
-    const string Object = "L/java/lang/Object;";
+    const string Class = "Ljava/lang/Class;";
+    const string String = "Ljava/lang/String;";
+    const string Object = "Ljava/lang/Object;";
     const string Boolean = "Z";
     const string Byte = "B";
     const string Char = "C";
@@ -17,6 +17,7 @@ namespace jt {
     const string Double = "D";
 }
 
+static JavaVM *gs_vm = nullptr;
 static JNIEnv *gs_env = nullptr;
 
 JNIEnv *Env() {
@@ -26,26 +27,32 @@ JNIEnv *Env() {
 JObject::JObject(jobject obj, bool attach)
 : _obj(obj) {
     if (!attach && _obj) {
-        gs_env->NewLocalRef(_obj);
+        _obj = gs_env->NewLocalRef(_obj);
     }
 }
 
 JObject::JObject(ajni::JObject &r)
 : _obj(r._obj)
 {
-    if (_obj)
-        gs_env->NewLocalRef(_obj);
+    if (_obj) {
+        _obj = gs_env->NewLocalRef(_obj);
+    }
 }
 
 JObject::~JObject() {
-    if (_obj)
+    if (_obj) {
         gs_env->DeleteLocalRef(_obj);
+        _obj = nullptr;
+    }
 }
 
 JString::JString(jstring v, bool attach) {
     jboolean cp = false;
     size_t sl = gs_env->GetStringUTFLength(v);
-    _str = string(gs_env->GetStringUTFChars(v, &cp), sl);
+    const char* cs = gs_env->GetStringUTFChars(v, &cp);
+    _str = string(cs, sl);
+    gs_env->ReleaseStringUTFChars(v, cs);
+
     if (!attach) {
         _obj = gs_env->NewStringUTF(_str.c_str());
     } else {
@@ -58,7 +65,10 @@ JString::JString(const std::string& str): _str(str) {
 }
 
 JString::~JString() {
-    gs_env->ReleaseStringChars(_obj, nullptr);
+    if (_obj) {
+        gs_env->DeleteLocalRef(_obj);
+        _obj = nullptr;
+    }
 }
 
 JVariant::JVariant(bool v)
@@ -136,13 +146,6 @@ string JVariant::jt() const {
     return "";
 }
 
-JClass::JClass(const ajni::JClassName &name)
-: _clazzname(name), _instance(nullptr) {
-    if (!name.empty()) {
-        _clazz = gs_env->FindClass(_clazzname.c_str());
-    }
-}
-
 JVariant JMethod::operator ()() {
     return invoke(vector<const JVariant*>());
 }
@@ -187,62 +190,91 @@ string JMethod::signature(const vector<const JVariant*>& args) const {
 }
 
 JVariant JMethod::invoke(const vector<const JVariant*>& args) {
+    AJNI_CHECKEXCEPTION
+
     string sig = signature(args);
     vector<jvalue> jargs;
     for (auto& e: args) {
         jargs.emplace_back(e->jv());
     }
+    const jvalue* jpargs = jargs.size() ? (const jvalue*)&jargs[0] : nullptr;
+
     if (is_static) {
-        auto mid = gs_env->GetStaticMethodID(_cls._clazz, name.c_str(), sig.c_str());
+        auto mid = gs_env->GetStaticMethodID(_cls.clazz(), name.c_str(), sig.c_str());
         if (!mid)
             throw "没有找到函数 " + name + sig;
         if (returntyp == jt::Boolean) {
-            return gs_env->CallStaticBooleanMethodA(_cls._clazz, mid, (jvalue*)&jargs);
+            return gs_env->CallStaticBooleanMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::Byte) {
-            return gs_env->CallStaticByteMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticByteMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::Char) {
-            return gs_env->CallStaticCharMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticCharMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::Short) {
-            return gs_env->CallStaticShortMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticShortMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::Int) {
-            return gs_env->CallStaticIntMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticIntMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::Long) {
-            return gs_env->CallStaticLongMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticLongMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::Float) {
-            return gs_env->CallStaticFloatMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticFloatMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::Double) {
-            return gs_env->CallStaticDoubleMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticDoubleMethodA(_cls.clazz(), mid, jpargs);
         } else if (returntyp == jt::String) {
-            return (jstring)gs_env->CallStaticObjectMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return (jstring)gs_env->CallStaticObjectMethodA(_cls.clazz(), mid, jpargs);
         } else {
-            return gs_env->CallStaticObjectMethodA(_cls._clazz, mid, (jvalue*)&args);
+            return gs_env->CallStaticObjectMethodA(_cls.clazz(), mid, jpargs);
         }
     } else {
-        auto mid = gs_env->GetMethodID(_cls._clazz, name.c_str(), sig.c_str());
+        auto mid = gs_env->GetMethodID(_cls.clazz(), name.c_str(), sig.c_str());
         if (!mid)
             throw "没有找到函数 " + name + sig;
     }
     return JVariant();
 }
 
-JClass::~JClass() {
-
+JClass::JClass(const ajni::JClassName &name)
+: _clazzname(name), _instance(nullptr) {
+    if (!name.empty()) {
+        _clazz = gs_env->FindClass(name.c_str());
+    }
 }
 
-JClass::instance_type JClass::instance() throw(exception) {
+JClass::~JClass() {
+    if (_clazz) {
+        gs_env->DeleteLocalRef(_clazz);
+        _clazz = nullptr;
+    }
+}
+
+JClass::instance_type JClass::instance() {
     if (_instance != nullptr)
         throw "已经实例化";
     auto r = make_shared<JClass>(_clazzname);
     if (_clazz == nullptr)
         throw "没找到类型" + _clazzname;
     r->_clazz = _clazz;
-    return r;
+    return nullptr;
+}
+
+ExceptionGuard::~ExceptionGuard() {
+    if (!gs_env->ExceptionCheck())
+        return;
+    jthrowable exp = gs_env->ExceptionOccurred();
+    gs_env->ExceptionClear();
+    AJNI_LOGE("JNI遇到未知错误");
 }
 
 AJNI_END
 
+JNIEXPORT jint JNI_OnLoad(JavaVM *vm, void *reserved) {
+    ajni::gs_vm = vm;
+    vm->GetEnv((void**)&ajni::gs_env, JNI_VERSION_1_4);
+    vm->AttachCurrentThread(&ajni::gs_env, nullptr);
+    return JNI_VERSION_1_4;
+}
+
 void AJNI_FUNC(AJni_Init)(JNIEnv *env, jobject self) {
-    ajni::gs_env = env;
+    // pass
 }
 
 void AJNI_FUNC(AJni_Main)(JNIEnv *env, jobject self) {

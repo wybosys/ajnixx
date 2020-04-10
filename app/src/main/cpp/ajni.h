@@ -55,6 +55,8 @@ return *_shared; \
 #define __AJNI_COMBINE(L, R) L##R
 #define _AJNI_COMBINE(L, R) __AJNI_COMBINE(L, R)
 
+#define AJNI_CHECKEXCEPTION ExceptionGuard _AJNI_COMBINE(__exception_guard_, __LINE__);
+
 #define AJNI_API(ret) extern "C" JNIEXPORT ret JNICALL
 #define AJNI_FUNC(name) Java_com_wybosys_ajni_##name
 
@@ -210,9 +212,6 @@ public:
 protected:
 
     JClass& _cls;
-
-private:
-    friend class JClass;
 };
 
 // 映射到Java的类
@@ -227,17 +226,27 @@ public:
     virtual ~JClass();
 
     // 实例化
-    virtual instance_type instance() throw(exception);
+    virtual instance_type instance();
+
+    inline const JClassName& name() const {
+        return _clazzname;
+    }
+
+    inline jclass clazz() const {
+        return _clazz;
+    }
 
 protected:
 
     JClassName _clazzname;
     jclass _clazz;
     jobject _instance;
+};
 
-    friend class JInspect;
-    friend class JMethod;
-    friend class JVariant;
+class ExceptionGuard
+{
+public:
+    ~ExceptionGuard();
 };
 
 AJNI_END
