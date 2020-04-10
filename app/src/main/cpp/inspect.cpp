@@ -8,7 +8,7 @@ class JReflectClass: public JClass
 public:
 
     JReflectClass()
-    : JClass("java/lang/reflect/Class"),
+    : JClass("java/lang/Class"),
     ForName(*this)
     {
         ForName.name = "forName";
@@ -20,8 +20,6 @@ public:
     JMethod ForName;
 };
 
-static JReflectClass gs_reflect_class;
-
 struct JInspectPrivate {
     shared_ptr<JReflectClass> rclass;
 };
@@ -30,7 +28,8 @@ JInspect::JInspect(const ajni::JClass &clz)
 :_clz(clz) {
     AJNI_CLASS_CONSTRUCT()
 
-    JVariant t = gs_reflect_class.ForName(clz._clazzname);
+    JReflectClass Class;
+    JVariant t = Class.ForName(clz._clazzname);
 }
 
 JInspect::~JInspect() {

@@ -7,6 +7,8 @@
 #include <vector>
 #include <map>
 #include <exception>
+#include <algorithm>
+#include <numeric>
 
 #define AJNI_BEGIN namespace ajni {
 #define AJNI_END }
@@ -73,9 +75,64 @@ typedef ::std::string JClassName;
 namespace jt {
     extern const string Class;
     extern const string String;
+    extern const string Object;
+    extern const string Boolean;
+    extern const string Byte;
+    extern const string Char;
+    extern const string Short;
+    extern const string Int;
+    extern const string Long;
+    extern const string Float;
+    extern const string Double;
 }
 
 class JClass;
+
+class JObject
+{
+public:
+
+    // attach=true，代表实例化jobject时不增加应用计数
+    JObject(jobject = nullptr, bool attach=true);
+    JObject(JObject&);
+    ~JObject();
+
+    inline operator jobject () {
+        return _obj;
+    }
+
+private:
+    jobject _obj;
+};
+
+template <typename T>
+class _JObject {
+    _JObject(_JObject&);
+
+public:
+    _JObject(): _obj(nullptr) {}
+
+    inline operator T () {
+        return _obj;
+    }
+
+protected:
+    T _obj;
+};
+
+class JString: public _JObject<jstring>
+{
+public:
+    JString(const string&);
+    ~JString();
+
+    inline operator const string& () const {
+        return _str;
+    }
+
+private:
+    string _str;
+};
 
 class JVariant {
 public:
@@ -97,29 +154,35 @@ public:
 inline operator typ() { return obj; } \
 inline operator const typ() const { return obj; }
 
-    _JVARIANT_GET_IMPL(jobject, _vobj)
-    _JVARIANT_GET_IMPL(jboolean, _vbl)
-    _JVARIANT_GET_IMPL(jchar, _vc)
-    _JVARIANT_GET_IMPL(jbyte, _vb)
-    _JVARIANT_GET_IMPL(jshort, _vs)
-    _JVARIANT_GET_IMPL(jint, _vi)
-    _JVARIANT_GET_IMPL(jlong, _vl)
-    _JVARIANT_GET_IMPL(jfloat, _vf)
-    _JVARIANT_GET_IMPL(jdouble, _vd)
-    _JVARIANT_GET_IMPL(::std::string, _vss)
+    _JVARIANT_GET_IMPL(jobject, _v.obj)
+    _JVARIANT_GET_IMPL(jboolean, _v.bl)
+    _JVARIANT_GET_IMPL(jchar, _v.c)
+    _JVARIANT_GET_IMPL(jbyte, _v.b)
+    _JVARIANT_GET_IMPL(jshort, _v.s)
+    _JVARIANT_GET_IMPL(jint, _v.i)
+    _JVARIANT_GET_IMPL(jlong, _v.l)
+    _JVARIANT_GET_IMPL(jfloat, _v.f)
+    _JVARIANT_GET_IMPL(jdouble, _v.d)
+    _JVARIANT_GET_IMPL(::std::string, *_vss)
+
+    // 返回jni类型定义
+    string jt() const;
 
 private:
     TYPE _typ = UNKNOWN;
-    jobject _vobj;
-    jboolean _vbl;
-    jchar _vc;
-    jbyte _vb;
-    jshort _vs;
-    jint _vi;
-    jlong _vl;
-    jfloat _vf;
-    jdouble _vd;
-    ::std::string _vss;
+
+    union {
+        jobject obj;
+        jboolean bl;
+        jchar c;
+        jbyte b;
+        jshort s;
+        jint i;
+        jlong l;
+        jfloat f;
+        jdouble d;
+    } _v;
+    shared_ptr<JString> _vss;
 };
 
 class JMethod {
@@ -142,6 +205,9 @@ public:
     JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&);
     JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&, const JVariant&);
     JVariant invoke(const vector<const JVariant*>&);
+
+    // 生成函数标记
+    string signature(const vector<const JVariant*>&) const;
 
 protected:
 
@@ -172,6 +238,7 @@ protected:
     jobject _instance;
 
     friend class JInspect;
+    friend class JMethod;
     friend jobject JClassGetInstance(JClass&);
 };
 
