@@ -6,7 +6,7 @@ AJNI_BEGIN
 class JActivity: public JClass {
 public:
 
-    JActivity(const JClassName& name);
+    JActivity(const JClassPath&);
 
 };
 

@@ -5,13 +5,13 @@ AJNI_BEGIN_NS(jre)
 
 class Object: public JClass {
 public:
-    Object(const JClassName& name="java/lang/Object");
+    Object(const JClassPath& path="java/lang/Object");
     JMethod toString;
 };
 
 class Throwable: public Object {
 public:
-    Throwable(const JClassName& name="java/lang/Throwable");
+    Throwable(const JClassPath& path="java/lang/Throwable");
 };
 
 AJNI_END_NS

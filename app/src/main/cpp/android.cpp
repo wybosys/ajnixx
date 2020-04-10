@@ -3,8 +3,8 @@
 
 AJNI_BEGIN
 
-JActivity::JActivity(const ajni::JClassName &name)
-: JClass(name) {
+JActivity::JActivity(const JClassPath &path)
+: JClass(path) {
 
 }
 

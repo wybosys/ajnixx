@@ -302,10 +302,10 @@ JVariant JMethod::invoke(jobject obj, const vector<const JVariant*>& args) const
     return JVariant();
 }
 
-JClass::JClass(const ajni::JClassName &name)
-: _clazzname(name) {
-    if (!name.empty()) {
-        _clazz = gs_env->FindClass(name.c_str());
+JClass::JClass(const JClassPath &path)
+: _clazzpath(path), _clazz(nullptr) {
+    if (!path.empty()) {
+        _clazz = gs_env->FindClass(path.c_str());
     }
 }
 

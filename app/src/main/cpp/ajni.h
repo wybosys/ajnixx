@@ -80,8 +80,11 @@ using namespace ::std;
 // 获得全局env
 JNIEnv *Env();
 
-// 定义java类的名称类型，例如 com/google/gson/Gson
-typedef ::std::string JClassName;
+// 定义java类的路径，例如 com/google/gson/Gson
+typedef string JClassPath;
+
+// 定义java类的名称，例如 com.google.gson.Gson
+typedef string JClassName;
 
 // java的类型
 namespace jt {
@@ -238,11 +241,19 @@ class JClass {
 
 public:
 
-    JClass(const JClassName &name = "");
+    JClass(const JClassPath &path = "");
     virtual ~JClass();
 
-    inline const JClassName& name() const {
-        return _clazzname;
+    // jni类路径，java/lang/Class的格式
+    inline const JClassPath& path() const {
+        return _clazzpath;
+    }
+
+    // 类名，java.lang.Class的格式
+    inline JClassName name() const {
+        string t = _clazzpath;
+        replace(t.begin(), t.end(), '/', '.');
+        return t;
     }
 
     inline jclass clazz() const {
@@ -251,7 +262,7 @@ public:
 
 protected:
 
-    JClassName _clazzname;
+    JClassPath _clazzpath;
     jclass _clazz;
 };
 
