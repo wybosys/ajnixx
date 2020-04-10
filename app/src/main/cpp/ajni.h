@@ -297,6 +297,30 @@ public:
             reset(clz->construct(v));
     }
 
+    JEntry(const JVariant& v, const JVariant& v1, clazz_type clz = make_shared<Clazz>(), bool ins=true)
+    : JObject(nullptr, true), _clazz(clz) {
+        if (ins)
+            reset(clz->construct(v, v1));
+    }
+
+    JEntry(const JVariant& v, const JVariant& v1, const JVariant& v2, clazz_type clz = make_shared<Clazz>(), bool ins=true)
+    : JObject(nullptr, true), _clazz(clz) {
+        if (ins)
+            reset(clz->construct(v, v1, v2));
+    }
+
+    JEntry(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3, clazz_type clz = make_shared<Clazz>(), bool ins=true)
+    : JObject(nullptr, true), _clazz(clz) {
+        if (ins)
+            reset(clz->construct(v, v1, v2, v3));
+    }
+
+    JEntry(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3, const JVariant& v4, clazz_type clz = make_shared<Clazz>(), bool ins=true)
+    : JObject(nullptr, true), _clazz(clz) {
+        if (ins)
+            reset(clz->construct(v, v1, v2, v3, v4));
+    }
+
     inline const Clazz* operator -> () const {
         return _clazz.get();
     }

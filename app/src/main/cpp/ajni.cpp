@@ -330,6 +330,9 @@ JClass::JClass(const JClassPath &path)
 : _clazzpath(path), _clazz(nullptr), construct(*this) {
     if (!path.empty()) {
         _clazz = gs_env->FindClass(path.c_str());
+        if (_clazz) {
+            _clazz = (jclass)gs_env->NewGlobalRef(_clazz);
+        }
     }
 
     construct.is_construct = true;
@@ -338,7 +341,7 @@ JClass::JClass(const JClassPath &path)
 
 JClass::~JClass() {
     if (_clazz) {
-        gs_env->DeleteLocalRef(_clazz);
+        gs_env->DeleteGlobalRef(_clazz);
         _clazz = nullptr;
     }
 }
