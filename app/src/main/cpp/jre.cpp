@@ -11,7 +11,7 @@ Object::Object(const JClassName &name)
 
 Throwable::Throwable(const JClassName &name)
 : Object(name) {
-    
+
 }
 
 AJNI_END_NS

@@ -147,35 +147,35 @@ string JVariant::jt() const {
     return "";
 }
 
-JVariant JMethod::operator ()() {
+JVariant JMethod::operator ()() const {
     return invoke(vector<const JVariant*>());
 }
 
-JVariant JMethod::operator ()(JVariant const& v) {
+JVariant JMethod::operator ()(JVariant const& v) const {
     return invoke(vector<const JVariant*>({
         &v
     }));
 }
 
-JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1) {
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1) const {
     return invoke(vector<const JVariant*>({
         &v, &v1
     }));
 }
 
-JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2) {
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2) const {
     return invoke(vector<const JVariant*>({
         &v, &v1, &v2
     }));
 }
 
-JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3) {
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3) const {
     return invoke(vector<const JVariant*>({
         &v, &v1, &v2, &v3
     }));
 }
 
-JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3, const JVariant& v4) {
+JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3, const JVariant& v4) const {
     return invoke(vector<const JVariant*>({
         &v, &v1, &v2, &v3, &v4
     }));
@@ -190,7 +190,7 @@ string JMethod::signature(const vector<const JVariant*>& args) const {
     return sig;
 }
 
-JVariant JMethod::invoke(const vector<const JVariant*>& args) {
+JVariant JMethod::invoke(const vector<const JVariant*>& args) const {
     AJNI_CHECKEXCEPTION
 
     string sig = signature(args);
@@ -252,7 +252,10 @@ ExceptionGuard::~ExceptionGuard() {
         return;
     jthrowable exp = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
-    AJNI_LOGE("JNI遇到未知错误");
+
+    JEntry<jre::Throwable> obj(exp);
+    string msg = obj->toString();
+    AJNI_LOGE("捕获JNI异常 %s", msg.c_str());
 }
 
 AJNI_END

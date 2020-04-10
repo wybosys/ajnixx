@@ -55,6 +55,13 @@ _shared = new cls(); \
 return *_shared; \
 }
 
+#define AJNI_STATIC_DECL(cls) static const cls& shared();
+#define AJNI_STATIC_IMPL(cls) shared_ptr<cls> __gs_##cls; \
+const cls& cls::shared() { \
+    if (!__gs_##cls) \
+        __gs_##cls = make_shared<cls>(); \
+    return *__gs_##cls; }
+
 #define __AJNI_COMBINE(L, R) L##R
 #define _AJNI_COMBINE(L, R) __AJNI_COMBINE(L, R)
 
@@ -155,7 +162,7 @@ public:
     JVariant(jdouble);
     JVariant(jobject);
     JVariant(jstring);
-    JVariant(const ::std::string&);
+    JVariant(const string&);
 
 #define _JVARIANT_GET_IMPL(typ, obj) \
 inline operator typ() { return obj; } \
@@ -170,7 +177,7 @@ inline operator const typ() const { return obj; }
     _JVARIANT_GET_IMPL(jlong, _v.j)
     _JVARIANT_GET_IMPL(jfloat, _v.f)
     _JVARIANT_GET_IMPL(jdouble, _v.d)
-    _JVARIANT_GET_IMPL(::std::string, *_vs)
+    _JVARIANT_GET_IMPL(string, *_vs)
     _JVARIANT_GET_IMPL(jstring, *_vs)
 
     // 返回jni类型定义
@@ -201,13 +208,13 @@ public:
     bool is_static; // 是否是静态函数
 
     // 执行java函数
-    JVariant operator ()();
-    JVariant operator ()(const JVariant&);
-    JVariant operator ()(const JVariant&, const JVariant&);
-    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&);
-    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&);
-    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&, const JVariant&);
-    JVariant invoke(const vector<const JVariant*>&);
+    JVariant operator ()() const;
+    JVariant operator ()(const JVariant&) const;
+    JVariant operator ()(const JVariant&, const JVariant&) const;
+    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&) const;
+    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&) const;
+    JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&, const JVariant&) const;
+    JVariant invoke(const vector<const JVariant*>&) const;
 
     // 生成函数标记
     string signature(const vector<const JVariant*>&) const;
@@ -217,13 +224,10 @@ protected:
     JClass& _cls;
 };
 
-// 映射到Java的类
 class JClass {
     AJNI_NOCOPY(JClass);
 
 public:
-
-    typedef shared_ptr<JClass> instance_type;
 
     JClass(const JClassName &name = "");
     virtual ~JClass();
@@ -242,18 +246,26 @@ protected:
     jclass _clazz;
 };
 
-// 实例
-class JEntry
-{
+// 实例对象
+template <typename Clazz = JClass>
+class JEntry: public JObject {
     AJNI_NOCOPY(JEntry);
 
 public:
 
-    JEntry(const JClass&);
+    typedef shared_ptr<Clazz> clazz_type;
 
-protected:
+    JEntry(jobject obj, clazz_type clz = make_shared<Clazz>())
+    : JObject(obj, true), _clazz(clz) {
+        // pass
+    }
 
-    const JClass& _clazz;
+    inline const Clazz* operator -> () const {
+        return _clazz.get();
+    }
+
+private:
+    clazz_type _clazz;
 };
 
 class ExceptionGuard
