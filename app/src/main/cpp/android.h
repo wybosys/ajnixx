@@ -33,6 +33,12 @@ public:
     class LayoutParams: public JClass {
     public:
         LayoutParams(const JClassPath& = "android/view/ViewGroup$LayoutParams");
+
+        enum {
+            FILL_PARENT = -1,
+            MATCH_PARENT = -1,
+            WRAP_CONTENT = -2
+        };
     };
 
     ViewGroup(const JClassPath& = "android/view/ViewGroup");

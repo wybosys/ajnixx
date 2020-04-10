@@ -119,7 +119,7 @@ public:
         return _obj;
     }
 
-    void reset(jobject= nullptr, bool attatch=true);
+    void reset(jobject=nullptr, bool attatch=true);
 
 private:
     jobject _obj;
@@ -200,7 +200,6 @@ private:
     TYPE _typ = UNKNOWN;
     jvalue _v;
     shared_ptr<JString> _vs;
-    shared_ptr<JObject> _vo;
 };
 
 class JField {

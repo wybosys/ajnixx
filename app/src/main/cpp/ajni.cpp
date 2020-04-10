@@ -126,8 +126,7 @@ JVariant::JVariant(jdouble v)
 
 JVariant::JVariant(jobject v)
 : _typ(JVariant::OBJECT) {
-    _vo = make_shared<JObject>(v, true);
-    _v.l = *_vo;
+    _v.l = v;
 }
 
 JVariant::JVariant(jstring v)

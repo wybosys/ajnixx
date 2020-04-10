@@ -37,6 +37,6 @@ void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
     auto act = JEntry<android::Activity>::Attach(activity);
     auto lyt = JEntry<android::ConstraintLayout>::Attach((*act)->findViewById(*act, (int)rid.main()));
 
-    JEntry<android::ViewGroup::LayoutParams> lp(100, 100);
+    JEntry<android::ViewGroup::LayoutParams> lp(android::ViewGroup::LayoutParams::FILL_PARENT, android::ViewGroup::LayoutParams::FILL_PARENT);
     (*lyt)->addView(*lyt, (jobject)bv, (jobject)lp);
 }
