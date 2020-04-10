@@ -8,15 +8,12 @@ AJNI_USE
 class BlockView : public android::Activity {
 public:
     BlockView() : android::Activity("com/wybosys/ajni/BlockView") {
-        construct.argtyps = {
-                "Landroid/content/Context;",
-                "Landroid/util/AttributeSet;"
-        };
+        construct.argtyps = { jt::Context, jt::AttributeSet };
     }
 };
 
 void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
     AJNI_LOGD("启动测试");
 
-    JEntry<BlockView> blockview(activity);
+    JEntry<BlockView> blockview(activity, jnull);
 }

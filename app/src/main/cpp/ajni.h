@@ -77,6 +77,8 @@ AJNI_BEGIN
 
 using namespace ::std;
 
+static jobject jnull = nullptr;
+
 // 获得全局env
 JNIEnv *Env();
 
