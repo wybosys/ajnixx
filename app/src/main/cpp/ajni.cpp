@@ -190,6 +190,40 @@ string JMethod::signature(const vector<const JVariant*>& args) const {
     return sig;
 }
 
+JVariant JMethod::operator ()(jobject obj) const {
+    return invoke(obj, vector<const JVariant*>());
+}
+
+JVariant JMethod::operator ()(jobject obj, JVariant const& v) const {
+    return invoke(obj, vector<const JVariant*>({
+        &v
+    }));
+}
+
+JVariant JMethod::operator ()(jobject obj, const JVariant& v, const JVariant& v1) const {
+    return invoke(obj, vector<const JVariant*>({
+        &v, &v1
+    }));
+}
+
+JVariant JMethod::operator ()(jobject obj, const JVariant& v, const JVariant& v1, const JVariant& v2) const {
+    return invoke(obj, vector<const JVariant*>({
+        &v, &v1, &v2
+    }));
+}
+
+JVariant JMethod::operator ()(jobject obj, const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3) const {
+    return invoke(obj, vector<const JVariant*>({
+        &v, &v1, &v2, &v3
+    }));
+}
+
+JVariant JMethod::operator ()(jobject obj, const JVariant& v, const JVariant& v1, const JVariant& v2, const JVariant& v3, const JVariant& v4) const {
+    return invoke(obj, vector<const JVariant*>({
+        &v, &v1, &v2, &v3, &v4
+    }));
+}
+
 JVariant JMethod::invoke(const vector<const JVariant*>& args) const {
     AJNI_CHECKEXCEPTION
 
@@ -225,10 +259,45 @@ JVariant JMethod::invoke(const vector<const JVariant*>& args) const {
         } else {
             return gs_env->CallStaticObjectMethodA(_cls.clazz(), mid, jpargs);
         }
-    } else {
+    }
+    return JVariant();
+}
+
+JVariant JMethod::invoke(jobject obj, const vector<const JVariant*>& args) const {
+    AJNI_CHECKEXCEPTION
+
+    string sig = signature(args);
+    vector<jvalue> jargs;
+    for (auto& e: args) {
+        jargs.emplace_back(e->jv());
+    }
+    const jvalue* jpargs = jargs.size() ? (const jvalue*)&jargs[0] : nullptr;
+
+    if (!is_static) {
         auto mid = gs_env->GetMethodID(_cls.clazz(), name.c_str(), sig.c_str());
         if (!mid)
             throw "没有找到函数 " + name + sig;
+        if (returntyp == jt::Boolean) {
+            return gs_env->CallBooleanMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Byte) {
+            return gs_env->CallByteMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Char) {
+            return gs_env->CallCharMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Short) {
+            return gs_env->CallShortMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Int) {
+            return gs_env->CallIntMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Long) {
+            return gs_env->CallLongMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Float) {
+            return gs_env->CallFloatMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::Double) {
+            return gs_env->CallDoubleMethodA(obj, mid, jpargs);
+        } else if (returntyp == jt::String) {
+            return (jstring) gs_env->CallObjectMethodA(obj, mid, jpargs);
+        } else {
+            return gs_env->CallObjectMethodA(obj, mid, jpargs);
+        }
     }
     return JVariant();
 }
@@ -254,7 +323,7 @@ ExceptionGuard::~ExceptionGuard() {
     gs_env->ExceptionClear();
 
     JEntry<jre::Throwable> obj(exp);
-    string msg = obj->toString();
+    string msg = obj->toString(obj);
     AJNI_LOGE("捕获JNI异常 %s", msg.c_str());
 }
 

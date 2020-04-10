@@ -109,7 +109,7 @@ public:
     JObject(JObject&);
     ~JObject();
 
-    inline operator jobject () {
+    inline operator jobject () const {
         return _obj;
     }
 
@@ -215,6 +215,15 @@ public:
     JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&) const;
     JVariant operator ()(const JVariant&, const JVariant&, const JVariant&, const JVariant&, const JVariant&) const;
     JVariant invoke(const vector<const JVariant*>&) const;
+
+    // 成员函数
+    JVariant operator ()(jobject) const;
+    JVariant operator ()(jobject, const JVariant&) const;
+    JVariant operator ()(jobject, const JVariant&, const JVariant&) const;
+    JVariant operator ()(jobject, const JVariant&, const JVariant&, const JVariant&) const;
+    JVariant operator ()(jobject, const JVariant&, const JVariant&, const JVariant&, const JVariant&) const;
+    JVariant operator ()(jobject, const JVariant&, const JVariant&, const JVariant&, const JVariant&, const JVariant&) const;
+    JVariant invoke(jobject, const vector<const JVariant*>&) const;
 
     // 生成函数标记
     string signature(const vector<const JVariant*>&) const;
