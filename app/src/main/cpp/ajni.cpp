@@ -344,8 +344,8 @@ ExceptionGuard::~ExceptionGuard() {
     jthrowable exp = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
 
-    JEntry<jre::Throwable> obj(exp);
-    string msg = obj->toString(obj);
+    auto obj = JEntry<jre::Throwable>::Attach(exp);
+    string msg = (*obj)->toString(*obj);
     AJNI_LOGE("捕获JNI异常 %s", msg.c_str());
 }
 

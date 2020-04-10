@@ -281,19 +281,28 @@ class JEntry: public JObject {
 public:
 
     typedef shared_ptr<Clazz> clazz_type;
+    typedef JEntry<Clazz> self_type;
 
-    JEntry(jobject obj, clazz_type clz = make_shared<Clazz>())
-    : JObject(obj, true), _clazz(clz) {
-        // pass
+    JEntry(clazz_type clz = make_shared<Clazz>(), bool ins=true)
+    : JObject(nullptr, true), _clazz(clz) {
+        if (ins)
+            reset(clz->construct());
     }
 
-    JEntry(clazz_type clz = make_shared<Clazz>())
+    JEntry(const JVariant& v, clazz_type clz = make_shared<Clazz>(), bool ins=true)
     : JObject(nullptr, true), _clazz(clz) {
-        reset(clz->construct());
+        if (ins)
+            reset(clz->construct(v));
     }
 
     inline const Clazz* operator -> () const {
         return _clazz.get();
+    }
+
+    static shared_ptr<self_type> Attach(jobject obj) {
+        auto r = make_shared<self_type>(make_shared<Clazz>(), false);
+        r->reset(obj);
+        return r;
     }
 
 private:

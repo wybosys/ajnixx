@@ -13,5 +13,5 @@ public:
 void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
     AJNI_LOGD("启动测试");
 
-    JEntry<BlockView> blockview;
+    JEntry<BlockView> blockview(activity);
 }
