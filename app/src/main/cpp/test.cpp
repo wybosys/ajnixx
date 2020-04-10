@@ -12,6 +12,7 @@ public:
     R_id(): JClass("com/wybosys/ajni/R$id"),
     main(*this)
     {
+        main.name = "main";
         main.is_static = true;
         main.typ = jt::Int;
     }
@@ -33,6 +34,5 @@ void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
     blockview->setBackgroundColor(blockview, (int)0xFFFF0000);
 
     R_id rid;
-    int main = rid.main();
-    AJNI_LOGD("%d", main);
+    //int main = rid.main();
 }
