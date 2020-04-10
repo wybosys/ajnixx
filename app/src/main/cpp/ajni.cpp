@@ -16,6 +16,7 @@ namespace jt {
     const string Long = "J";
     const string Float = "F";
     const string Double = "D";
+    const string Void = "V";
 }
 
 static JavaVM *gs_vm = nullptr;
@@ -44,6 +45,17 @@ JObject::~JObject() {
     if (_obj) {
         gs_env->DeleteLocalRef(_obj);
         _obj = nullptr;
+    }
+}
+
+void JObject::reset(jobject obj, bool attatch) {
+    if (_obj) {
+        gs_env->DeleteLocalRef(_obj);
+    }
+
+    _obj = obj;
+    if (_obj && attatch) {
+        _obj = gs_env->NewLocalRef(_obj);
     }
 }
 
@@ -186,7 +198,7 @@ string JMethod::signature(const vector<const JVariant*>& args) const {
     for (auto& e:args) {
         ps.emplace_back(e->jt());
     }
-    string sig = "(" + join(ps.begin(), ps.end(), ";") + ")" + returntyp;
+    string sig = "(" + join(ps.begin(), ps.end(), "") + ")" + returntyp;
     return sig;
 }
 
@@ -233,6 +245,13 @@ JVariant JMethod::invoke(const vector<const JVariant*>& args) const {
         jargs.emplace_back(e->jv());
     }
     const jvalue* jpargs = jargs.size() ? (const jvalue*)&jargs[0] : nullptr;
+
+    if (is_construct) {
+        auto mid = gs_env->GetMethodID(_cls.clazz(), "<init>", sig.c_str());
+        if (!mid)
+            throw "没有找到构造函数 " + name + sig;
+        return gs_env->NewObjectA(_cls.clazz(), mid, jpargs);
+    }
 
     if (is_static) {
         auto mid = gs_env->GetStaticMethodID(_cls.clazz(), name.c_str(), sig.c_str());
@@ -303,10 +322,13 @@ JVariant JMethod::invoke(jobject obj, const vector<const JVariant*>& args) const
 }
 
 JClass::JClass(const JClassPath &path)
-: _clazzpath(path), _clazz(nullptr) {
+: _clazzpath(path), _clazz(nullptr), construct(*this) {
     if (!path.empty()) {
         _clazz = gs_env->FindClass(path.c_str());
     }
+
+    construct.is_construct = true;
+    construct.returntyp = jt::Void;
 }
 
 JClass::~JClass() {

@@ -1,15 +1,15 @@
 #ifndef _AJNI_ANDROID_H
 #define _AJNI_ANDROID_H
 
-AJNI_BEGIN
+AJNI_BEGIN_NS(android)
 
-class JActivity: public JClass {
+class Activity: public JClass {
 public:
 
-    JActivity(const JClassPath&);
+    Activity(const JClassPath&);
 
 };
 
-AJNI_END
+AJNI_END_NS
 
 #endif

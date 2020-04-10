@@ -1,11 +1,11 @@
 #include "ajni.h"
 #include "android.h"
 
-AJNI_BEGIN
+AJNI_BEGIN_NS(android)
 
-JActivity::JActivity(const JClassPath &path)
+Activity::Activity(const JClassPath &path)
 : JClass(path) {
 
 }
 
-AJNI_END
+AJNI_END_NS

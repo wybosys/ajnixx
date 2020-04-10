@@ -99,6 +99,7 @@ namespace jt {
     extern const string Long;
     extern const string Float;
     extern const string Double;
+    extern const string Void;
 }
 
 class JClass;
@@ -115,6 +116,8 @@ public:
     inline operator jobject () const {
         return _obj;
     }
+
+    void reset(jobject= nullptr, bool attatch=true);
 
 private:
     jobject _obj;
@@ -209,6 +212,7 @@ public:
     string returntyp; // 返回类型
     vector<string> argtyps; // 参数类型
     bool is_static; // 是否是静态函数
+    bool is_construct; // 是否是构造函数
 
     // 执行java函数
     JVariant operator ()() const;
@@ -260,6 +264,9 @@ public:
         return _clazz;
     }
 
+    // 构造函数
+    JMethod construct;
+
 protected:
 
     JClassPath _clazzpath;
@@ -278,6 +285,11 @@ public:
     JEntry(jobject obj, clazz_type clz = make_shared<Clazz>())
     : JObject(obj, true), _clazz(clz) {
         // pass
+    }
+
+    JEntry(clazz_type clz = make_shared<Clazz>())
+    : JObject(nullptr, true), _clazz(clz) {
+        reset(clz->construct());
     }
 
     inline const Clazz* operator -> () const {
