@@ -54,7 +54,7 @@ void JObject::reset(jobject obj, bool attatch) {
     }
 
     _obj = obj;
-    if (_obj && attatch) {
+    if (_obj && !attatch) {
         _obj = gs_env->NewLocalRef(_obj);
     }
 }

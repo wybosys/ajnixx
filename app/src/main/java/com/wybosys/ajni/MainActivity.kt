@@ -26,7 +26,7 @@ class MainActivity : AppCompatActivity {
         //bv.setBackgroundColor(Color.RED)
 
         val lyr = findViewById<ConstraintLayout>(R.id.main)
-        //lyr.addView(bv, ViewGroup.LayoutParams(100, 100))
+        // lyr.addView(bv, ViewGroup.LayoutParams(100, 100))
 
         // sample_text.text = stringFromJNI()
     }

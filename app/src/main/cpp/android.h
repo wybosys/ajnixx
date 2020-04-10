@@ -5,6 +5,8 @@ AJNI_BEGIN_NS(jt)
 extern const string Context;
 extern const string AttributeSet;
 extern const string View;
+extern const string ViewGroup;
+extern const string ViewGroupLayoutParams;
 AJNI_END_NS
 
 AJNI_BEGIN_NS(android)
@@ -23,6 +25,25 @@ public:
     View(const JClassPath& = "android/view/View");
 
     JMethod setBackgroundColor;
+};
+
+class ViewGroup: public View {
+public:
+
+    class LayoutParams: public JClass {
+    public:
+        LayoutParams(const JClassPath& = "android/view/ViewGroup$LayoutParams");
+    };
+
+    ViewGroup(const JClassPath& = "android/view/ViewGroup");
+
+    JMethod addView;
+};
+
+class ConstraintLayout: public ViewGroup {
+public:
+
+    ConstraintLayout(const JClassPath& = "androidx/constraintlayout/widget/ConstraintLayout");
 };
 
 AJNI_END_NS

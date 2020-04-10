@@ -30,11 +30,13 @@ public:
 void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
     AJNI_LOGD("启动测试");
 
-    JEntry<BlockView> blockview(activity, jnull);
-    blockview->setBackgroundColor(blockview, (int)0xFFFF0000);
+    JEntry<BlockView> bv(activity, jnull);
+    bv->setBackgroundColor(bv, (int)0xFFFF0000);
 
     R_id rid;
     auto act = JEntry<android::Activity>::Attach(activity);
-    JVariant t = (*act)->findViewById(*act, (int)rid.main());
-    //int main = rid.main();
+    auto lyt = JEntry<android::ConstraintLayout>::Attach((*act)->findViewById(*act, (int)rid.main()));
+
+    JEntry<android::ViewGroup::LayoutParams> lp(100, 100);
+    (*lyt)->addView(*lyt, (jobject)bv, (jobject)lp);
 }
