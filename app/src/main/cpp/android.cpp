@@ -13,4 +13,11 @@ Activity::Activity(const JClassPath &path)
 
 }
 
+View::View(const JClassPath &path)
+: JClass(path),
+setBackgroundColor(*this) {
+    setBackgroundColor.name = 'setBackgroundColor';
+    setBackgroundColor.returntyp = jt::Void;
+}
+
 AJNI_END_NS

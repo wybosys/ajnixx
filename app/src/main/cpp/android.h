@@ -15,6 +15,14 @@ public:
 
 };
 
+class View: public JClass {
+public:
+
+    View(const JClassPath&);
+
+    JMethod setBackgroundColor;
+};
+
 AJNI_END_NS
 
 #endif
