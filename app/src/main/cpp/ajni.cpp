@@ -159,6 +159,72 @@ string JVariant::jt() const {
     return "";
 }
 
+JVariant JField::operator()() const {
+    AJNI_CHECKEXCEPTION
+
+    if (is_static) {
+        auto fid = gs_env->GetStaticFieldID(_cls.clazz(), name.c_str(), typ.c_str());
+        if (!fid)
+            throw "没有找到静态变量 " + name + typ;
+        if (typ == jt::Boolean) {
+            return gs_env->GetStaticBooleanField(_cls.clazz(), fid);
+        } else if (typ == jt::Byte) {
+            return gs_env->GetStaticByteField(_cls.clazz(), fid);
+        } else if (typ == jt::Char) {
+            return gs_env->GetStaticCharField(_cls.clazz(), fid);
+        } else if (typ == jt::Short) {
+            return gs_env->GetStaticShortField(_cls.clazz(), fid);
+        } else if (typ == jt::Int) {
+            return gs_env->GetStaticIntField(_cls.clazz(), fid);
+        } else if (typ == jt::Long) {
+            return gs_env->GetStaticLongField(_cls.clazz(), fid);
+        } else if (typ == jt::Float) {
+            return gs_env->GetStaticFloatField(_cls.clazz(), fid);
+        } else if (typ == jt::Double) {
+            return gs_env->GetStaticDoubleField(_cls.clazz(), fid);
+        } else if (typ == jt::String) {
+            return (jstring)gs_env->GetStaticObjectField(_cls.clazz(), fid);
+        } else {
+            return gs_env->GetStaticObjectField(_cls.clazz(), fid);
+        }
+    }
+
+    return JVariant();
+}
+
+JVariant JField::operator()(jobject obj) const {
+    AJNI_CHECKEXCEPTION
+
+    if (!is_static) {
+        auto fid = gs_env->GetFieldID(_cls.clazz(), name.c_str(), typ.c_str());
+        if (!fid)
+            throw "没有找到变量 " + name + typ;
+        if (typ == jt::Boolean) {
+            return gs_env->GetBooleanField(obj, fid);
+        } else if (typ == jt::Byte) {
+            return gs_env->GetByteField(obj, fid);
+        } else if (typ == jt::Char) {
+            return gs_env->GetCharField(obj, fid);
+        } else if (typ == jt::Short) {
+            return gs_env->GetShortField(obj, fid);
+        } else if (typ == jt::Int) {
+            return gs_env->GetIntField(obj, fid);
+        } else if (typ == jt::Long) {
+            return gs_env->GetLongField(obj, fid);
+        } else if (typ == jt::Float) {
+            return gs_env->GetFloatField(obj, fid);
+        } else if (typ == jt::Double) {
+            return gs_env->GetDoubleField(obj, fid);
+        } else if (typ == jt::String) {
+            return (jstring)gs_env->GetObjectField(obj, fid);
+        } else {
+            return gs_env->GetObjectField(obj, fid);
+        }
+    }
+
+    return JVariant();
+}
+
 JVariant JMethod::operator ()() const {
     return invoke(vector<const JVariant*>());
 }

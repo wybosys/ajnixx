@@ -203,12 +203,31 @@ private:
     shared_ptr<JObject> _vo;
 };
 
-class JMethod {
-    JMethod(JMethod&);
+class JField {
+    AJNI_NOCOPY(JField);
 
 public:
 
-    JMethod(JClass& cls): _cls(cls) {}
+    JField(const JClass& cls): _cls(cls) {}
+
+    string name; // 变量名
+    string typ; // 变量类型
+    bool is_static; // 是否是静态变量
+
+    // 获取数据
+    JVariant operator()() const;
+    JVariant operator()(jobject) const;
+
+protected:
+    const JClass& _cls;
+};
+
+class JMethod {
+    AJNI_NOCOPY(JMethod);
+
+public:
+
+    JMethod(const JClass& cls): _cls(cls) {}
 
     string name; // 函数名
     string returntyp; // 返回类型
@@ -240,8 +259,7 @@ public:
     string signature(const vector<const JVariant*>&, const vector<string>& = {}) const;
 
 protected:
-
-    JClass& _cls;
+    const JClass& _cls;
 };
 
 class JClass {

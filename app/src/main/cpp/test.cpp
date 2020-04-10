@@ -5,6 +5,20 @@
 
 AJNI_USE
 
+class R_id : public JClass
+{
+public:
+
+    R_id(): JClass("com/wybosys/ajni/R$id"),
+    main(*this)
+    {
+        main.is_static = true;
+        main.typ = jt::Int;
+    }
+
+    JField main;
+};
+
 class BlockView : public android::View {
 public:
     BlockView() : android::View("com/wybosys/ajni/BlockView") {
@@ -17,4 +31,8 @@ void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
 
     JEntry<BlockView> blockview(activity, jnull);
     blockview->setBackgroundColor(blockview, (int)0xFFFF0000);
+
+    R_id rid;
+    int main = rid.main();
+    AJNI_LOGD("%d", main);
 }

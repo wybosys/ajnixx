@@ -13,6 +13,7 @@ public:
 
     Activity(const JClassPath&);
 
+    JMethod findViewById;
 };
 
 class View: public JClass {
