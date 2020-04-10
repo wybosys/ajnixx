@@ -193,7 +193,12 @@ JVariant JMethod::operator ()(const JVariant& v, const JVariant& v1, const JVari
     }));
 }
 
-string JMethod::signature(const vector<const JVariant*>& args) const {
+string JMethod::signature(const vector<const JVariant*>& args, const vector<string>& predefs) const {
+    if (predefs.size()) {
+        string sig = "(" + join(predefs.begin(), predefs.end(), "") + ")" + returntyp;
+        return sig;
+    }
+
     vector<string> ps;
     for (auto& e:args) {
         ps.emplace_back(e->jt());
@@ -239,7 +244,7 @@ JVariant JMethod::operator ()(jobject obj, const JVariant& v, const JVariant& v1
 JVariant JMethod::invoke(const vector<const JVariant*>& args) const {
     AJNI_CHECKEXCEPTION
 
-    string sig = signature(args);
+    string sig = signature(args, argtyps);
     vector<jvalue> jargs;
     for (auto& e: args) {
         jargs.emplace_back(e->jv());
@@ -285,7 +290,7 @@ JVariant JMethod::invoke(const vector<const JVariant*>& args) const {
 JVariant JMethod::invoke(jobject obj, const vector<const JVariant*>& args) const {
     AJNI_CHECKEXCEPTION
 
-    string sig = signature(args);
+    string sig = signature(args, argtyps);
     vector<jvalue> jargs;
     for (auto& e: args) {
         jargs.emplace_back(e->jv());

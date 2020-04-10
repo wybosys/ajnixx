@@ -210,9 +210,11 @@ public:
 
     string name; // 函数名
     string returntyp; // 返回类型
-    vector<string> argtyps; // 参数类型
     bool is_static; // 是否是静态函数
     bool is_construct; // 是否是构造函数
+
+    // 参数类型, 设置则代表不使用自动推导，手动指定入参表
+    vector<string> argtyps;
 
     // 执行java函数
     JVariant operator ()() const;
@@ -233,7 +235,7 @@ public:
     JVariant invoke(jobject, const vector<const JVariant*>&) const;
 
     // 生成函数标记
-    string signature(const vector<const JVariant*>&) const;
+    string signature(const vector<const JVariant*>&, const vector<string>& = {}) const;
 
 protected:
 

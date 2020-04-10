@@ -5,9 +5,14 @@
 
 AJNI_USE
 
-class BlockView: public android::Activity {
+class BlockView : public android::Activity {
 public:
-    BlockView(): android::Activity("com/wybosys/ajni/BlockView") {}
+    BlockView() : android::Activity("com/wybosys/ajni/BlockView") {
+        construct.argtyps = {
+                "Landroid/content/Context;",
+                "Landroid/util/AttributeSet;"
+        };
+    }
 };
 
 void AJNI_FUNC(AJni_Test)(JNIEnv *env, jobject self, jobject activity) {
