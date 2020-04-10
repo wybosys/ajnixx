@@ -1,5 +1,6 @@
 #include "ajni.h"
 #include "stlext.h"
+#include "jre.h"
 
 AJNI_BEGIN
 
@@ -233,7 +234,7 @@ JVariant JMethod::invoke(const vector<const JVariant*>& args) {
 }
 
 JClass::JClass(const ajni::JClassName &name)
-: _clazzname(name), _instance(nullptr) {
+: _clazzname(name) {
     if (!name.empty()) {
         _clazz = gs_env->FindClass(name.c_str());
     }
@@ -244,16 +245,6 @@ JClass::~JClass() {
         gs_env->DeleteLocalRef(_clazz);
         _clazz = nullptr;
     }
-}
-
-JClass::instance_type JClass::instance() {
-    if (_instance != nullptr)
-        throw "已经实例化";
-    auto r = make_shared<JClass>(_clazzname);
-    if (_clazz == nullptr)
-        throw "没找到类型" + _clazzname;
-    r->_clazz = _clazz;
-    return nullptr;
 }
 
 ExceptionGuard::~ExceptionGuard() {

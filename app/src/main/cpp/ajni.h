@@ -14,6 +14,9 @@
 #define AJNI_END }
 #define AJNI_USE using namespace ajni;
 
+#define AJNI_BEGIN_NS(ns) AJNI_BEGIN namespace ns {
+#define AJNI_END_NS } AJNI_END
+
 #define _AJNI_LOG_IDR "ajni"
 #define AJNI_LOGD(...)  __android_log_print(ANDROID_LOG_DEBUG,_AJNI_LOG_IDR,__VA_ARGS__)
 #define AJNI_LOGI(...)  __android_log_print(ANDROID_LOG_INFO,_AJNI_LOG_IDR,__VA_ARGS__)
@@ -216,7 +219,7 @@ protected:
 
 // 映射到Java的类
 class JClass {
-    JClass(JClass&);
+    AJNI_NOCOPY(JClass);
 
 public:
 
@@ -224,9 +227,6 @@ public:
 
     JClass(const JClassName &name = "");
     virtual ~JClass();
-
-    // 实例化
-    virtual instance_type instance();
 
     inline const JClassName& name() const {
         return _clazzname;
@@ -240,7 +240,20 @@ protected:
 
     JClassName _clazzname;
     jclass _clazz;
-    jobject _instance;
+};
+
+// 实例
+class JEntry
+{
+    AJNI_NOCOPY(JEntry);
+
+public:
+
+    JEntry(const JClass&);
+
+protected:
+
+    const JClass& _clazz;
 };
 
 class ExceptionGuard

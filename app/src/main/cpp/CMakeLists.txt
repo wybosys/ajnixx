@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
 add_library(ajni-test
         SHARED
         ajni.cpp
+        jre.cpp
         android.cpp
         inspect.cpp
         test.cpp)
@@ -10,6 +11,7 @@ add_library(ajni-test
 add_library(ajni
         SHARED
         ajni.cpp
+        jre.cpp
         android.cpp)
 
 find_library(log-lib
