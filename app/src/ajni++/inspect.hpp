@@ -3,11 +3,11 @@
 
 AJNI_BEGIN
 
-AJNI_CLASS_PREPARE(JInspect)
+NNT_CLASS_PREPARE(JInspect);
 
 class JInspect
 {
-    AJNI_CLASS_DECL(JInspect)
+    NNT_CLASS_DECL(JInspect);
 
 public:
 
@@ -15,7 +15,7 @@ public:
     ~JInspect();
 
 private:
-    const JClass& _clz;
+    JClass const& _clz;
 };
 
 AJNI_END
