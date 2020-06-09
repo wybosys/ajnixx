@@ -1,2 +1,5 @@
-rootProject.name='AJni++'
 include ':app'
+rootProject.name = 'app'
+
+include ':ajni++'
+project(':ajni++').projectDir = new File('ajni++')
