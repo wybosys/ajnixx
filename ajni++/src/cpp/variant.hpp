@@ -117,7 +117,7 @@ private:
 
     class JComVariantTypes : public ::com::VariantTypes<> {
     public:
-        typedef JObject object_type;
+        typedef _jobject object_type;
         typedef JString string_type;
     };
 
@@ -160,9 +160,13 @@ public:
 
     JVariant(string const &);
 
-    JVariant &operator=(JVariant const &);
-
     string const &toString() const;
+
+    integer toInteger() const;
+
+    number toNumber() const;
+
+    bool toBool() const;
 
     inline operator string const &() const {
         return toString();
@@ -170,6 +174,14 @@ public:
 
     inline operator variant_type const &() const {
         return _var;
+    }
+
+    inline JObject toObject() const {
+        return _var.toObject();
+    }
+
+    inline operator JObject () const {
+        return toObject();
     }
 
     static JTypeSignature FromVT(variant_type::VT);
@@ -181,6 +193,40 @@ private:
 
     variant_type const _var;
 };
+
+extern void grab(jobject);
+extern bool drop(jobject);
+
+template<typename _CharT, typename _Traits>
+static ::std::basic_ostream <_CharT, _Traits> &operator<<(::std::basic_ostream <_CharT, _Traits> &stm, JVariant const &v) {
+    switch (v.vt) {
+        default:
+            break;
+        case JVariant::VT::STRING:
+            stm << v.toString();
+            break;
+        case JVariant::VT::INTEGER:
+            stm << v.toInteger();
+            break;
+        case JVariant::VT::NUMBER:
+            stm << v.toNumber();
+            break;
+        case JVariant::VT::BOOLEAN:
+            stm << v.toBool();
+            break;
+        case JVariant::VT::OBJECT:
+            stm << v.toObject();
+            break;
+    }
+    return stm;
+}
+
+template<typename _CharT, typename _Traits>
+static ::std::basic_ostream <_CharT, _Traits> &operator<<(::std::basic_ostream <_CharT, _Traits> &stm, shared_ptr <JVariant> const &v) {
+    if (!v)
+        return stm;
+    return stm << *v;
+}
 
 AJNI_END
 

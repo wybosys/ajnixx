@@ -9,7 +9,13 @@ class Test : public JClass
 {
 public:
 
-    Test() : JClass(CLASSPATH) {}
+    Test() : JClass(CLASSPATH),
+    test0(*this)
+    {
+        test0.returntype = TypeSignature::STRING;
+    }
+
+    JMethod test0;
 
     static const string CLASSPATH;
 };
@@ -19,12 +25,16 @@ const string Test::CLASSPATH = "com/nnt/ajnixx/Test";
 void Test0(::std::ostringstream& oss)
 {
     auto cls = JContext::shared().register_class<Test>();
-    if (cls) {
+    if (!cls) {
         oss << "没找到 Test 类" << endl;
         return;
     } else {
         oss << "找到 Test 类" << endl;
     }
+
+    // 实例化对象
+    JEntry<Test> obj(cls->construct());
+    oss << obj->test0(obj) << endl;
 }
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)

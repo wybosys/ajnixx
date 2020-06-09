@@ -2,6 +2,9 @@
 #include "variant.hpp"
 #include <sstream>
 
+#include <cross/cross.hpp>
+#include <cross/str.hpp>
+
 AJNI_BEGIN
 
 JObject::JObject(jobject obj)
@@ -152,7 +155,7 @@ JValue::JValue(JVariant const& var)
             _val.z = comvar.toBool();
             break;
         case VT::OBJECT: {
-            jobject obj = *comvar.toObject();
+            jobject obj = comvar.toObject();
             if (obj) {
                 obj = Env.NewLocalRef(obj);
             }
@@ -254,6 +257,65 @@ string const& JVariant::toString() const {
     return _var.toString();
 }
 
+integer JVariant::toInteger() const
+{
+    switch (_var.vt) {
+        case variant_type::VT::INT:
+            return _var.toInt();
+        case variant_type::VT::UINT:
+            return _var.toUInt();
+        case variant_type::VT::LONG:
+            return _var.toLong();
+        case variant_type::VT::ULONG:
+            return _var.toULong();
+        case variant_type::VT::SHORT:
+            return _var.toShort();
+        case variant_type::VT::USHORT:
+            return _var.toUShort();
+        case variant_type::VT::LONGLONG:
+            return (integer) _var.toLonglong();
+        case variant_type::VT::ULONGLONG:
+            return (integer) _var.toULonglong();
+        case variant_type::VT::CHAR:
+            return _var.toChar();
+        case variant_type::VT::UCHAR:
+            return _var.toUChar();
+        case variant_type::VT::BOOLEAN:
+            return _var.toBool();
+        case variant_type::VT::FLOAT:
+            return (integer) round(_var.toFloat());
+        case variant_type::VT::DOUBLE:
+            return (integer) round(_var.toDouble());
+        case variant_type::VT::STRING:
+            return ::CROSS_NS::toint(_var.toString());
+        default:
+            break;
+    }
+    return 0;
+}
+
+number JVariant::toNumber() const
+{
+    switch (_var.vt) {
+        case variant_type::VT::FLOAT:
+            return _var.toFloat();
+        case variant_type::VT::DOUBLE:
+            return _var.toDouble();
+        case variant_type::VT::STRING:
+            return ::CROSS_NS::todouble(_var.toString());
+        default:
+            break;
+    }
+    return toInteger();
+}
+
+bool JVariant::toBool() const
+{
+    if (_var.vt == variant_type::VT::BOOLEAN)
+        return _var.toBool();
+    return toNumber() != 0;
+}
+
 JTypeSignature JVariant::FromVT(variant_type::VT vt)
 {
     switch (vt)
@@ -293,6 +355,17 @@ JTypeSignature JVariant::FromVT(variant_type::VT vt)
 
 JTypeSignature JVariant::signature() const {
     return FromVT(_var.vt);
+}
+
+void grab(jobject obj)
+{
+    Env.NewLocalRef(obj);
+}
+
+bool drop(jobject obj)
+{
+    Env.DeleteLocalRef(obj);
+    return false;
 }
 
 AJNI_END
