@@ -14,7 +14,37 @@ static thread_local JNIEnv *tls_env = nullptr;
 
 JEnv Env;
 
-void JEnv::BindVM(JavaVM *vm, JNIEnv *env) {
+class JEnvPrivate
+{
+public:
+
+    void clear()
+    {
+        ctx.clear();
+    }
+
+    JContext ctx;
+};
+
+JEnv::JEnv()
+{
+    NNT_CLASS_CONSTRUCT();
+}
+
+JEnv::~JEnv()
+{
+    NNT_CLASS_DESTORY();
+}
+
+JContext& JEnv::context()
+{
+    return d_ptr->ctx;
+}
+
+void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
+{
+    Logger::Info("启动AJNI++环境");
+
     ajni::gs_vm = vm;
 
     if (!env) {
@@ -24,6 +54,15 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env) {
 
     ajni::gs_env = ajni::tls_env = env;
     ajni::tls_ismain = true;
+}
+
+void JEnv::UnbindVM()
+{
+    ajni::gs_vm = nullptr;
+    ajni::tls_env = nullptr;
+    d_ptr->clear();
+
+    Logger::Info("释放AJNI++环境");
 }
 
 jclass JEnv::FindClass(string const& str)

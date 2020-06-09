@@ -4,6 +4,7 @@
 USE_AJNI;
 
 AJNI_IMP_LOADED({})
+AJNI_IMP_UNLOADED({})
 
 class Test : public JClass
 {
@@ -25,7 +26,7 @@ const string Test::CLASSPATH = "com/nnt/ajnixx/Test";
 
 void Test0(::std::ostringstream& oss)
 {
-    auto cls = JContext::shared().register_class<Test>();
+    auto cls = Env.context().register_class<Test>();
     if (!cls) {
         oss << "没找到 Test 类" << endl;
         return;

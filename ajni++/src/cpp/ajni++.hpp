@@ -125,7 +125,6 @@ NNT_CLASS_PREPARE(JContext);
 // 上下文环境
 class JContext
 {
-    NNT_SINGLETON_DECL(JContext);
     NNT_CLASS_DECL(JContext);
 
 public:
@@ -150,6 +149,8 @@ public:
         auto r = ::NNT_NS::make_dynamic_shared<T, JClass>();
         return add(r) ? r : nullptr;
     }
+
+    void clear();
 };
 
 // 实例定义
@@ -158,10 +159,12 @@ class JEntry
 {
 public:
 
-    JEntry(JObject const& obj, JContext& ctx = JContext::shared())
+    typedef JContext::class_type class_type;
+
+    JEntry(JObject const& obj)
     : _obj(obj)
     {
-        _clazz = ctx.register_class<TClass>();
+        _clazz = Env.context().register_class<TClass>();
     }
 
     inline TClass const* operator -> () const {

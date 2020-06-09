@@ -361,8 +361,6 @@ bool JClass::exists() const {
     return _clazz != nullptr;
 }
 
-NNT_SINGLETON_IMPL(JContext);
-
 class JContextPrivate
 {
 public:
@@ -389,9 +387,15 @@ bool JContext::add(class_type const& cls)
     return true;
 }
 
-JContext::class_type JContext::find_class(JClassPath const& ph) const {
+JContext::class_type JContext::find_class(JClassPath const& ph) const
+{
     auto fnd = d_ptr->classes.find(ph);
     return fnd == d_ptr->classes.end() ? nullptr : fnd->second;
+}
+
+void JContext::clear()
+{
+    d_ptr->classes.clear();
 }
 
 AJNI_END

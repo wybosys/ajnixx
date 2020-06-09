@@ -45,6 +45,13 @@ exp \
 return JNI_VERSION_1_4; \
 }
 
+#define AJNI_IMP_UNLOADED(exp) \
+AJNI_API(void) JNI_OnUnload(JavaVM* vm, void* reserved) \
+{ \
+        ::AJNI_NS::Env.UnbindVM(); \
+        exp \
+}
+
 AJNI_BEGIN
 
 using ::std::make_shared;
@@ -65,14 +72,28 @@ typedef string JClassName;
 typedef string JTypeSignature;
 
 class JValues;
+class JContext;
+
+NNT_CLASS_PREPARE(JEnv);
 
 class JEnv
 {
+    NNT_CLASS_DECL(JEnv);
+
 public:
+
+    JEnv();
+    ~JEnv();
 
     // 设置vm对象，ajni++不使用JNI_OnLoad的形式获取vm避免干扰其他库的工作
     // \@env 已经存在的env，不传则即时获取一个
     void BindVM(JavaVM*, JNIEnv* env = nullptr);
+
+    // 取消注册
+    void UnbindVM();
+
+    // 获得上下文，之后类均从该对象获得
+    JContext& context();
 
     jclass FindClass(string const&);
 
@@ -140,6 +161,7 @@ public:
     jsize GetStringUTFLength(jstring);
     string GetStringUTFChars(jstring);
     jstring NewStringUTF(string const&);
+
 };
 
 // 获得全局env
