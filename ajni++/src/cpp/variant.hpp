@@ -96,6 +96,7 @@ private:
 class JValues {
 public:
 
+    JValues() = default;
     JValues(::std::vector<JVariant> const &);
 
     typedef shared_ptr <JValue> value_type;

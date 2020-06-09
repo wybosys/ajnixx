@@ -62,26 +62,30 @@ using ::std::endl;
 // 定义全局空对象
 extern const jobject jnull;
 
+#define _STRING_LIKE_IMPL(left, right) \
+    using left::right; \
+    using left::operator =; \
+    using left::operator +=;
+
 template <typename T>
 class StringLike : public string
 {
 public:
-    using string::string;
-    using string::operator =;
+    _STRING_LIKE_IMPL(string, string)
+
+    StringLike(string const& r): string(r) {}
 };
 
 // 定义java类的路径，例如 com/google/gson/Gson
 class JClassPath : public StringLike<JClassPath> {
 public:
-    using StringLike<JClassPath>::StringLike;
-    using StringLike<JClassPath>::operator =;
+    _STRING_LIKE_IMPL(StringLike<JClassPath>, StringLike)
 };
 
 // 定义java类的名称，例如 com.google.gson.Gson
 class JClassName : public StringLike<JClassName> {
 public:
-    using StringLike<JClassName>::StringLike;
-    using StringLike<JClassName>::operator =;
+    _STRING_LIKE_IMPL(StringLike<JClassName>, StringLike)
 
     JClassName(JClassPath const&);
 };
@@ -89,8 +93,7 @@ public:
 // 定义签名类型
 class JTypeSignature : public StringLike<JTypeSignature> {
 public:
-    using StringLike<JTypeSignature>::StringLike;
-    using StringLike<JTypeSignature>::operator =;
+    _STRING_LIKE_IMPL(StringLike<JTypeSignature>, StringLike)
 
     JTypeSignature(JClassPath const&);
 

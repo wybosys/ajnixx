@@ -78,6 +78,8 @@ public:
     // 生成函数标记
     string signature(args_type const &, args_signatures_type const & = {}) const;
 
+    static string Signature(args_type const &, JTypeSignature const& sreturn, args_signatures_type const & = {});
+
 protected:
 
     JClass const& _clazz;

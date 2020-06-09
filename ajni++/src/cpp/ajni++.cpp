@@ -294,6 +294,11 @@ JVariant JStaticMethod::operator()(JVariant const &v, JVariant const &v1, JVaria
 
 string JMethod::signature(args_type const &args, args_signatures_type const &predefs) const
 {
+    return Signature(args, sreturn, predefs);
+}
+
+string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, args_signatures_type const &predefs)
+{
     if (predefs.size())
     {
         ::std::vector<string> tss(predefs.begin(), predefs.end());

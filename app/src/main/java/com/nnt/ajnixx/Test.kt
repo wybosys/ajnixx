@@ -33,3 +33,10 @@ class Test {
         val Test0 = "Test0 Static Variable String"
     }
 }
+
+fun GetInfo(): Info
+{
+    return Info()
+}
+
+var abc = 123

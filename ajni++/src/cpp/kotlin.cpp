@@ -4,6 +4,11 @@
 
 AJNI_BEGIN_NS(kotlin)
 
+string FirstUppcase(string const& str)
+{
+    return (char)toupper(str[0]) + str.substr(1);
+}
+
 JClass::JClass(JClassPath const& cp)
 : ::AJNI_NS::JClass(cp)
 {
@@ -87,6 +92,191 @@ JVariant JStaticMethod::invoke(::std::vector<JVariant> const &args) const
     else
     {
         return Env.CallObjectMethod(obj$, mid, jvals);
+    }
+
+    return JVariant();
+}
+
+JGlobalField::JGlobalField(JClassPath const& cp)
+: _clazz(cp + "Kt")
+{
+}
+
+JVariant JGlobalField::operator()() const
+{
+    AJNI_CHECKEXCEPTION;
+
+    auto clz = _clazz.clazz();
+    auto getname = "get" + FirstUppcase(name);
+    JValues jvals;
+
+    auto mid = Env.GetStaticMethodID(clz, getname.c_str(), stype.c_str());
+    if (!mid)
+    {
+        Logger::Error("没有找到静态变量 " + name + stype);
+        return JVariant();
+    }
+
+    if (stype == TypeSignature::BOOLEAN)
+    {
+        return Env.CallStaticBooleanMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::BYTE)
+    {
+        return Env.CallStaticByteMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::CHAR)
+    {
+        return Env.CallStaticCharMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::SHORT)
+    {
+        return Env.CallStaticShortMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::INT)
+    {
+        return Env.CallStaticIntMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::LONG)
+    {
+        return Env.CallStaticLongMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::FLOAT)
+    {
+        return Env.CallStaticFloatMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::DOUBLE)
+    {
+        return Env.CallStaticDoubleMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::STRING)
+    {
+        return (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+    }
+    else if (stype == TypeSignature::VOID)
+    {
+        Env.CallStaticVoidMethod(clz, mid, jvals);
+    }
+    else
+    {
+        return Env.CallStaticObjectMethod(clz, mid, jvals);
+    }
+
+    return JVariant();
+}
+
+void JGlobalField::operator()(JObject& obj, JVariant const& v)
+{
+    AJNI_CHECKEXCEPTION;
+
+    auto clz = _clazz.clazz();
+    auto setname = "set" + FirstUppcase(name);
+    JValues jvals({v});
+
+    auto mid = Env.GetStaticMethodID(clz, setname.c_str(), stype.c_str());
+    if (!mid)
+    {
+        Logger::Error("没有找到静态变量 " + name + stype);
+        return;
+    }
+
+    Env.CallStaticVoidMethod(clz, mid, jvals);
+}
+
+JGlobalMethod::JGlobalMethod(JClassPath const& cp)
+: _clazz(cp + "Kt")
+{
+}
+
+JVariant JGlobalMethod::operator()() const
+{
+    return invoke({});
+}
+
+JVariant JGlobalMethod::operator()(JVariant const &v) const
+{
+    return invoke({v});
+}
+
+JVariant JGlobalMethod::operator()(JVariant const &v, JVariant const &v1) const
+{
+    return invoke({v, v1});
+}
+
+JVariant JGlobalMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2) const
+{
+    return invoke({v, v1, v2});
+}
+
+JVariant JGlobalMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3) const
+{
+    return invoke({v, v1, v2, v3});
+}
+
+JVariant JGlobalMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3, JVariant const &v4) const
+{
+    return invoke({v, v1, v2, v3, v4});
+}
+
+JVariant JGlobalMethod::invoke(::std::vector<JVariant> const &args) const
+{
+    AJNI_CHECKEXCEPTION;
+
+    string sig = JMethod::Signature(args, sreturn, sargs);
+    JValues jvals(args);
+
+    auto clz = _clazz.clazz();
+
+    auto mid = Env.GetStaticMethodID(clz, name, sig);
+    if (!mid)
+    {
+        Logger::Error("没有找到函数 " + name + sig);
+        return JVariant();
+    }
+
+    if (sreturn == TypeSignature::BOOLEAN)
+    {
+        return Env.CallStaticBooleanMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::BYTE)
+    {
+        return Env.CallStaticByteMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::CHAR)
+    {
+        return Env.CallStaticCharMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::SHORT)
+    {
+        return Env.CallStaticShortMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::INT)
+    {
+        return Env.CallStaticIntMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::LONG)
+    {
+        return Env.CallStaticLongMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::FLOAT)
+    {
+        return Env.CallStaticFloatMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::DOUBLE)
+    {
+        return Env.CallStaticDoubleMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::STRING)
+    {
+        return (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+    }
+    else if (sreturn == TypeSignature::VOID)
+    {
+        Env.CallStaticVoidMethod(clz, mid, jvals);
+    }
+    else
+    {
+        return Env.CallStaticObjectMethod(clz, mid, jvals);
     }
 
     return JVariant();

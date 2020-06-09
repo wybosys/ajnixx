@@ -91,6 +91,19 @@ void Test0(::std::ostringstream& oss)
     oss << obj_info->fnul(obj_info) << endl;
     obj_info->fabc(obj_info, "modified abc");
     oss << obj_info->fabc(obj_info) << endl;
+
+    // 获得全局函数
+    oss << "全局" << endl;
+    kotlin::JGlobalMethod mth(Test::CLASSPATH);
+    mth.name = "GetInfo";
+    mth.sreturn = Info::CLASSPATH;
+    JEntry<Info> gobj_info(mth());
+    oss << gobj_info->fabc(gobj_info) << endl;
+
+    kotlin::JGlobalField mtf(Test::CLASSPATH);
+    mtf.name = "abc";
+    mth.sreturn = TypeSignature::INT;
+    oss << mtf() << endl;
 }
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)

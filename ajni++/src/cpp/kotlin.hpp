@@ -35,6 +35,57 @@ public:
     virtual JVariant invoke(::std::vector<JVariant> const &) const;
 };
 
+class JGlobalField
+{
+public:
+
+    JGlobalField(JClassPath const&);
+
+    // 变量名
+    string name;
+
+    // 变量类型
+    JTypeSignature stype;
+
+    // get
+    JVariant operator()() const;
+
+    // set
+    void operator()(JObject&, JVariant const&);
+
+protected:
+
+    ::AJNI_NS::JClass _clazz;
+};
+
+class JGlobalMethod
+{
+public:
+
+    // 此处的classpath其实是文件名路径
+    JGlobalMethod(JClassPath const&);
+
+    JVariant operator()() const;
+    JVariant operator()(JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    virtual JVariant invoke(::std::vector<JVariant> const &) const;
+
+    // 函数名
+    string name;
+
+    // 返回类型
+    JTypeSignature sreturn;
+
+    JMethod::args_signatures_type sargs;
+
+protected:
+
+    ::AJNI_NS::JClass _clazz;
+};
+
 AJNI_END_NS
 
 #endif
