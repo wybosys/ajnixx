@@ -11,7 +11,7 @@ JVariant JStaticField::operator()() const
 {
     AJNI_CHECKEXCEPTION;
 
-    auto clz = _clazz.static_clazz();
+    auto clz = _clazz.clazz();
 
     auto fid = Env.GetStaticFieldID(clz, name.c_str(), stype.c_str());
     if (!fid)
@@ -254,7 +254,7 @@ JVariant JStaticMethod::invoke(::std::vector<JVariant> const &args) const
     string sig = signature(args, sargs);
     JValues jvals(args);
 
-    auto clz = _clazz.static_clazz();
+    auto clz = _clazz.clazz();
 
     auto mid = Env.GetStaticMethodID(clz, name, sig);
     if (!mid)

@@ -90,7 +90,7 @@ public:
     JVariant operator()(JVariant const &, JVariant const &, JVariant const &) const;
     JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
     JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant invoke(::std::vector<JVariant> const &) const;
+    virtual JVariant invoke(::std::vector<JVariant> const &) const;
 };
 
 class JMemberMethod : public JMethod
@@ -105,7 +105,7 @@ public:
     JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &) const;
     JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
     JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant invoke(JObject&, ::std::vector<JVariant> const &) const;
+    virtual JVariant invoke(JObject&, ::std::vector<JVariant> const &) const;
 };
 
 class JStaticMethod : public JMethod
@@ -120,7 +120,7 @@ public:
     JVariant operator()(JVariant const &, JVariant const &, JVariant const &) const;
     JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
     JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant invoke(::std::vector<JVariant> const &) const;
+    virtual JVariant invoke(::std::vector<JVariant> const &) const;
 
 };
 
@@ -147,10 +147,6 @@ public:
     JConstructMethod construct;
 
     virtual jclass clazz() const {
-        return (jclass)(jobject)_clazz;
-    }
-
-    virtual jclass static_clazz() const {
         return (jclass)(jobject)_clazz;
     }
 

@@ -12,7 +12,8 @@ class Test : public kotlin::JClass
 public:
 
     Test() : kotlin::JClass(CLASSPATH),
-    test0(*this), ftest0(*this), fTest0(*this)
+    test0(*this), ftest0(*this),
+    Test0(*this), fTest0(*this)
     {
         test0.name = "test0";
         test0.sreturn = TypeSignature::STRING;
@@ -20,13 +21,17 @@ public:
         ftest0.name = "test0";
         ftest0.stype = TypeSignature::STRING;
 
+        Test0.name = "Test0";
+        Test0.sreturn = TypeSignature::STRING;
+
         fTest0.name = "Test0";
-        fTest0.sreturn = TypeSignature::STRING;
+        fTest0.stype = TypeSignature::STRING;
     }
 
     JMemberMethod test0;
     JMemberField ftest0;
-    kotlin::JStaticMethod fTest0;
+    kotlin::JStaticMethod Test0;
+    JStaticField fTest0;
 
     static const string CLASSPATH;
 };
@@ -47,6 +52,7 @@ void Test0(::std::ostringstream& oss)
     JEntry<Test> obj(cls->construct());
     oss << obj->test0(obj) << endl;
     oss << obj->ftest0(obj) << endl;
+    oss << obj->Test0() << endl;
     oss << obj->fTest0() << endl;
 }
 

@@ -11,11 +11,17 @@ public:
 
     JClass(JClassPath const& cp);
 
-    virtual jclass static_clazz() const;
+    virtual jclass clazz$() const;
+
+    inline JObject const& object$() const {
+        return _object$;
+    }
 
 protected:
 
+    JObject _object$;
     JObject _clazz$;
+    JClassPath _classpath$;
 };
 
 class JStaticMethod : public ::AJNI_NS::JStaticMethod
@@ -26,7 +32,7 @@ public:
     : ::AJNI_NS::JStaticMethod(clz)
     {}
 
-    JVariant invoke(::std::vector<JVariant> const &) const;
+    virtual JVariant invoke(::std::vector<JVariant> const &) const;
 };
 
 AJNI_END_NS

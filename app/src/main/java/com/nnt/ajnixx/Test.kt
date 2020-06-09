@@ -18,6 +18,6 @@ class Test {
             return "Test0 Static Function String"
         }
 
-        // val Test0 = "Test0 Static Variable String"
+        val Test0 = "Test0 Static Variable String"
     }
 }
