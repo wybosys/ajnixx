@@ -222,6 +222,17 @@ jdouble JEnv::CallStaticDoubleMethod(jclass cls, jmethodID id, JValues const& va
     return 0;
 }
 
+jobject JEnv::CallStaticObjectMethod(jclass cls, jmethodID id, JValues const& vals)
+{
+    JENV_IMPL_EXPAND(CallStaticObjectMethod, cls NNT_COMMA id);
+    return 0;
+}
+
+void JEnv::CallStaticVoidMethod(jclass cls, jmethodID id, JValues const& vals)
+{
+    JENV_IMPL_EXPAND(CallStaticVoidMethod, cls NNT_COMMA id);
+}
+
 jboolean JEnv::CallBooleanMethod(jobject cls, jmethodID id, JValues const& vals)
 {
     JENV_IMPL_EXPAND(CallBooleanMethod, cls NNT_COMMA id);

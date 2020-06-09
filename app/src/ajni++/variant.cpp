@@ -40,6 +40,8 @@ JObject &JObject::operator=(JObject const &r)
     {
         _obj = Env.NewLocalRef(_obj);
     }
+
+    return *this;
 }
 
 JString::JString(jstring v)
@@ -62,6 +64,10 @@ JString::JString(string const &str)
 JString::~JString()
 {
     // pass
+}
+
+jstring JString::asReturn() const {
+    return Env.NewStringUTF(_str);
 }
 
 JValue::JValue(JValue const& r)
@@ -176,6 +182,11 @@ JVariant::JVariant(jdouble v)
 
 JVariant::JVariant(jobject v)
     : vt(VT::OBJECT), _var(JObject(v))
+{
+}
+
+JVariant::JVariant(jstring v)
+    : vt(VT::STRING), _var(JString(v))
 {
 }
 
