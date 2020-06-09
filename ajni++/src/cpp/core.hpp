@@ -33,7 +33,7 @@
 #define AJNI_CHECKEXCEPTION ExceptionGuard _NNT_COMBINE(__exception_guard_, __LINE__)
 
 #define AJNI_API(ret) extern "C" JNIEXPORT ret JNICALL
-#define AJNI_FUNC(name) Java_com_nnt_ajni_##name
+#define AJNI_FUNC(name) Java_com_nnt_ajnixx_##name
 
 AJNI_BEGIN
 
