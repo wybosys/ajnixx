@@ -7,7 +7,7 @@ import com.getkeepsafe.relinker.ReLinker
 class MainActivity() : AppCompatActivity() {
 
     init {
-        ReLinker.loadLibrary(this, "test_ajni++")
+        ReLinker.loadLibrary(this, "test")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
