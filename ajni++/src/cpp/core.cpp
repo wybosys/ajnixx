@@ -3,6 +3,9 @@
 #include "jre.hpp"
 #include "variant.hpp"
 
+#include <cross/cross.hpp>
+#include <cross/str.hpp>
+
 AJNI_BEGIN
 
 const jobject jnull = nullptr;
@@ -426,6 +429,35 @@ void Logger::Error(string const& msg)
 void Logger::Fatal(string const& msg)
 {
     AJNI_LOGF("%s", msg.c_str());
+}
+
+JClassName::JClassName(JClassPath const& cp)
+{
+    *this = ::CROSS_NS::replace((string const&)cp, "/", ".");
+}
+
+JTypeSignature::JTypeSignature(JClassPath const& cp)
+{
+    *this = cp;
+}
+
+JTypeSignature& JTypeSignature::operator = (JClassPath const& cp)
+{
+    if (!cp.size()) {
+        *this = "V";
+        goto LABEL_RETURN;
+    }
+    if (cp[0] == 'L') {
+        *this = (string const&)cp;
+        goto LABEL_RETURN;
+    }
+    if (cp.find('/') != string::npos) {
+        *this = "L" + (string const&)cp + ";";
+        goto LABEL_RETURN;
+    }
+    *this = (string const&)cp;
+    LABEL_RETURN:
+    return *this;
 }
 
 AJNI_END

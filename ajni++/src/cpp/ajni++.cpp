@@ -185,7 +185,8 @@ string JMethod::signature(args_type const &args, args_signatures_type const &pre
 {
     if (predefs.size())
     {
-        string sig = "(" + CROSS_NS::implode(predefs, "") + ")" + sreturn;
+        ::std::vector<string> tss(predefs.begin(), predefs.end());
+        string sig = "(" + CROSS_NS::implode(tss, "") + ")" + sreturn;
         return sig;
     }
 
@@ -386,7 +387,7 @@ JClass::JClass(JClassPath const&path)
 
 JClassName JClass::name() const
 {
-    return CROSS_NS::replace(_clazzpath, "/", ".");
+    return _clazzpath;
 }
 
 bool JClass::exists() const {

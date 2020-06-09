@@ -7,13 +7,26 @@ USE_AJNI;
 AJNI_IMP_LOADED({})
 AJNI_IMP_UNLOADED({})
 
+class Info : public kotlin::JClass
+{
+public:
+
+    Info() : kotlin::JClass(CLASSPATH)
+    {}
+
+    static const JClassPath CLASSPATH;
+};
+
+const JClassPath Info::CLASSPATH = "com/nnt/ajnixx/Info";
+
 class Test : public kotlin::JClass
 {
 public:
 
     Test() : kotlin::JClass(CLASSPATH),
     test0(*this), ftest0(*this),
-    Test0(*this), fTest0(*this)
+    Test0(*this), fTest0(*this),
+    finfo(*this)
     {
         test0.name = "test0";
         test0.sreturn = TypeSignature::STRING;
@@ -26,17 +39,21 @@ public:
 
         fTest0.name = "Test0";
         fTest0.stype = TypeSignature::STRING;
+
+        finfo.name = "info";
+        finfo.sreturn = Info::CLASSPATH;
     }
 
     JMemberMethod test0;
     JMemberField ftest0;
     kotlin::JStaticMethod Test0;
     JStaticField fTest0;
+    JMemberMethod finfo;
 
-    static const string CLASSPATH;
+    static const JClassPath CLASSPATH;
 };
 
-const string Test::CLASSPATH = "com/nnt/ajnixx/Test";
+const JClassPath Test::CLASSPATH = "com/nnt/ajnixx/Test";
 
 void Test0(::std::ostringstream& oss)
 {
@@ -54,6 +71,9 @@ void Test0(::std::ostringstream& oss)
     oss << obj->ftest0(obj) << endl;
     oss << obj->Test0() << endl;
     oss << obj->fTest0() << endl;
+
+    // 获得数据对象
+    JEntry<Info> obj_info(obj->finfo(obj));
 }
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)

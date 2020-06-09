@@ -59,7 +59,7 @@ public:
     string name;
 
     // 返回类型
-    string sreturn;
+    JTypeSignature sreturn;
 
     // 参数类型, 设置则代表不使用自动推导，手动指定入参表
     typedef ::std::vector<JTypeSignature> args_signatures_type;

@@ -62,14 +62,40 @@ using ::std::endl;
 // 定义全局空对象
 extern const jobject jnull;
 
+template <typename T>
+class StringLike : public string
+{
+public:
+    using string::string;
+    using string::operator =;
+};
+
 // 定义java类的路径，例如 com/google/gson/Gson
-typedef string JClassPath;
+class JClassPath : public StringLike<JClassPath> {
+public:
+    using StringLike<JClassPath>::StringLike;
+    using StringLike<JClassPath>::operator =;
+};
 
 // 定义java类的名称，例如 com.google.gson.Gson
-typedef string JClassName;
+class JClassName : public StringLike<JClassName> {
+public:
+    using StringLike<JClassName>::StringLike;
+    using StringLike<JClassName>::operator =;
+
+    JClassName(JClassPath const&);
+};
 
 // 定义签名类型
-typedef string JTypeSignature;
+class JTypeSignature : public StringLike<JTypeSignature> {
+public:
+    using StringLike<JTypeSignature>::StringLike;
+    using StringLike<JTypeSignature>::operator =;
+
+    JTypeSignature(JClassPath const&);
+
+    JTypeSignature& operator = (JClassPath const&);
+};
 
 class JValues;
 class JContext;

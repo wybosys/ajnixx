@@ -1,5 +1,12 @@
 package com.nnt.ajnixx
 
+class Info
+{
+    var abc: String? = "abc"
+    var cde: Int = 123
+    var nul: Any? = null
+}
+
 class Test {
 
     fun test0(): String
@@ -8,6 +15,11 @@ class Test {
     }
 
     val test0 = "Test0 Member Variable String"
+
+    fun info(): Info
+    {
+        return Info()
+    }
 
     companion object {
 
