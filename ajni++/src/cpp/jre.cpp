@@ -10,7 +10,7 @@ Object::Object(JClassPath const& cp)
     : JClass(cp), toString(*this)
 {
     toString.name = "toString";
-    toString.returntype = TypeSignature::STRING;
+    toString.sreturn = TypeSignature::STRING;
 }
 
 JClassPath Throwable::CLASSPATH = "java/lang/Throwable";

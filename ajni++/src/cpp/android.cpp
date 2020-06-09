@@ -18,7 +18,7 @@ Activity::Activity(const JClassPath &path)
       findViewById(*this)
 {
     findViewById.name = "findViewById";
-    findViewById.returntype = TypeSignature::VIEW;
+    findViewById.sreturn = TypeSignature::VIEW;
 }
 
 View::View(const JClassPath &path)
@@ -26,7 +26,7 @@ View::View(const JClassPath &path)
       setBackgroundColor(*this)
 {
     setBackgroundColor.name = "setBackgroundColor";
-    setBackgroundColor.returntype = ajni::TypeSignature::VOID;
+    setBackgroundColor.sreturn = ajni::TypeSignature::VOID;
 }
 
 ViewGroup::ViewGroup(JClassPath const& path)
@@ -34,14 +34,14 @@ ViewGroup::ViewGroup(JClassPath const& path)
       addView(*this)
 {
     addView.name = "addView";
-    addView.returntype = ajni::TypeSignature::VOID;
-    addView.args_signature = {TypeSignature::VIEW, TypeSignature::VIEWGROUP_LAYOUTPARAMS};
+    addView.sreturn = ajni::TypeSignature::VOID;
+    addView.sargs = {TypeSignature::VIEW, TypeSignature::VIEWGROUP_LAYOUTPARAMS};
 }
 
 ViewGroup::LayoutParams::LayoutParams(const JClassPath &path)
     : JClass(path)
 {
-    construct.args_signature = {ajni::TypeSignature::INT, ajni::TypeSignature::INT};
+    construct.sargs = {ajni::TypeSignature::INT, ajni::TypeSignature::INT};
 }
 
 ConstraintLayout::ConstraintLayout(const JClassPath &path)

@@ -153,11 +153,11 @@ JVariant JMethod::operator()(JVariant const &v, JVariant const &v1, JVariant con
     return invoke({v, v1, v2, v3, v4});
 }
 
-string JMethod::signature(args_type const &args, args_signature_type const &predefs) const
+string JMethod::signature(args_type const &args, args_signatures_type const &predefs) const
 {
     if (predefs.size())
     {
-        string sig = "(" + CROSS_NS::implode(predefs, "") + ")" + returntype;
+        string sig = "(" + CROSS_NS::implode(predefs, "") + ")" + sreturn;
         return sig;
     }
 
@@ -167,7 +167,7 @@ string JMethod::signature(args_type const &args, args_signature_type const &pred
         ps.emplace_back(e.signature());
     }
 
-    string sig = "(" + CROSS_NS::implode(ps, "") + ")" + returntype;
+    string sig = "(" + CROSS_NS::implode(ps, "") + ")" + sreturn;
     return sig;
 }
 
@@ -205,7 +205,7 @@ JVariant JMethod::invoke(::std::vector<JVariant> const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
-    string sig = signature(args, args_signature);
+    string sig = signature(args, sargs);
     JValues jvals(args);
 
     if (is_construct)
@@ -229,43 +229,43 @@ JVariant JMethod::invoke(::std::vector<JVariant> const &args) const
             return JVariant();
         }
 
-        if (returntype == TypeSignature::BOOLEAN)
+        if (sreturn == TypeSignature::BOOLEAN)
         {
             return Env.CallStaticBooleanMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::BYTE)
+        else if (sreturn == TypeSignature::BYTE)
         {
             return Env.CallStaticByteMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::CHAR)
+        else if (sreturn == TypeSignature::CHAR)
         {
             return Env.CallStaticCharMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::SHORT)
+        else if (sreturn == TypeSignature::SHORT)
         {
             return Env.CallStaticShortMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::INT)
+        else if (sreturn == TypeSignature::INT)
         {
             return Env.CallStaticIntMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::LONG)
+        else if (sreturn == TypeSignature::LONG)
         {
             return Env.CallStaticLongMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::FLOAT)
+        else if (sreturn == TypeSignature::FLOAT)
         {
             return Env.CallStaticFloatMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::DOUBLE)
+        else if (sreturn == TypeSignature::DOUBLE)
         {
             return Env.CallStaticDoubleMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::STRING)
+        else if (sreturn == TypeSignature::STRING)
         {
             return (jstring)Env.CallStaticObjectMethod(_clazz, mid, jvals);
         }
-        else if (returntype == TypeSignature::VOID)
+        else if (sreturn == TypeSignature::VOID)
         {
             Env.CallStaticVoidMethod(_clazz, mid, jvals);
         }
@@ -281,7 +281,7 @@ JVariant JMethod::invoke(JObject& obj, ::std::vector<JVariant> const &args) cons
 {
     AJNI_CHECKEXCEPTION;
 
-    string sig = signature(args, args_signature);
+    string sig = signature(args, sargs);
     JValues jvals(args);
 
     if (!is_static)
@@ -293,43 +293,43 @@ JVariant JMethod::invoke(JObject& obj, ::std::vector<JVariant> const &args) cons
             return JVariant();
         }
 
-        if (returntype == TypeSignature::BOOLEAN)
+        if (sreturn == TypeSignature::BOOLEAN)
         {
             return Env.CallBooleanMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::BYTE)
+        else if (sreturn == TypeSignature::BYTE)
         {
             return Env.CallByteMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::CHAR)
+        else if (sreturn == TypeSignature::CHAR)
         {
             return Env.CallCharMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::SHORT)
+        else if (sreturn == TypeSignature::SHORT)
         {
             return Env.CallShortMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::INT)
+        else if (sreturn == TypeSignature::INT)
         {
             return Env.CallIntMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::LONG)
+        else if (sreturn == TypeSignature::LONG)
         {
             return Env.CallLongMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::FLOAT)
+        else if (sreturn == TypeSignature::FLOAT)
         {
             return Env.CallFloatMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::DOUBLE)
+        else if (sreturn == TypeSignature::DOUBLE)
         {
             return Env.CallDoubleMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::STRING)
+        else if (sreturn == TypeSignature::STRING)
         {
             return (jstring)Env.CallObjectMethod(obj, mid, jvals);
         }
-        else if (returntype == TypeSignature::VOID)
+        else if (sreturn == TypeSignature::VOID)
         {
             Env.CallVoidMethod(obj, mid, jvals);
         }
@@ -349,7 +349,7 @@ JClass::JClass(JClassPath const&path)
     }
 
     construct.is_construct = true;
-    construct.returntype = TypeSignature::VOID;
+    construct.sreturn = TypeSignature::VOID;
 }
 
 JClassName JClass::name() const

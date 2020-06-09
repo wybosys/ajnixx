@@ -12,7 +12,8 @@ public:
     Test() : JClass(CLASSPATH),
     test0(*this)
     {
-        test0.returntype = TypeSignature::STRING;
+        test0.name = "test0";
+        test0.sreturn = TypeSignature::STRING;
     }
 
     JMethod test0;

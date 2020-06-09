@@ -48,7 +48,7 @@ public:
     string name;
 
     // 返回类型
-    string returntype;
+    string sreturn;
 
     // 是否是静态函数
     bool is_static = false;
@@ -57,8 +57,8 @@ public:
     bool is_construct = false;
 
     // 参数类型, 设置则代表不使用自动推导，手动指定入参表
-    typedef ::std::vector<JTypeSignature> args_signature_type;
-    args_signature_type args_signature;
+    typedef ::std::vector<JTypeSignature> args_signatures_type;
+    args_signatures_type sargs;
 
     typedef ::std::vector<JVariant> args_type;
 
@@ -81,7 +81,7 @@ public:
     JVariant invoke(JObject&, ::std::vector<JVariant> const &) const;
 
     // 生成函数标记
-    string signature(args_type const &, args_signature_type const & = {}) const;
+    string signature(args_type const &, args_signatures_type const & = {}) const;
 
 protected:
 
