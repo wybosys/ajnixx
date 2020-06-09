@@ -8,14 +8,14 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity() : AppCompatActivity() {
 
-    init {
-        ReLinker.loadLibrary(this, "tester")
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
+        // 加载so
+        ReLinker.loadLibrary(this, "tester")
+
+        // 测试
         sample_text.text = Test.Test()
     }
 }

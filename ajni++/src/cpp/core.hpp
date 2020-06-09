@@ -35,6 +35,15 @@
 #define AJNI_API(ret) extern "C" JNIEXPORT ret JNICALL
 #define AJNI_FUNC(name) Java_com_nnt_ajnixx_##name
 
+// 如果没有实现，需要再so里实现JNI的初始化函数
+#define AJNI_IMP_LOADED(exp) \
+AJNI_API(jint) JNI_OnLoad(JavaVM *vm, void *reserved) \
+{ \
+::AJNI_NS::Env.BindVM(vm); \
+exp \
+return JNI_VERSION_1_4; \
+}
+
 AJNI_BEGIN
 
 using ::std::make_shared;
