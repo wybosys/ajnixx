@@ -1,3 +1,8 @@
 #include <ajni++.hpp>
 
-//AJNI_FUNC()
+USE_AJNI;
+
+AJNI_API(jstring) AJNI_FUNC(Test_00024Companion_Test)(JNIEnv *env)
+{
+    return JString("AJNI++ STRING").asReturn();
+}

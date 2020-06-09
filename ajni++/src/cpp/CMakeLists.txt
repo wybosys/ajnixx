@@ -11,7 +11,7 @@ jre.cpp
 variant.cpp
 )
 
-target_link_libraries(ajni++ cross)
+target_link_libraries(ajni++ cross log)
 
 set_target_properties(ajni++
     PROPERTIES

@@ -14,7 +14,7 @@
     namespace AJNI_NS \
     {
 #define AJNI_END }
-#define AJNI_USE using namespace AJNI_NS;
+#define USE_AJNI using namespace AJNI_NS;
 
 #define AJNI_BEGIN_NS(ns)   \
     AJNI_BEGIN namespace ns \
