@@ -40,6 +40,9 @@ AJNI_BEGIN
 using ::std::make_shared;
 using ::std::shared_ptr;
 using ::std::string;
+using ::std::cout;
+using ::std::cerr;
+using ::std::endl;
 
 // 定义全局空对象
 extern const jobject jnull;

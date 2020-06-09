@@ -7,7 +7,7 @@ import com.getkeepsafe.relinker.ReLinker
 class MainActivity() : AppCompatActivity() {
 
     init {
-        ReLinker.loadLibrary(this, "test")
+        ReLinker.loadLibrary(this, "tester")
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

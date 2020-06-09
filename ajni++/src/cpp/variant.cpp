@@ -88,6 +88,12 @@ JValue::JValue(JVariant const& var)
         case VT::UINT:
             _val.i = comvar.toInt();
             break;
+        case VT::FLOAT:
+            _val.f = comvar.toFloat();
+            break;
+        case VT::DOUBLE:
+            _val.d = comvar.toDouble();
+            break;
         case VT::SHORT:
         case VT::USHORT:
             _val.s = comvar.toShort();
@@ -95,6 +101,10 @@ JValue::JValue(JVariant const& var)
         case VT::LONG:
         case VT::ULONG:
             _val.j = comvar.toLong();
+            break;
+        case VT::LONGLONG:
+        case VT::ULONGLONG:
+            _val.j = (jlong)comvar.toLonglong();
             break;
         case VT::CHAR:
         case VT::UCHAR:
@@ -115,6 +125,13 @@ JValue::JValue(JVariant const& var)
             _val.l = Env.NewStringUTF(comvar.toString());
             _free = true;
         } break;
+        case VT::NIL:
+            break;
+        case VT::BYTES:
+        case VT::FUNCTION:
+        case VT::POINTER:
+            AJNI_LOGE("ajnixx: 不支持类型转换");
+            break;
     }
 }
 
@@ -213,6 +230,8 @@ JTypeSignature JVariant::FromVT(variant_type::VT vt)
             return TypeSignature::SHORT;
         case variant_type::VT::LONG:
         case variant_type::VT::ULONG:
+        case variant_type::VT::LONGLONG:
+        case variant_type::VT::ULONGLONG:
             return TypeSignature::LONG;
         case variant_type::VT::FLOAT:
             return TypeSignature::FLOAT;
@@ -225,8 +244,13 @@ JTypeSignature JVariant::FromVT(variant_type::VT vt)
             return TypeSignature::STRING;
         case variant_type::VT::OBJECT:
             return TypeSignature::OBJECT;
+        case variant_type::VT::NIL:
+            return TypeSignature::VOID;
+        case variant_type::VT::FUNCTION:
+        case variant_type::VT::POINTER:
+        case variant_type::VT::BYTES:
+            return TypeSignature::OBJECT;
     }
-    return TypeSignature::VOID;
 }
 
 JTypeSignature JVariant::signature() const {

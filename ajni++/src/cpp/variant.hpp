@@ -64,7 +64,7 @@ AJNI_BEGIN
         }
 
     private:
-        jvalue _val;
+        jvalue _val = {0};
         bool _free = false;
     };
 

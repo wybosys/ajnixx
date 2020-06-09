@@ -4,8 +4,6 @@
 #include "core.hpp"
 #include "variant.hpp"
 
-#include <initializer_list>
-
 AJNI_BEGIN
 
 class JClass;
