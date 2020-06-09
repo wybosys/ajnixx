@@ -73,7 +73,7 @@ JVariant JMemberField::operator()(JObject& obj) const
     auto fid = Env.GetFieldID(clz, name.c_str(), stype.c_str());
     if (!fid)
     {
-        Logger::Error("没有找到静态变量 " + name + stype);
+        Logger::Error("没有找到成员变量 " + name + stype);
         return JVariant();
     }
 

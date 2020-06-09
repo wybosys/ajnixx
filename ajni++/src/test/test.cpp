@@ -11,8 +11,20 @@ class Info : public kotlin::JClass
 {
 public:
 
-    Info() : kotlin::JClass(CLASSPATH)
-    {}
+    Info() : kotlin::JClass(CLASSPATH),
+    fabc(*this), fcde(*this), fnul(*this)
+    {
+        fabc.name = "abc";
+        fabc.stype = TypeSignature::STRING;
+
+        fcde.name = "cde";
+        fcde.stype = TypeSignature::INT;
+
+        fnul.name = "nul";
+        fnul.stype = TypeSignature::OBJECT;
+    }
+
+    JMemberField fabc, fcde, fnul;
 
     static const JClassPath CLASSPATH;
 };
@@ -74,6 +86,9 @@ void Test0(::std::ostringstream& oss)
 
     // 获得数据对象
     JEntry<Info> obj_info(obj->finfo(obj));
+    oss << obj_info->fabc(obj_info) << endl;
+    oss << obj_info->fcde(obj_info) << endl;
+    oss << obj_info->fnul(obj_info) << endl;
 }
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)
