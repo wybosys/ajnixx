@@ -1,4 +1,4 @@
-package com.wybosys.ajnixx
+package com.nnt.ajnixx
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity

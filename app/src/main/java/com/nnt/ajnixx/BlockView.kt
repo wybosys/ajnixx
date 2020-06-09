@@ -1,4 +1,4 @@
-package com.wybosys.ajnixx
+package com.nnt.ajnixx
 
 import android.content.Context
 import android.util.AttributeSet
