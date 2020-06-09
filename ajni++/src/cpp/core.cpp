@@ -355,12 +355,37 @@ ExceptionGuard::~ExceptionGuard()
 {
     if (!gs_env->ExceptionCheck())
         return;
-    jthrowable exp = gs_env->ExceptionOccurred();
+    jthrowable err = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
 
-    JEntry<jre::Throwable> obj(exp);
+    JEntry<jre::Throwable> obj(err);
     string msg = obj->toString(obj);
-    AJNI_LOGE("捕获JNI异常 %s", msg.c_str());
+    Logger::Error("捕获JNI异常 " + msg);
+}
+
+void Logger::Debug(string const& msg)
+{
+    AJNI_LOGD("%s", msg.c_str());
+}
+
+void Logger::Info(string const& msg)
+{
+    AJNI_LOGI("%s", msg.c_str());
+}
+
+void Logger::Warn(string const& msg)
+{
+    AJNI_LOGW("%s", msg.c_str());
+}
+
+void Logger::Error(string const& msg)
+{
+    AJNI_LOGE("%s", msg.c_str());
+}
+
+void Logger::Fatal(string const& msg)
+{
+    AJNI_LOGF("%s", msg.c_str());
 }
 
 AJNI_END

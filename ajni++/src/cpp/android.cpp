@@ -29,19 +29,19 @@ View::View(const JClassPath &path)
     setBackgroundColor.returntype = ajni::TypeSignature::VOID;
 }
 
-ViewGroup::ViewGroup(const JClassPath &path)
+ViewGroup::ViewGroup(JClassPath const& path)
     : View(path),
       addView(*this)
 {
     addView.name = "addView";
     addView.returntype = ajni::TypeSignature::VOID;
-    addView.argtypes = {TypeSignature::VIEW, TypeSignature::VIEWGROUP_LAYOUTPARAMS};
+    addView.args_signature = {TypeSignature::VIEW, TypeSignature::VIEWGROUP_LAYOUTPARAMS};
 }
 
 ViewGroup::LayoutParams::LayoutParams(const JClassPath &path)
     : JClass(path)
 {
-    construct.argtypes = {ajni::TypeSignature::INT, ajni::TypeSignature::INT};
+    construct.args_signature = {ajni::TypeSignature::INT, ajni::TypeSignature::INT};
 }
 
 ConstraintLayout::ConstraintLayout(const JClassPath &path)

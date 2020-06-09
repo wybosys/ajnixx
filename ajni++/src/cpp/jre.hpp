@@ -6,14 +6,18 @@ AJNI_BEGIN_NS(jre)
 class Object : public JClass
 {
 public:
-    Object(const JClassPath &path = "java/lang/Object");
+    static JClassPath CLASSPATH;
+
+    Object(JClassPath const& = CLASSPATH);
     JMethod toString;
 };
 
 class Throwable : public Object
 {
 public:
-    Throwable(const JClassPath &path = "java/lang/Throwable");
+    static JClassPath CLASSPATH;
+
+    Throwable(JClassPath const& = CLASSPATH);
 };
 
 AJNI_END_NS

@@ -14,7 +14,7 @@ public:
         ForName.name = "forName";
         ForName.is_static = true;
         ForName.returntype = TypeSignature::CLASS;
-        ForName.argtypes.emplace_back(TypeSignature::STRING);
+        ForName.args_signature.emplace_back(TypeSignature::STRING);
     }
 
     JMethod ForName;

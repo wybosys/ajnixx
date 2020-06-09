@@ -4,15 +4,19 @@
 
 AJNI_BEGIN_NS(jre)
 
-Object::Object(const JClassPath &path)
-    : JClass(path), toString(*this)
+JClassPath Object::CLASSPATH = "java/lang/Object";
+
+Object::Object(JClassPath const& cp)
+    : JClass(cp), toString(*this)
 {
     toString.name = "toString";
     toString.returntype = TypeSignature::STRING;
 }
 
-Throwable::Throwable(const JClassPath &path)
-    : Object(path)
+JClassPath Throwable::CLASSPATH = "java/lang/Throwable";
+
+Throwable::Throwable(JClassPath const& cp)
+    : Object(cp)
 {
 }
 

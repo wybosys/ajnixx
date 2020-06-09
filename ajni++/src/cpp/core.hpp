@@ -50,8 +50,6 @@ AJNI_BEGIN
 using ::std::make_shared;
 using ::std::shared_ptr;
 using ::std::string;
-using ::std::cout;
-using ::std::cerr;
 using ::std::endl;
 
 // 定义全局空对象
@@ -168,6 +166,17 @@ class ExceptionGuard
 {
 public:
     ~ExceptionGuard();
+};
+
+class Logger
+{
+public:
+
+    static void Debug(string const&);
+    static void Info(string const&);
+    static void Warn(string const&);
+    static void Error(string const&);
+    static void Fatal(string const&);
 };
 
 AJNI_END

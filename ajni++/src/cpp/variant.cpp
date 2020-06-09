@@ -11,7 +11,7 @@ JObject::JObject(jobject obj)
         _obj = Env.NewLocalRef(_obj);
 }
 
-JObject::JObject(ajni::JObject const &r)
+JObject::JObject(JObject const &r)
     : _obj(r._obj)
 {
     if (_obj)
@@ -39,6 +39,44 @@ JObject &JObject::operator=(JObject const &r)
     if (_obj)
     {
         _obj = Env.NewLocalRef(_obj);
+    }
+
+    return *this;
+}
+
+JGlobalObject::JGlobalObject(jobject obj)
+    : _obj(obj)
+{
+    if (_obj)
+        _obj = Env.NewGlobalRef(_obj);
+}
+
+JGlobalObject::JGlobalObject(JGlobalObject const &r)
+    : _obj(r._obj)
+{
+    if (_obj)
+        _obj = Env.NewGlobalRef(_obj);
+}
+
+JGlobalObject::~JGlobalObject()
+{
+    if (_obj)
+    {
+        Env.DeleteGlobalRef(_obj);
+        _obj = nullptr;
+    }
+}
+
+JGlobalObject &JGlobalObject::operator=(JGlobalObject const &r) {
+    if (_obj == r._obj)
+        return *this;
+
+    if (_obj)
+        Env.DeleteGlobalRef(_obj);
+
+    _obj = r._obj;
+    if (_obj) {
+        _obj = Env.NewGlobalRef(_obj);
     }
 
     return *this;
@@ -198,7 +236,7 @@ JVariant::JVariant(jdouble v)
 }
 
 JVariant::JVariant(jobject v)
-    : vt(VT::OBJECT), _var(JObject(v))
+    : vt(VT::OBJECT), _var(v)
 {
 }
 

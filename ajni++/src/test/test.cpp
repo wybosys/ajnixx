@@ -5,12 +5,25 @@ USE_AJNI;
 
 AJNI_IMP_LOADED({})
 
+class Test : public JClass
+{
+public:
+
+    Test() : JClass(CLASSPATH) {}
+
+    static const string CLASSPATH;
+};
+
+const string Test::CLASSPATH = "com/nnt/ajnixx/Test";
+
 void Test0(::std::ostringstream& oss)
 {
-    JClass cls("com/nnt/ajnixx/Test");
-    if (!cls.exists()) {
+    auto cls = JContext::shared().register_class<Test>();
+    if (cls) {
         oss << "没找到 Test 类" << endl;
         return;
+    } else {
+        oss << "找到 Test 类" << endl;
     }
 }
 

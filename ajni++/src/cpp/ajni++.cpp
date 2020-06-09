@@ -7,60 +7,58 @@
 
 AJNI_BEGIN
 
-USE_CROSS;
-
 JVariant JField::operator()() const
 {
     AJNI_CHECKEXCEPTION;
 
     if (is_static)
     {
-        auto fid = Env.GetStaticFieldID(_cls, name.c_str(), typ.c_str());
+        auto fid = Env.GetStaticFieldID(_clazz, name.c_str(), typ.c_str());
         if (!fid)
         {
-            cerr << "没有找到静态变量 " + name + typ << endl;
+            Logger::Error("没有找到静态变量 " + name + typ);
             return JVariant();
         }
 
         if (typ == TypeSignature::BOOLEAN)
         {
-            return Env.GetStaticBooleanField(_cls, fid);
+            return Env.GetStaticBooleanField(_clazz, fid);
         }
         else if (typ == TypeSignature::BYTE)
         {
-            return Env.GetStaticByteField(_cls, fid);
+            return Env.GetStaticByteField(_clazz, fid);
         }
         else if (typ == TypeSignature::CHAR)
         {
-            return Env.GetStaticCharField(_cls, fid);
+            return Env.GetStaticCharField(_clazz, fid);
         }
         else if (typ == TypeSignature::SHORT)
         {
-            return Env.GetStaticShortField(_cls, fid);
+            return Env.GetStaticShortField(_clazz, fid);
         }
         else if (typ == TypeSignature::INT)
         {
-            return Env.GetStaticIntField(_cls, fid);
+            return Env.GetStaticIntField(_clazz, fid);
         }
         else if (typ == TypeSignature::LONG)
         {
-            return Env.GetStaticLongField(_cls, fid);
+            return Env.GetStaticLongField(_clazz, fid);
         }
         else if (typ == TypeSignature::FLOAT)
         {
-            return Env.GetStaticFloatField(_cls, fid);
+            return Env.GetStaticFloatField(_clazz, fid);
         }
         else if (typ == TypeSignature::DOUBLE)
         {
-            return Env.GetStaticDoubleField(_cls, fid);
+            return Env.GetStaticDoubleField(_clazz, fid);
         }
         else if (typ == TypeSignature::STRING)
         {
-            return (jstring)Env.GetStaticObjectField(_cls, fid);
+            return (jstring)Env.GetStaticObjectField(_clazz, fid);
         }
         else
         {
-            return Env.GetStaticObjectField(_cls, fid);
+            return Env.GetStaticObjectField(_clazz, fid);
         }
     }
 
@@ -73,10 +71,10 @@ JVariant JField::operator()(jobject obj) const
 
     if (!is_static)
     {
-        auto fid = Env.GetFieldID(_cls, name.c_str(), typ.c_str());
+        auto fid = Env.GetFieldID(_clazz, name.c_str(), typ.c_str());
         if (!fid)
         {
-            cerr << "没有找到静态变量 " + name + typ << endl;
+            Logger::Error("没有找到静态变量 " + name + typ);
             return JVariant();
         }
 
@@ -155,11 +153,11 @@ JVariant JMethod::operator()(JVariant const &v, JVariant const &v1, JVariant con
     return invoke({v, v1, v2, v3, v4});
 }
 
-string JMethod::signature(::std::vector<JVariant> const &args, ::std::vector<JTypeSignature> const &predefs) const
+string JMethod::signature(args_type const &args, args_signature_type const &predefs) const
 {
     if (predefs.size())
     {
-        string sig = "(" + implode(predefs, "") + ")" + returntype;
+        string sig = "(" + CROSS_NS::implode(predefs, "") + ")" + returntype;
         return sig;
     }
 
@@ -169,36 +167,36 @@ string JMethod::signature(::std::vector<JVariant> const &args, ::std::vector<JTy
         ps.emplace_back(e.signature());
     }
 
-    string sig = "(" + implode(ps, "") + ")" + returntype;
+    string sig = "(" + CROSS_NS::implode(ps, "") + ")" + returntype;
     return sig;
 }
 
-JVariant JMethod::operator()(jobject obj) const
+JVariant JMethod::operator()(JObject& obj) const
 {
     return invoke(obj, {});
 }
 
-JVariant JMethod::operator()(jobject obj, JVariant const &v) const
+JVariant JMethod::operator()(JObject& obj, JVariant const &v) const
 {
     return invoke(obj, {v});
 }
 
-JVariant JMethod::operator()(jobject obj, JVariant const &v, JVariant const &v1) const
+JVariant JMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1) const
 {
     return invoke(obj, {v, v1});
 }
 
-JVariant JMethod::operator()(jobject obj, JVariant const &v, JVariant const &v1, JVariant const &v2) const
+JVariant JMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1, JVariant const &v2) const
 {
     return invoke(obj, {v, v1, v2});
 }
 
-JVariant JMethod::operator()(jobject obj, JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3) const
+JVariant JMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3) const
 {
     return invoke(obj, {v, v1, v2, v3});
 }
 
-JVariant JMethod::operator()(jobject obj, JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3, JVariant const &v4) const
+JVariant JMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3, JVariant const &v4) const
 {
     return invoke(obj, {v, v1, v2, v3, v4});
 }
@@ -207,91 +205,91 @@ JVariant JMethod::invoke(::std::vector<JVariant> const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
-    string sig = signature(args, argtypes);
+    string sig = signature(args, args_signature);
     JValues jvals(args);
 
     if (is_construct)
     {
-        auto mid = Env.GetMethodID(_cls, "<init>", sig);
+        auto mid = Env.GetMethodID(_clazz, "<init>", sig);
         if (!mid)
         {
-            cerr << "没有找到构造函数 " + name + sig << endl;
+            Logger::Error("没有找到构造函数 " + name + " " + sig);
             return JVariant();
         }
 
-        return Env.NewObject(_cls, mid, jvals);
+        return Env.NewObject(_clazz, mid, jvals);
     }
 
     if (is_static)
     {
-        auto mid = Env.GetStaticMethodID(_cls, name, sig);
+        auto mid = Env.GetStaticMethodID(_clazz, name, sig);
         if (!mid)
         {
-            cerr << "没有找到函数 " + name + sig << endl;
+            Logger::Error("没有找到函数 " + name + sig);
             return JVariant();
         }
 
         if (returntype == TypeSignature::BOOLEAN)
         {
-            return Env.CallStaticBooleanMethod(_cls, mid, jvals);
+            return Env.CallStaticBooleanMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::BYTE)
         {
-            return Env.CallStaticByteMethod(_cls, mid, jvals);
+            return Env.CallStaticByteMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::CHAR)
         {
-            return Env.CallStaticCharMethod(_cls, mid, jvals);
+            return Env.CallStaticCharMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::SHORT)
         {
-            return Env.CallStaticShortMethod(_cls, mid, jvals);
+            return Env.CallStaticShortMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::INT)
         {
-            return Env.CallStaticIntMethod(_cls, mid, jvals);
+            return Env.CallStaticIntMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::LONG)
         {
-            return Env.CallStaticLongMethod(_cls, mid, jvals);
+            return Env.CallStaticLongMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::FLOAT)
         {
-            return Env.CallStaticFloatMethod(_cls, mid, jvals);
+            return Env.CallStaticFloatMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::DOUBLE)
         {
-            return Env.CallStaticDoubleMethod(_cls, mid, jvals);
+            return Env.CallStaticDoubleMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::STRING)
         {
-            return (jstring)Env.CallStaticObjectMethod(_cls, mid, jvals);
+            return (jstring)Env.CallStaticObjectMethod(_clazz, mid, jvals);
         }
         else if (returntype == TypeSignature::VOID)
         {
-            Env.CallStaticVoidMethod(_cls, mid, jvals);
+            Env.CallStaticVoidMethod(_clazz, mid, jvals);
         }
         else
         {
-            return Env.CallStaticObjectMethod(_cls, mid, jvals);
+            return Env.CallStaticObjectMethod(_clazz, mid, jvals);
         }
     }
     return JVariant();
 }
 
-JVariant JMethod::invoke(jobject obj, ::std::vector<JVariant> const &args) const
+JVariant JMethod::invoke(JObject& obj, ::std::vector<JVariant> const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
-    string sig = signature(args, argtypes);
+    string sig = signature(args, args_signature);
     JValues jvals(args);
 
     if (!is_static)
     {
-        auto mid = Env.GetMethodID(_cls, name, sig);
+        auto mid = Env.GetMethodID(_clazz, name, sig);
         if (!mid)
         {
-            cerr << "没有找到函数 " + name + sig << endl;
+            Logger::Error("没有找到函数 " + name + sig);
             return JVariant();
         }
 
@@ -346,35 +344,54 @@ JVariant JMethod::invoke(jobject obj, ::std::vector<JVariant> const &args) const
 JClass::JClass(JClassPath const&path)
     : _clazzpath(path), construct(*this)
 {
-    if (!path.empty())
-    {
+    if (!path.empty()) {
         _clazz = Env.FindClass(path);
-        if (_clazz)
-        {
-            _clazz = Env.NewGlobalRef(_clazz);
-        }
     }
 
     construct.is_construct = true;
     construct.returntype = TypeSignature::VOID;
 }
 
-JClass::~JClass()
-{
-    if (_clazz)
-    {
-        Env.DeleteGlobalRef(_clazz);
-        _clazz = nullptr;
-    }
-}
-
 JClassName JClass::name() const
 {
-    return replace(_clazzpath, "/", ".");
+    return CROSS_NS::replace(_clazzpath, "/", ".");
 }
 
 bool JClass::exists() const {
     return _clazz != nullptr;
+}
+
+NNT_SINGLETON_IMPL(JContext);
+
+class JContextPrivate
+{
+public:
+
+    typedef ::std::map<JClassPath, JContext::class_type> classes_type;
+    classes_type classes;
+};
+
+JContext::JContext()
+{
+    NNT_CLASS_CONSTRUCT();
+}
+
+JContext::~JContext()
+{
+    NNT_CLASS_DESTORY();
+}
+
+bool JContext::add(class_type const& cls)
+{
+    if (!cls->exists())
+        return false;
+    d_ptr->classes[cls->path()] = cls;
+    return true;
+}
+
+JContext::class_type JContext::find_class(JClassPath const& ph) const {
+    auto fnd = d_ptr->classes.find(ph);
+    return fnd == d_ptr->classes.end() ? nullptr : fnd->second;
 }
 
 AJNI_END
