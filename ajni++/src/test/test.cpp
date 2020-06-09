@@ -11,13 +11,21 @@ class Test : public JClass
 public:
 
     Test() : JClass(CLASSPATH),
-    test0(*this)
+    test0(*this), ftest0(*this), fTest0(*this)
     {
         test0.name = "test0";
         test0.sreturn = TypeSignature::STRING;
+
+        ftest0.name = "test0";
+        ftest0.stype = TypeSignature::STRING;
+
+        fTest0.name = "Test0";
+        fTest0.sreturn = TypeSignature::STRING;
     }
 
-    JMethod test0;
+    JMemberMethod test0;
+    JField ftest0;
+    JStaticMethod fTest0;
 
     static const string CLASSPATH;
 };
@@ -37,6 +45,8 @@ void Test0(::std::ostringstream& oss)
     // 实例化对象
     JEntry<Test> obj(cls->construct());
     oss << obj->test0(obj) << endl;
+    oss << obj->ftest0(obj) << endl;
+    oss << obj->fTest0() << endl;
 }
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)

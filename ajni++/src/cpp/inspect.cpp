@@ -12,12 +12,11 @@ public:
           ForName(*this)
     {
         ForName.name = "forName";
-        ForName.is_static = true;
         ForName.sreturn = TypeSignature::CLASS;
         ForName.sargs.emplace_back(TypeSignature::STRING);
     }
 
-    JMethod ForName;
+    JStaticMethod ForName;
 };
 
 struct JInspectPrivate

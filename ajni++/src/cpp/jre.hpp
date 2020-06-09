@@ -9,7 +9,7 @@ public:
     static JClassPath CLASSPATH;
 
     Object(JClassPath const& = CLASSPATH);
-    JMethod toString;
+    JMemberMethod toString;
 };
 
 class Throwable : public Object

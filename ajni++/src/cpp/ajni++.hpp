@@ -20,14 +20,14 @@ public:
     string name;
 
     // 变量类型
-    string typ;
+    JTypeSignature stype;
 
     // 是否是静态变量
     bool is_static = false;
 
     // 获取数据
     JVariant operator()() const;
-    JVariant operator()(jobject) const;
+    JVariant operator()(JObject&) const;
 
 protected:
 
@@ -50,19 +50,59 @@ public:
     // 返回类型
     string sreturn;
 
-    // 是否是静态函数
-    bool is_static = false;
-
-    // 是否是构造函数
-    bool is_construct = false;
-
     // 参数类型, 设置则代表不使用自动推导，手动指定入参表
     typedef ::std::vector<JTypeSignature> args_signatures_type;
     args_signatures_type sargs;
 
     typedef ::std::vector<JVariant> args_type;
 
-    // 当前对应的如果是静态函数则应调用下面的
+    // 生成函数标记
+    string signature(args_type const &, args_signatures_type const & = {}) const;
+
+protected:
+
+    JClass const& _clazz;
+};
+
+class JConstructMethod : public JMethod
+{
+public:
+
+    JConstructMethod(JClass const& clz) : JMethod(clz)
+    {
+        sreturn = TypeSignature::VOID;
+    }
+
+    JVariant operator()() const;
+    JVariant operator()(JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant invoke(::std::vector<JVariant> const &) const;
+};
+
+class JMemberMethod : public JMethod
+{
+public:
+
+    JMemberMethod(JClass const& clz) : JMethod(clz) {}
+
+    JVariant operator()(JObject&) const;
+    JVariant operator()(JObject&, JVariant const &) const;
+    JVariant operator()(JObject&, JVariant const &, JVariant const &) const;
+    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    JVariant invoke(JObject&, ::std::vector<JVariant> const &) const;
+};
+
+class JStaticMethod : public JMethod
+{
+public:
+
+    JStaticMethod(JClass const& clz) : JMethod(clz) {}
+
     JVariant operator()() const;
     JVariant operator()(JVariant const &) const;
     JVariant operator()(JVariant const &, JVariant const &) const;
@@ -71,21 +111,6 @@ public:
     JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
     JVariant invoke(::std::vector<JVariant> const &) const;
 
-    // 当前对应的如果是成员函数则应调用下面的
-    JVariant operator()(JObject&) const;
-    JVariant operator()(JObject&, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant invoke(JObject&, ::std::vector<JVariant> const &) const;
-
-    // 生成函数标记
-    string signature(args_type const &, args_signatures_type const & = {}) const;
-
-protected:
-
-    JClass const& _clazz;
 };
 
 // 类定义
@@ -108,7 +133,7 @@ public:
     bool exists() const;
 
     // 定义构造函数
-    JMethod construct;
+    JConstructMethod construct;
 
     inline operator jclass () const {
         return (jclass)(jobject)_clazz;
