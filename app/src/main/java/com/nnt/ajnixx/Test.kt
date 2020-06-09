@@ -10,6 +10,8 @@ class Test {
     val test0 = "Test0 Member Variable String"
 
     companion object {
+
+        // 返回测试结果
         external fun Test(): String
 
         fun Test0(): String {

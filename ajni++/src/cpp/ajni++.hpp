@@ -8,12 +8,14 @@ AJNI_BEGIN
 
 class JClass;
 
+// 变量定义
 class JField
 {
     NNT_NOCOPY(JField);
 
 public:
-    JField(const JClass &cls) : _cls(cls) {}
+
+    JField(JClass const& cls) : _cls(cls) {}
 
     string name;            // 变量名
     string typ;             // 变量类型
@@ -24,15 +26,18 @@ public:
     JVariant operator()(jobject) const;
 
 protected:
-    const JClass &_cls;
+
+    JClass const&_cls;
 };
 
+// 方法定义
 class JMethod
 {
     NNT_NOCOPY(JMethod);
 
 public:
-    JMethod(const JClass &cls) : _cls(cls) {}
+
+    JMethod(JClass const& cls) : _cls(cls) {}
 
     string name;       // 函数名
     string returntype; // 返回类型
@@ -65,37 +70,42 @@ public:
     string signature(::std::vector<JVariant> const &, ::std::vector<JTypeSignature> const & = {}) const;
 
 protected:
-    const JClass &_cls;
+
+    JClass const& _cls;
 };
 
+// 类定义
 class JClass
 {
     NNT_NOCOPY(JClass);
 
 public:
-    JClass(const JClassPath &path = "");
+
+    JClass(JClassPath const& path = "");
     virtual ~JClass();
 
     // jni类路径，java/lang/Class的格式
-    inline const JClassPath &path() const
-    {
+    inline JClassPath const& path() const {
         return _clazzpath;
     }
 
-    // 类名，java.lang.Class的格式
+    // 类名
     JClassName name() const;
 
-    inline jclass clazz() const
-    {
-        return _clazz;
-    }
+    // 是否存在
+    bool exists() const;
 
     // 构造函数
     JMethod construct;
 
+    inline operator jclass () const {
+        return _clazz;
+    }
+
 protected:
+
     JClassPath _clazzpath;
-    jclass _clazz;
+    jclass _clazz = nullptr;
 };
 
 // 实例对象
