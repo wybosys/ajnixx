@@ -1,4 +1,5 @@
 #include <ajni++.hpp>
+#include <kotlin.hpp>
 #include <sstream>
 
 USE_AJNI;
@@ -6,11 +7,11 @@ USE_AJNI;
 AJNI_IMP_LOADED({})
 AJNI_IMP_UNLOADED({})
 
-class Test : public JKotlinClass
+class Test : public kotlin::JClass
 {
 public:
 
-    Test() : JKotlinClass(CLASSPATH),
+    Test() : kotlin::JClass(CLASSPATH),
     test0(*this), ftest0(*this), fTest0(*this)
     {
         test0.name = "test0";
@@ -25,7 +26,7 @@ public:
 
     JMemberMethod test0;
     JMemberField ftest0;
-    JStaticMethod fTest0;
+    kotlin::JStaticMethod fTest0;
 
     static const string CLASSPATH;
 };

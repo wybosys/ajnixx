@@ -9,6 +9,7 @@ core.cpp
 inspect.cpp
 jre.cpp
 variant.cpp
+kotlin.cpp
 )
 
 target_link_libraries(ajni++ cross log)

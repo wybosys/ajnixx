@@ -393,15 +393,6 @@ bool JClass::exists() const {
     return _clazz != nullptr;
 }
 
-JKotlinClass::JKotlinClass(JClassPath const& cp)
-: JClass(cp)
-{
-    {
-        AJNI_CHECKEXCEPTION(false);
-        _clazz$ = Env.FindClass(cp + "$Companion");
-    }
-}
-
 class JContextPrivate
 {
 public:

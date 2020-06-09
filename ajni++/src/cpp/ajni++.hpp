@@ -160,20 +160,6 @@ protected:
     JClassPath _clazzpath;
 };
 
-class JKotlinClass : public JClass
-{
-public:
-
-    JKotlinClass(JClassPath const& cp);
-
-    virtual jclass static_clazz() const {
-        return _clazz$ ? (jclass)(jobject)_clazz$ : (jclass)(jobject)_clazz;
-    }
-
-protected:
-    JObject _clazz$;
-};
-
 NNT_CLASS_PREPARE(JContext);
 
 // 上下文环境
