@@ -51,7 +51,7 @@ public:
     JVariant operator()() const;
 
     // set
-    void operator()(JObject&, JVariant const&);
+    void operator()(JVariant const&);
 
 protected:
 

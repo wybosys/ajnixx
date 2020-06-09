@@ -108,12 +108,13 @@ JVariant JGlobalField::operator()() const
 
     auto clz = _clazz.clazz();
     auto getname = "get" + FirstUppcase(name);
+    string sig = JMethod::Signature({}, stype, {});
     JValues jvals;
 
-    auto mid = Env.GetStaticMethodID(clz, getname.c_str(), stype.c_str());
+    auto mid = Env.GetStaticMethodID(clz, getname.c_str(), sig.c_str());
     if (!mid)
     {
-        Logger::Error("没有找到静态变量 " + name + stype);
+        Logger::Error("没有找到全局变量 " + name + stype);
         return JVariant();
     }
 
@@ -165,18 +166,19 @@ JVariant JGlobalField::operator()() const
     return JVariant();
 }
 
-void JGlobalField::operator()(JObject& obj, JVariant const& v)
+void JGlobalField::operator()(JVariant const& v)
 {
     AJNI_CHECKEXCEPTION;
 
     auto clz = _clazz.clazz();
     auto setname = "set" + FirstUppcase(name);
+    string sig = JMethod::Signature({v}, TypeSignature::VOID, {});
     JValues jvals({v});
 
-    auto mid = Env.GetStaticMethodID(clz, setname.c_str(), stype.c_str());
+    auto mid = Env.GetStaticMethodID(clz, setname.c_str(), sig.c_str());
     if (!mid)
     {
-        Logger::Error("没有找到静态变量 " + name + stype);
+        Logger::Error("没有找到全局变量 " + name + stype);
         return;
     }
 

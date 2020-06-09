@@ -102,7 +102,9 @@ void Test0(::std::ostringstream& oss)
 
     kotlin::JGlobalField mtf(Test::CLASSPATH);
     mtf.name = "abc";
-    mth.sreturn = TypeSignature::INT;
+    mtf.stype = TypeSignature::INT;
+    oss << mtf() << endl;
+    mtf(456);
     oss << mtf() << endl;
 }
 
