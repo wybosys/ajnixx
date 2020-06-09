@@ -22,16 +22,27 @@ public:
     // 变量类型
     JTypeSignature stype;
 
-    // 是否是静态变量
-    bool is_static = false;
-
-    // 获取数据
-    JVariant operator()() const;
-    JVariant operator()(JObject&) const;
-
 protected:
 
     JClass const& _clazz;
+};
+
+class JMemberField : public JField
+{
+public:
+
+    JMemberField(JClass const& clz) : JField(clz) {}
+
+    JVariant operator()(JObject&) const;
+};
+
+class JStaticField : public JField
+{
+public:
+
+    JStaticField(JClass const& clz) : JField(clz) {}
+
+    JVariant operator()() const;
 };
 
 // 方法定义
@@ -135,7 +146,11 @@ public:
     // 定义构造函数
     JConstructMethod construct;
 
-    inline operator jclass () const {
+    virtual jclass clazz() const {
+        return (jclass)(jobject)_clazz;
+    }
+
+    virtual jclass static_clazz() const {
         return (jclass)(jobject)_clazz;
     }
 
@@ -143,6 +158,20 @@ protected:
 
     JObject _clazz;
     JClassPath _clazzpath;
+};
+
+class JKotlinClass : public JClass
+{
+public:
+
+    JKotlinClass(JClassPath const& cp);
+
+    virtual jclass static_clazz() const {
+        return _clazz$ ? (jclass)(jobject)_clazz$ : (jclass)(jobject)_clazz;
+    }
+
+protected:
+    JObject _clazz$;
 };
 
 NNT_CLASS_PREPARE(JContext);

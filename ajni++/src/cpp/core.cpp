@@ -396,10 +396,11 @@ ExceptionGuard::~ExceptionGuard()
         return;
     jthrowable err = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
-
-    JEntry<jre::Throwable> obj(err);
-    string msg = obj->toString(obj);
-    Logger::Error("捕获JNI异常 " + msg);
+    if (_print) {
+        JEntry<jre::Throwable> obj(err);
+        string msg = obj->toString(obj);
+        Logger::Error("捕获JNI异常 " + msg);
+    }
 }
 
 void Logger::Debug(string const& msg)

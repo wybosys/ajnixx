@@ -187,7 +187,10 @@ namespace TypeSignature
 class ExceptionGuard
 {
 public:
+    ExceptionGuard(bool print = true) : _print(print) {}
     ~ExceptionGuard();
+private:
+    bool _print;
 };
 
 class Logger

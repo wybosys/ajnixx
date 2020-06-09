@@ -6,11 +6,11 @@ USE_AJNI;
 AJNI_IMP_LOADED({})
 AJNI_IMP_UNLOADED({})
 
-class Test : public JClass
+class Test : public JKotlinClass
 {
 public:
 
-    Test() : JClass(CLASSPATH),
+    Test() : JKotlinClass(CLASSPATH),
     test0(*this), ftest0(*this), fTest0(*this)
     {
         test0.name = "test0";
@@ -24,7 +24,7 @@ public:
     }
 
     JMemberMethod test0;
-    JField ftest0;
+    JMemberField ftest0;
     JStaticMethod fTest0;
 
     static const string CLASSPATH;
