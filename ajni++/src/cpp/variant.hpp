@@ -2,7 +2,6 @@
 #define __AJNI_VARIANT_H_INCLUDED
 
 #include "com++.hpp"
-#include "../nlua++/com++.hpp"
 #include <vector>
 
 AJNI_BEGIN
