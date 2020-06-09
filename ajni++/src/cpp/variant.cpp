@@ -1,6 +1,7 @@
 #include "core.hpp"
 #include "variant.hpp"
 #include <sstream>
+#include <cmath>
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
