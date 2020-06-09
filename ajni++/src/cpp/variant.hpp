@@ -84,6 +84,10 @@ public:
         return _val;
     }
 
+    inline operator jobject() const {
+        return _val.l;
+    }
+
 private:
     jvalue _val = {0};
     bool _free = false;
@@ -138,6 +142,12 @@ public:
 
     JVariant();
 
+    JVariant(const char s[]);
+
+    JVariant(jstring);
+
+    JVariant(string const &);
+
     JVariant(bool);
 
     JVariant(jchar);
@@ -155,10 +165,6 @@ public:
     JVariant(jdouble);
 
     JVariant(jobject);
-
-    JVariant(jstring);
-
-    JVariant(string const &);
 
     string const &toString() const;
 

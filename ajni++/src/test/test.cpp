@@ -89,6 +89,8 @@ void Test0(::std::ostringstream& oss)
     oss << obj_info->fabc(obj_info) << endl;
     oss << obj_info->fcde(obj_info) << endl;
     oss << obj_info->fnul(obj_info) << endl;
+    obj_info->fabc(obj_info, "modified abc");
+    oss << obj_info->fabc(obj_info) << endl;
 }
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)

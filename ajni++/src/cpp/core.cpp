@@ -123,6 +123,51 @@ jdouble JEnv::GetStaticDoubleField(jclass cls, jfieldID id)
     return tls_env->GetStaticDoubleField(cls, id);
 }
 
+void JEnv::SetStaticObjectField(jclass cls, jfieldID id, jobject v)
+{
+    tls_env->SetStaticObjectField(cls, id, v);
+}
+
+void JEnv::SetStaticBooleanField(jclass cls, jfieldID id, jboolean v)
+{
+    tls_env->SetStaticBooleanField(cls, id, v);
+}
+
+void JEnv::SetStaticByteField(jclass cls, jfieldID id, jbyte v)
+{
+    tls_env->SetStaticByteField(cls, id, v);
+}
+
+void JEnv::SetStaticCharField(jclass cls, jfieldID id, jchar v)
+{
+    tls_env->SetStaticCharField(cls, id, v);
+}
+
+void JEnv::SetStaticShortField(jclass cls, jfieldID id, jshort v)
+{
+    tls_env->SetStaticShortField(cls, id, v);
+}
+
+void JEnv::SetStaticIntField(jclass cls, jfieldID id, jint v)
+{
+    tls_env->SetStaticIntField(cls, id, v);
+}
+
+void JEnv::SetStaticLongField(jclass cls, jfieldID id, jlong v)
+{
+    tls_env->SetStaticLongField(cls, id, v);
+}
+
+void JEnv::SetStaticFloatField(jclass cls, jfieldID id, jfloat v)
+{
+    tls_env->SetStaticFloatField(cls, id, v);
+}
+
+void JEnv::SetStaticDoubleField(jclass cls, jfieldID id, jdouble v)
+{
+    tls_env->SetStaticDoubleField(cls, id, v);
+}
+
 jfieldID JEnv::GetFieldID(jclass cls, string const &name, string const &sig)
 {
     return tls_env->GetFieldID(cls, name.c_str(), sig.c_str());
@@ -172,6 +217,52 @@ jdouble JEnv::GetDoubleField(jobject obj, jfieldID fid)
 {
     return tls_env->GetDoubleField(obj, fid);
 }
+
+void JEnv::SetObjectField(jobject obj, jfieldID id, jobject v)
+{
+    tls_env->SetObjectField(obj, id, v);
+}
+
+void JEnv::SetBooleanField(jobject obj, jfieldID id, jboolean v)
+{
+    tls_env->SetBooleanField(obj, id, v);
+}
+
+void JEnv::SetByteField(jobject obj, jfieldID id, jbyte v)
+{
+    tls_env->SetByteField(obj, id, v);
+}
+
+void JEnv::SetCharField(jobject obj, jfieldID id, jchar v)
+{
+    tls_env->SetCharField(obj, id, v);
+}
+
+void JEnv::SetShortField(jobject obj, jfieldID id, jshort v)
+{
+    tls_env->SetShortField(obj, id, v);
+}
+
+void JEnv::SetIntField(jobject obj, jfieldID id, jint v)
+{
+    tls_env->SetIntField(obj, id, v);
+}
+
+void JEnv::SetLongField(jobject obj, jfieldID id, jlong v)
+{
+    tls_env->SetLongField(obj, id, v);
+}
+
+void JEnv::SetFloatField(jobject obj, jfieldID id, jfloat v)
+{
+    tls_env->SetFloatField(obj, id, v);
+}
+
+void JEnv::SetDoubleField(jobject obj, jfieldID id, jdouble v)
+{
+    tls_env->SetDoubleField(obj, id, v);
+}
+
 
 jmethodID JEnv::GetMethodID(jclass cls, string const &name, string const &sig)
 {

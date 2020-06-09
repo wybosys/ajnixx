@@ -168,10 +168,8 @@ JValue::JValue(JVariant const& var)
         } break;
         case VT::NIL:
             break;
-        case VT::BYTES:
-        case VT::FUNCTION:
-        case VT::POINTER:
-            AJNI_LOGE("ajnixx: 不支持类型转换");
+        default:
+            Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int)comvar.vt));
             break;
     }
 }
@@ -195,6 +193,11 @@ JValues::JValues(::std::vector<JVariant> const& vars)
 
 JVariant::JVariant()
     : vt(VT::NIL)
+{
+}
+
+JVariant::JVariant(const char s[])
+    : vt(VT::STRING), _var(s)
 {
 }
 

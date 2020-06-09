@@ -64,6 +64,61 @@ JVariant JStaticField::operator()() const
     return JVariant();
 }
 
+void JStaticField::operator()(JObject& obj, JVariant const& v)
+{
+    AJNI_CHECKEXCEPTION;
+
+    auto clz = _clazz.clazz();
+
+    auto fid = Env.GetStaticFieldID(clz, name.c_str(), stype.c_str());
+    if (!fid)
+    {
+        Logger::Error("没有找到静态变量 " + name + stype);
+        return;
+    }
+
+    if (stype == TypeSignature::BOOLEAN)
+    {
+        Env.SetStaticBooleanField(clz, fid, v.toBool());
+    }
+    else if (stype == TypeSignature::BYTE)
+    {
+        Env.SetStaticByteField(clz, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::CHAR)
+    {
+        Env.SetStaticCharField(clz, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::SHORT)
+    {
+        Env.SetStaticShortField(clz, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::INT)
+    {
+        Env.SetStaticIntField(clz, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::LONG)
+    {
+        Env.SetStaticLongField(clz, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::FLOAT)
+    {
+        Env.SetStaticFloatField(clz, fid, v.toNumber());
+    }
+    else if (stype == TypeSignature::DOUBLE)
+    {
+        Env.SetStaticDoubleField(clz, fid, v.toNumber());
+    }
+    else if (stype == TypeSignature::STRING)
+    {
+        Env.SetStaticObjectField(clz, fid, JValue(v));
+    }
+    else
+    {
+        Env.SetStaticObjectField(clz, fid, v.toObject());
+    }
+}
+
 JVariant JMemberField::operator()(JObject& obj) const
 {
     AJNI_CHECKEXCEPTION;
@@ -119,6 +174,62 @@ JVariant JMemberField::operator()(JObject& obj) const
     }
 
     return JVariant();
+}
+
+void JMemberField::operator()(JObject& obj, JVariant const& v)
+{
+    AJNI_CHECKEXCEPTION;
+
+    auto clz = _clazz.clazz();
+
+    auto fid = Env.GetFieldID(clz, name.c_str(), stype.c_str());
+    if (!fid)
+    {
+        Logger::Error("没有找到成员变量 " + name + stype);
+        return;
+    }
+
+    if (stype == TypeSignature::BOOLEAN)
+    {
+        Env.SetBooleanField(obj, fid, v.toBool());
+    }
+    else if (stype == TypeSignature::BYTE)
+    {
+        Env.SetByteField(obj, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::CHAR)
+    {
+        Env.SetCharField(obj, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::SHORT)
+    {
+        Env.SetShortField(obj, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::INT)
+    {
+        Env.SetIntField(obj, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::LONG)
+    {
+        Env.SetLongField(obj, fid, v.toInteger());
+    }
+    else if (stype == TypeSignature::FLOAT)
+    {
+        Env.SetFloatField(obj, fid, v.toNumber());
+    }
+    else if (stype == TypeSignature::DOUBLE)
+    {
+        Env.SetDoubleField(obj, fid, v.toNumber());
+    }
+    else if (stype == TypeSignature::STRING)
+    {
+        JValue jv(v);
+        Env.SetObjectField(obj, fid, jv);
+    }
+    else
+    {
+        Env.SetObjectField(obj, fid, v.toObject());
+    }
 }
 
 JVariant JConstructMethod::operator()() const

@@ -33,7 +33,11 @@ public:
 
     JMemberField(JClass const& clz) : JField(clz) {}
 
+    // get
     JVariant operator()(JObject&) const;
+
+    // set
+    void operator()(JObject&, JVariant const&);
 };
 
 class JStaticField : public JField
@@ -42,7 +46,11 @@ public:
 
     JStaticField(JClass const& clz) : JField(clz) {}
 
+    // get
     JVariant operator()() const;
+
+    // set
+    void operator()(JObject&, JVariant const&);
 };
 
 // 方法定义
@@ -201,6 +209,10 @@ public:
     : _obj(obj)
     {
         _clazz = Env.context().register_class<TClass>();
+    }
+
+    inline TClass* operator -> () {
+        return dynamic_cast<TClass*>(_clazz.get());
     }
 
     inline TClass const* operator -> () const {

@@ -134,6 +134,16 @@ public:
     jfloat GetStaticFloatField(jclass, jfieldID);
     jdouble GetStaticDoubleField(jclass, jfieldID);
 
+    void SetStaticObjectField(jclass, jfieldID, jobject);
+    void SetStaticBooleanField(jclass, jfieldID, jboolean);
+    void SetStaticByteField(jclass, jfieldID, jbyte);
+    void SetStaticCharField(jclass, jfieldID, jchar);
+    void SetStaticShortField(jclass, jfieldID, jshort);
+    void SetStaticIntField(jclass, jfieldID, jint);
+    void SetStaticLongField(jclass, jfieldID, jlong);
+    void SetStaticFloatField(jclass, jfieldID, jfloat);
+    void SetStaticDoubleField(jclass, jfieldID, jdouble);
+
     jfieldID GetFieldID(jclass, string const& name, string const& sig);
     jobject GetObjectField(jobject, jfieldID);
     jboolean GetBooleanField(jobject, jfieldID);
@@ -144,6 +154,16 @@ public:
     jlong GetLongField(jobject, jfieldID);
     jfloat GetFloatField(jobject, jfieldID);
     jdouble GetDoubleField(jobject, jfieldID);
+
+    void SetObjectField(jobject, jfieldID, jobject);
+    void SetBooleanField(jobject, jfieldID, jboolean);
+    void SetByteField(jobject, jfieldID, jbyte);
+    void SetCharField(jobject, jfieldID, jchar);
+    void SetShortField(jobject, jfieldID, jshort);
+    void SetIntField(jobject, jfieldID, jint);
+    void SetLongField(jobject, jfieldID, jlong);
+    void SetFloatField(jobject, jfieldID, jfloat);
+    void SetDoubleField(jobject, jfieldID, jdouble);
 
     jmethodID GetMethodID(jclass, string const& name, string const& sig);
     jmethodID GetStaticMethodID(jclass, string const& name, string const& sig);
