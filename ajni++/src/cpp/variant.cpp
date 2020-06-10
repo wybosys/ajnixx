@@ -257,6 +257,56 @@ JVariant::JVariant(string const &v)
 {
 }
 
+JVariant::JVariant(function_type::fun0_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun1_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun2_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun3_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun4_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun5_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun6_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun7_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun8_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
+JVariant::JVariant(function_type::fun9_type fn)
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+{
+}
+
 string const& JVariant::toString() const {
     return _var.toString();
 }

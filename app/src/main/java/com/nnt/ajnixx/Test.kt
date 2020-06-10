@@ -21,6 +21,10 @@ class Test {
         return Info()
     }
 
+    fun info_async(cb:Callback) {
+        cb(123, "abc")
+    }
+
     companion object {
 
         // 返回测试结果

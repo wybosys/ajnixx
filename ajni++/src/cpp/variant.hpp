@@ -3,6 +3,7 @@
 
 #include "com++.hpp"
 #include <vector>
+#include <functional>
 
 AJNI_BEGIN
 
@@ -126,9 +127,16 @@ private:
         typedef JString string_type;
     };
 
+    class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
+            JVariant,
+            JVariant,
+            JVariant const&
+            > {};
+
 public:
 
-    typedef ::com::Variant<JComVariantTypes> variant_type;
+    typedef ::COMXX_NS::Variant<JComVariantTypes> variant_type;
+    typedef ::COMXX_NS::Function<JComFunctionTypes> function_type;
 
     enum struct VT {
         NIL,
@@ -136,7 +144,8 @@ public:
         BOOLEAN,
         INTEGER,
         NUMBER,
-        STRING
+        STRING,
+        FUNCTION
     };
 
     const VT vt;
@@ -166,6 +175,17 @@ public:
     JVariant(jdouble);
 
     JVariant(jobject);
+
+    JVariant(function_type::fun0_type);
+    JVariant(function_type::fun1_type);
+    JVariant(function_type::fun2_type);
+    JVariant(function_type::fun3_type);
+    JVariant(function_type::fun4_type);
+    JVariant(function_type::fun5_type);
+    JVariant(function_type::fun6_type);
+    JVariant(function_type::fun7_type);
+    JVariant(function_type::fun8_type);
+    JVariant(function_type::fun9_type);
 
     string const &toString() const;
 
@@ -199,6 +219,8 @@ public:
 private:
 
     variant_type const _var;
+    shared_ptr<function_type> _fun;
+
 };
 
 extern void grab(jobject);

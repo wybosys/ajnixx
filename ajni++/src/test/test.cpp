@@ -38,7 +38,7 @@ public:
     Test() : kotlin::JClass(CLASSPATH),
     test0(*this), ftest0(*this),
     Test0(*this), fTest0(*this),
-    finfo(*this)
+    finfo(*this), finfoasync(*this)
     {
         test0.name = "test0";
         test0.sreturn = TypeSignature::STRING;
@@ -54,6 +54,9 @@ public:
 
         finfo.name = "info";
         finfo.sreturn = Info::CLASSPATH;
+
+        finfoasync.name = "info_async";
+        finfoasync.sreturn = TypeSignature::VOID;
     }
 
     JMemberMethod test0;
@@ -61,6 +64,7 @@ public:
     kotlin::JStaticMethod Test0;
     JStaticField fTest0;
     JMemberMethod finfo;
+    JMemberMethod finfoasync;
 
     static const JClassPath CLASSPATH;
 };
@@ -91,6 +95,13 @@ void Test0(::std::ostringstream& oss)
     oss << obj_info->fnul(obj_info) << endl;
     obj_info->fabc(obj_info, "modified abc");
     oss << obj_info->fabc(obj_info) << endl;
+
+    // 测试异步
+    /*
+    obj->finfoasync(obj, (JVariant)[&](JVariant const& v0, JVariant const& v1)->JVariant {
+        return JVariant();
+    });
+     */
 
     // 获得全局函数
     oss << "全局" << endl;
