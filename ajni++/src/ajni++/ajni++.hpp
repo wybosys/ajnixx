@@ -27,6 +27,9 @@ protected:
     JClass const& _clazz;
 };
 
+typedef shared_ptr<JVariant> return_type;
+typedef JVariant const& arg_type;
+
 class JMemberField : public JField
 {
 public:
@@ -34,10 +37,10 @@ public:
     JMemberField(JClass const& clz) : JField(clz) {}
 
     // get
-    JVariant operator()(JObject&) const;
+    return_type operator()(JObject&) const;
 
     // set
-    void operator()(JObject&, JVariant const&);
+    void operator()(JObject&, arg_type);
 };
 
 class JStaticField : public JField
@@ -47,10 +50,10 @@ public:
     JStaticField(JClass const& clz) : JField(clz) {}
 
     // get
-    JVariant operator()() const;
+    return_type operator()() const;
 
     // set
-    void operator()(JObject&, JVariant const&);
+    void operator()(JObject&, arg_type);
 };
 
 // 方法定义
@@ -94,13 +97,13 @@ public:
         sreturn = TypeSignature::VOID;
     }
 
-    JVariant operator()() const;
-    JVariant operator()(JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    virtual JVariant invoke(::std::vector<JVariant> const &) const;
+    return_type operator()() const;
+    return_type operator()(arg_type) const;
+    return_type operator()(arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    virtual return_type invoke(::std::vector<JVariant> const &) const;
 };
 
 class JMemberMethod : public JMethod
@@ -109,13 +112,13 @@ public:
 
     JMemberMethod(JClass const& clz) : JMethod(clz) {}
 
-    JVariant operator()(JObject&) const;
-    JVariant operator()(JObject&, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JObject&, JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    virtual JVariant invoke(JObject&, ::std::vector<JVariant> const &) const;
+    return_type operator()(JObject&) const;
+    return_type operator()(JObject&, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    virtual return_type invoke(JObject&, ::std::vector<JVariant> const &) const;
 };
 
 class JStaticMethod : public JMethod
@@ -124,13 +127,13 @@ public:
 
     JStaticMethod(JClass const& clz) : JMethod(clz) {}
 
-    JVariant operator()() const;
-    JVariant operator()(JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    virtual JVariant invoke(::std::vector<JVariant> const &) const;
+    return_type operator()() const;
+    return_type operator()(arg_type) const;
+    return_type operator()(arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    virtual return_type invoke(::std::vector<JVariant> const &) const;
 
 };
 
@@ -156,7 +159,11 @@ public:
     // 定义构造函数
     JConstructMethod construct;
 
-    virtual jclass clazz() const {
+    inline jclass clazz() const {
+        return (jclass)(jobject)_clazz;
+    }
+
+    inline operator jclass () const {
         return (jclass)(jobject)_clazz;
     }
 
@@ -223,7 +230,7 @@ public:
 
     typedef JContext::class_type class_type;
 
-    JEntry(JObject const& obj)
+    JEntry(shared_ptr<JObject> const& obj)
     : _obj(obj)
     {
         _clazz = Env.context().register_class<TClass>();
@@ -238,17 +245,17 @@ public:
     }
 
     inline operator JObject& () {
-        return _obj;
+        return *_obj;
     }
 
     inline jobject asReturn() const {
-        return _obj.asReturn();
+        return _obj->asReturn();
     }
 
 private:
 
     JContext::class_type _clazz;
-    JObject _obj;
+    shared_ptr<JObject> _obj;
 };
 
 AJNI_END

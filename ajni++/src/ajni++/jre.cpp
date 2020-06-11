@@ -20,12 +20,52 @@ Throwable::Throwable(JClassPath const& cp)
 {
 }
 
-namespace TypeSignature
+JClassPath const Number::CLASSPATH = "java/lang/Number";
+
+Number::Number(JClassPath const& cp)
+: Object(cp),
+longValue(*this)
 {
-    const JClassPath CALLBACK = "com/nnt/ajnixx/Callback";
+    longValue.name = "longValue";
+    longValue.stype = ::AJNI_NS::TypeSignature::LONG;
 }
 
-JClassPath const Callback::CLASSPATH = TypeSignature::CALLBACK;
+JClassPath const Float::CLASSPATH = "java/lang/Float";
+
+Float::Float(JClassPath const& cp)
+: Number(cp),
+floatValue(*this)
+{
+    floatValue.name = "floatValue";
+    floatValue.stype = ::AJNI_NS::TypeSignature::FLOAT;
+}
+
+JClassPath const Double::CLASSPATH = "java/lang/Double";
+
+Double::Double(JClassPath const& cp)
+: Number(cp),
+doubleValue(*this)
+{
+    doubleValue.name = "doubleValue";
+    doubleValue.stype = ::AJNI_NS::TypeSignature::DOUBLE;
+}
+
+JClassPath const String::CLASSPATH = "java/lang/String";
+
+String::String(JClassPath const& cp)
+: Object(cp),
+getBytes(*this)
+{
+    getBytes.name = "getBytes";
+    getBytes.stype = ::AJNI_NS::TypeSignature::BYTEARRAY;
+}
+
+namespace TypeSignature
+{
+    const JTypeSignature CALLBACK = "Lcom/nnt/ajnixx/Callback;";
+}
+
+JClassPath const Callback::CLASSPATH = "com/nnt/ajnixx/Callback";
 
 Callback::Callback(JClassPath const& cp)
 : Object(cp),

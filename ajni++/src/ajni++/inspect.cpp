@@ -28,9 +28,6 @@ JInspect::JInspect(const ajni::JClass &clz)
     : _clz(clz)
 {
     NNT_CLASS_CONSTRUCT();
-
-    JReflectClass Class;
-    JVariant t = Class.ForName(clz.name());
 }
 
 JInspect::~JInspect(){

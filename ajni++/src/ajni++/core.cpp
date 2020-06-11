@@ -78,6 +78,11 @@ bool JEnv::IsAssignableFrom(jclass l, jclass r)
     return tls_env->IsAssignableFrom(l, r);
 }
 
+bool JEnv::IsInstanceOf(jobject obj, jclass clz)
+{
+    return tls_env->IsInstanceOf(obj, clz);
+}
+
 jfieldID JEnv::GetStaticFieldID(jclass cls, const string &name, const string &typ)
 {
     return tls_env->GetStaticFieldID(cls, name.c_str(), typ.c_str());
@@ -492,6 +497,7 @@ namespace TypeSignature
     const JTypeSignature FLOAT = "F";
     const JTypeSignature DOUBLE = "D";
     const JTypeSignature VOID = "V";
+    const JTypeSignature BYTEARRAY = "[B";
 } // namespace TypeSignature
 
 ExceptionGuard::~ExceptionGuard()
@@ -501,8 +507,8 @@ ExceptionGuard::~ExceptionGuard()
     jthrowable err = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
     if (_print) {
-        JEntry<jre::Throwable> obj(err);
-        string msg = obj->toString(obj);
+        JEntry<jre::Throwable> obj(make_shared<JObject>(err));
+        string msg = *obj->toString(obj);
         Logger::Error("捕获JNI异常 " + msg);
     }
 }

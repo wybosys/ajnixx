@@ -11,7 +11,7 @@ AJNI_BEGIN
 
 USE_CROSS
 
-JVariant JStaticField::operator()() const
+return_type JStaticField::operator()() const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -21,54 +21,50 @@ JVariant JStaticField::operator()() const
     if (!fid)
     {
         Logger::Error("没有找到静态变量 " + name + stype);
-        return JVariant();
+        return nullptr;
     }
 
     if (stype == TypeSignature::BOOLEAN)
     {
-        return Env.GetStaticBooleanField(clz, fid);
+        return _V(Env.GetStaticBooleanField(clz, fid));
     }
     else if (stype == TypeSignature::BYTE)
     {
-        return Env.GetStaticByteField(clz, fid);
+        return _V(Env.GetStaticByteField(clz, fid));
     }
     else if (stype == TypeSignature::CHAR)
     {
-        return Env.GetStaticCharField(clz, fid);
+        return _V(Env.GetStaticCharField(clz, fid));
     }
     else if (stype == TypeSignature::SHORT)
     {
-        return Env.GetStaticShortField(clz, fid);
+        return _V(Env.GetStaticShortField(clz, fid));
     }
     else if (stype == TypeSignature::INT)
     {
-        return Env.GetStaticIntField(clz, fid);
+        return _V(Env.GetStaticIntField(clz, fid));
     }
     else if (stype == TypeSignature::LONG)
     {
-        return Env.GetStaticLongField(clz, fid);
+        return _V(Env.GetStaticLongField(clz, fid));
     }
     else if (stype == TypeSignature::FLOAT)
     {
-        return Env.GetStaticFloatField(clz, fid);
+        return _V(Env.GetStaticFloatField(clz, fid));
     }
     else if (stype == TypeSignature::DOUBLE)
     {
-        return Env.GetStaticDoubleField(clz, fid);
+        return _V(Env.GetStaticDoubleField(clz, fid));
     }
     else if (stype == TypeSignature::STRING)
     {
-        return (jstring)Env.GetStaticObjectField(clz, fid);
-    }
-    else
-    {
-        return Env.GetStaticObjectField(clz, fid);
+        return _V((jstring)Env.GetStaticObjectField(clz, fid));
     }
 
-    return JVariant();
+    return _V(Env.GetStaticObjectField(clz, fid));
 }
 
-void JStaticField::operator()(JObject& obj, JVariant const& v)
+void JStaticField::operator()(JObject& obj, arg_type v)
 {
     AJNI_CHECKEXCEPTION;
 
@@ -119,11 +115,11 @@ void JStaticField::operator()(JObject& obj, JVariant const& v)
     }
     else
     {
-        Env.SetStaticObjectField(clz, fid, v.toObject());
+        Env.SetStaticObjectField(clz, fid, *v.toObject());
     }
 }
 
-JVariant JMemberField::operator()(JObject& obj) const
+return_type JMemberField::operator()(JObject& obj) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -133,50 +129,50 @@ JVariant JMemberField::operator()(JObject& obj) const
     if (!fid)
     {
         Logger::Error("没有找到成员变量 " + name + stype);
-        return JVariant();
+        return nullptr;
     }
 
     if (stype == TypeSignature::BOOLEAN)
     {
-        return Env.GetBooleanField(obj, fid);
+        return _V(Env.GetBooleanField(obj, fid));
     }
     else if (stype == TypeSignature::BYTE)
     {
-        return Env.GetByteField(obj, fid);
+        return _V(Env.GetByteField(obj, fid));
     }
     else if (stype == TypeSignature::CHAR)
     {
-        return Env.GetCharField(obj, fid);
+        return _V(Env.GetCharField(obj, fid));
     }
     else if (stype == TypeSignature::SHORT)
     {
-        return Env.GetShortField(obj, fid);
+        return _V(Env.GetShortField(obj, fid));
     }
     else if (stype == TypeSignature::INT)
     {
-        return Env.GetIntField(obj, fid);
+        return _V(Env.GetIntField(obj, fid));
     }
     else if (stype == TypeSignature::LONG)
     {
-        return Env.GetLongField(obj, fid);
+        return _V(Env.GetLongField(obj, fid));
     }
     else if (stype == TypeSignature::FLOAT)
     {
-        return Env.GetFloatField(obj, fid);
+        return _V(Env.GetFloatField(obj, fid));
     }
     else if (stype == TypeSignature::DOUBLE)
     {
-        return Env.GetDoubleField(obj, fid);
+        return _V(Env.GetDoubleField(obj, fid));
     }
     else if (stype == TypeSignature::STRING)
     {
-        return (jstring)Env.GetObjectField(obj, fid);
+        return _V((jstring)Env.GetObjectField(obj, fid));
     }
 
-    return Env.GetObjectField(obj, fid);
+    return _V(Env.GetObjectField(obj, fid));
 }
 
-void JMemberField::operator()(JObject& obj, JVariant const& v)
+void JMemberField::operator()(JObject& obj, arg_type v)
 {
     AJNI_CHECKEXCEPTION;
 
@@ -228,66 +224,66 @@ void JMemberField::operator()(JObject& obj, JVariant const& v)
     }
     else
     {
-        Env.SetObjectField(obj, fid, v.toObject());
+        Env.SetObjectField(obj, fid, *v.toObject());
     }
 }
 
-JVariant JConstructMethod::operator()() const
+return_type JConstructMethod::operator()() const
 {
     return invoke({});
 }
 
-JVariant JConstructMethod::operator()(JVariant const &v) const
+return_type JConstructMethod::operator()(arg_type v) const
 {
     return invoke({v});
 }
 
-JVariant JConstructMethod::operator()(JVariant const &v, JVariant const &v1) const
+return_type JConstructMethod::operator()(arg_type v, arg_type v1) const
 {
     return invoke({v, v1});
 }
 
-JVariant JConstructMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2) const
+return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2) const
 {
     return invoke({v, v1, v2});
 }
 
-JVariant JConstructMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3) const
+return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
     return invoke({v, v1, v2, v3});
 }
 
-JVariant JConstructMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3, JVariant const &v4) const
+return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
     return invoke({v, v1, v2, v3, v4});
 }
 
-JVariant JStaticMethod::operator()() const
+return_type JStaticMethod::operator()() const
 {
     return invoke({});
 }
 
-JVariant JStaticMethod::operator()(JVariant const &v) const
+return_type JStaticMethod::operator()(arg_type v) const
 {
     return invoke({v});
 }
 
-JVariant JStaticMethod::operator()(JVariant const &v, JVariant const &v1) const
+return_type JStaticMethod::operator()(arg_type v, arg_type v1) const
 {
     return invoke({v, v1});
 }
 
-JVariant JStaticMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2) const
+return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2) const
 {
     return invoke({v, v1, v2});
 }
 
-JVariant JStaticMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3) const
+return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
     return invoke({v, v1, v2, v3});
 }
 
-JVariant JStaticMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3, JVariant const &v4) const
+return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
     return invoke({v, v1, v2, v3, v4});
 }
@@ -316,37 +312,37 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
     return sig;
 }
 
-JVariant JMemberMethod::operator()(JObject& obj) const
+return_type JMemberMethod::operator()(JObject& obj) const
 {
     return invoke(obj, {});
 }
 
-JVariant JMemberMethod::operator()(JObject& obj, JVariant const &v) const
+return_type JMemberMethod::operator()(JObject& obj, arg_type v) const
 {
     return invoke(obj, {v});
 }
 
-JVariant JMemberMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1) const
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1) const
 {
     return invoke(obj, {v, v1});
 }
 
-JVariant JMemberMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1, JVariant const &v2) const
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2) const
 {
     return invoke(obj, {v, v1, v2});
 }
 
-JVariant JMemberMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3) const
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
     return invoke(obj, {v, v1, v2, v3});
 }
 
-JVariant JMemberMethod::operator()(JObject& obj, JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3, JVariant const &v4) const
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
     return invoke(obj, {v, v1, v2, v3, v4});
 }
 
-JVariant JConstructMethod::invoke(::std::vector<JVariant> const &args) const
+return_type JConstructMethod::invoke(::std::vector<JVariant> const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -358,13 +354,13 @@ JVariant JConstructMethod::invoke(::std::vector<JVariant> const &args) const
     if (!mid)
     {
         Logger::Error("没有找到构造函数 " + name + " " + sig);
-        return JVariant();
+        return nullptr;
     }
 
-    return Env.NewObject(clz, mid, jvals);
+    return _V(Env.NewObject(clz, mid, jvals));
 }
 
-JVariant JStaticMethod::invoke(::std::vector<JVariant> const &args) const
+return_type JStaticMethod::invoke(::std::vector<JVariant> const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -377,58 +373,55 @@ JVariant JStaticMethod::invoke(::std::vector<JVariant> const &args) const
     if (!mid)
     {
         Logger::Error("没有找到函数 " + name + sig);
-        return JVariant();
+        return nullptr;
     }
 
     if (sreturn == TypeSignature::BOOLEAN)
     {
-        return Env.CallStaticBooleanMethod(clz, mid, jvals);
+        return _V(Env.CallStaticBooleanMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::BYTE)
     {
-        return Env.CallStaticByteMethod(clz, mid, jvals);
+        return _V(Env.CallStaticByteMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::CHAR)
     {
-        return Env.CallStaticCharMethod(clz, mid, jvals);
+        return _V(Env.CallStaticCharMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::SHORT)
     {
-        return Env.CallStaticShortMethod(clz, mid, jvals);
+        return _V(Env.CallStaticShortMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::INT)
     {
-        return Env.CallStaticIntMethod(clz, mid, jvals);
+        return _V(Env.CallStaticIntMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::LONG)
     {
-        return Env.CallStaticLongMethod(clz, mid, jvals);
+        return _V(Env.CallStaticLongMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::FLOAT)
     {
-        return Env.CallStaticFloatMethod(clz, mid, jvals);
+        return _V(Env.CallStaticFloatMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::DOUBLE)
     {
-        return Env.CallStaticDoubleMethod(clz, mid, jvals);
+        return _V(Env.CallStaticDoubleMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::STRING)
     {
-        return (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+        return _V((jstring)Env.CallStaticObjectMethod(clz, mid, jvals));
     }
     else if (sreturn == TypeSignature::VOID)
     {
         Env.CallStaticVoidMethod(clz, mid, jvals);
-    }
-    else
-    {
-        return Env.CallStaticObjectMethod(clz, mid, jvals);
+        return nullptr;
     }
 
-    return JVariant();
+    return _V(Env.CallStaticObjectMethod(clz, mid, jvals));
 }
 
-JVariant JMemberMethod::invoke(JObject& obj, ::std::vector<JVariant> const &args) const
+return_type JMemberMethod::invoke(JObject& obj, ::std::vector<JVariant> const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -441,55 +434,52 @@ JVariant JMemberMethod::invoke(JObject& obj, ::std::vector<JVariant> const &args
     if (!mid)
     {
         Logger::Error("没有找到函数 " + name + sig);
-        return JVariant();
+        return nullptr;
     }
 
     if (sreturn == TypeSignature::BOOLEAN)
     {
-        return Env.CallBooleanMethod(obj, mid, jvals);
+        return _V(Env.CallBooleanMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::BYTE)
     {
-        return Env.CallByteMethod(obj, mid, jvals);
+        return _V(Env.CallByteMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::CHAR)
     {
-        return Env.CallCharMethod(obj, mid, jvals);
+        return _V(Env.CallCharMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::SHORT)
     {
-        return Env.CallShortMethod(obj, mid, jvals);
+        return _V(Env.CallShortMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::INT)
     {
-        return Env.CallIntMethod(obj, mid, jvals);
+        return _V(Env.CallIntMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::LONG)
     {
-        return Env.CallLongMethod(obj, mid, jvals);
+        return _V(Env.CallLongMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::FLOAT)
     {
-        return Env.CallFloatMethod(obj, mid, jvals);
+        return _V(Env.CallFloatMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::DOUBLE)
     {
-        return Env.CallDoubleMethod(obj, mid, jvals);
+        return _V(Env.CallDoubleMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::STRING)
     {
-        return (jstring)Env.CallObjectMethod(obj, mid, jvals);
+        return _V((jstring)Env.CallObjectMethod(obj, mid, jvals));
     }
     else if (sreturn == TypeSignature::VOID)
     {
         Env.CallVoidMethod(obj, mid, jvals);
-    }
-    else
-    {
-        return Env.CallObjectMethod(obj, mid, jvals);
+        return nullptr;
     }
 
-    return JVariant();
+    return _V(Env.CallObjectMethod(obj, mid, jvals));
 }
 
 JClass::JClass(JClassPath const&path)

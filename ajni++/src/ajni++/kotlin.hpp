@@ -11,16 +11,16 @@ public:
 
     JClass(JClassPath const& cp);
 
-    virtual jclass clazz$() const;
+    jclass clazz$() const;
 
     inline JObject const& object$() const {
-        return _object$;
+        return *_object$;
     }
 
 protected:
 
-    JObject _object$;
-    JObject _clazz$;
+    shared_ptr<JObject> _object$;
+    shared_ptr<JObject> _clazz$;
     JClassPath _classpath$;
 };
 
@@ -32,7 +32,7 @@ public:
     : ::AJNI_NS::JStaticMethod(clz)
     {}
 
-    virtual JVariant invoke(::std::vector<JVariant> const &) const;
+    virtual return_type invoke(::std::vector<JVariant> const &) const;
 };
 
 class JGlobalField
@@ -48,7 +48,7 @@ public:
     JTypeSignature stype;
 
     // get
-    JVariant operator()() const;
+    return_type operator()() const;
 
     // set
     void operator()(JVariant const&);
@@ -65,13 +65,13 @@ public:
     // 此处的classpath其实是文件名路径
     JGlobalMethod(JClassPath const&);
 
-    JVariant operator()() const;
-    JVariant operator()(JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    JVariant operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    virtual JVariant invoke(::std::vector<JVariant> const &) const;
+    return_type operator()() const;
+    return_type operator()(JVariant const &) const;
+    return_type operator()(JVariant const &, JVariant const &) const;
+    return_type operator()(JVariant const &, JVariant const &, JVariant const &) const;
+    return_type operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    return_type operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    virtual return_type invoke(::std::vector<JVariant> const &) const;
 
     // 函数名
     string name;

@@ -8,6 +8,8 @@
 
 AJNI_BEGIN
 
+class JVariant;
+
 class JObject {
 public:
     // 自动引用计数
@@ -27,6 +29,9 @@ public:
 
     // 作为程序返回值输出
     jobject asReturn() const;
+
+    // 转换成具体的Variant类型，和Variant(JObject)不同，转换会读取具体对象内部信息，返回C++数据构成的Variant对象
+    shared_ptr<JVariant> toVariant() const;
 
 private:
     jobject _obj;
@@ -49,6 +54,8 @@ public:
 
     // 作为程序返回值输出
     jobject asReturn() const;
+
+    shared_ptr<JVariant> toVariant() const;
 
     JGlobalObject &operator=(JGlobalObject const &);
 
@@ -211,12 +218,12 @@ public:
         return _var;
     }
 
-    inline JObject toObject() const {
-        return _var.toObject();
+    inline shared_ptr<JObject> toObject() const {
+        return make_shared<JObject>(_var.toObject());
     }
 
-    inline operator JObject () const {
-        return toObject();
+    inline operator shared_ptr<JObject> () const {
+        return make_shared<JObject>(_var.toObject());
     }
 
     inline shared_ptr<function_type> toFunction() const {
@@ -232,6 +239,11 @@ private:
     shared_ptr<function_type> _fun;
 
 };
+
+template <typename T>
+inline shared_ptr<JVariant> _V(T const& v) {
+    return make_shared<JVariant>(v);
+}
 
 extern void grab(jobject);
 extern bool drop(jobject);

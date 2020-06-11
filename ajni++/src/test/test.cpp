@@ -74,7 +74,15 @@ const JClassPath Test::CLASSPATH = "com/nnt/ajnixx/Test";
 
 void Test0(::std::ostringstream& oss)
 {
-    auto cls = Env.context().register_class<Test>();
+    shared_ptr<JClass> cls;
+    cls = make_shared<JClass>("java/lang/Integer");
+    if (!cls) {
+        oss << "没有找到 Int 类对象" << endl;
+    } else {
+        oss << "找到 Int 类对象" << endl;
+    }
+
+    cls = Env.context().register_class<Test>();
     if (!cls) {
         oss << "没找到 Test 类" << endl;
         return;
@@ -83,14 +91,14 @@ void Test0(::std::ostringstream& oss)
     }
 
     // 实例化对象
-    JEntry<Test> obj(cls->construct());
+    JEntry<Test> obj(*cls->construct());
     oss << obj->test0(obj) << endl;
     oss << obj->ftest0(obj) << endl;
     oss << obj->Test0() << endl;
     oss << obj->fTest0() << endl;
 
     // 获得数据对象
-    JEntry<Info> obj_info(obj->finfo(obj));
+    JEntry<Info> obj_info(*obj->finfo(obj));
     oss << obj_info->fabc(obj_info) << endl;
     oss << obj_info->fcde(obj_info) << endl;
     oss << obj_info->fnul(obj_info) << endl;
@@ -108,7 +116,7 @@ void Test0(::std::ostringstream& oss)
     kotlin::JGlobalMethod mth(Test::CLASSPATH);
     mth.name = "GetInfo";
     mth.sreturn = Info::CLASSPATH;
-    JEntry<Info> gobj_info(mth());
+    JEntry<Info> gobj_info(*mth());
     oss << gobj_info->fabc(gobj_info) << endl;
 
     kotlin::JGlobalField mtf(Test::CLASSPATH);

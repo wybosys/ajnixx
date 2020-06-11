@@ -126,6 +126,7 @@ public:
 
     jclass FindClass(string const&);
     bool IsAssignableFrom(jclass, jclass);
+    bool IsInstanceOf(jobject, jclass);
 
     jfieldID GetStaticFieldID(jclass, string const& name, string const& typ);
     jobject GetStaticObjectField(jclass, jfieldID);
@@ -233,6 +234,7 @@ namespace TypeSignature
     extern const JTypeSignature FLOAT;
     extern const JTypeSignature DOUBLE;
     extern const JTypeSignature VOID;
+    extern const JTypeSignature BYTEARRAY;
 } // namespace TypeSignature
 
 class ExceptionGuard

@@ -20,9 +20,45 @@ public:
     Throwable(JClassPath const& = CLASSPATH);
 };
 
+class Number : public Object
+{
+public:
+    static JClassPath const CLASSPATH;
+
+    Number(JClassPath const& = CLASSPATH);
+    JMemberField longValue;
+};
+
+class Float : public Number
+{
+public:
+    static JClassPath const CLASSPATH;
+
+    Float(JClassPath const& = CLASSPATH);
+    JMemberField floatValue;
+};
+
+class Double : public Number
+{
+public:
+    static JClassPath const CLASSPATH;
+
+    Double(JClassPath const& = CLASSPATH);
+    JMemberField doubleValue;
+};
+
+class String : public Object
+{
+public:
+    static JClassPath const CLASSPATH;
+
+    String(JClassPath const& = CLASSPATH);
+    JMemberField getBytes;
+};
+
 namespace TypeSignature
 {
-    extern const JClassPath CALLBACK;
+    extern const JTypeSignature CALLBACK;
 }
 
 class Callback : public Object
