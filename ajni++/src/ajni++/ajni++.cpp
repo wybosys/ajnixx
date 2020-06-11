@@ -60,6 +60,11 @@ return_type JStaticField::operator()() const
     {
         return _V((jstring)Env.GetStaticObjectField(clz, fid));
     }
+    else if (stype == TypeSignature::BYTEARRAY)
+    {
+        JArray arr((jarray)Env.GetStaticObjectField(clz, fid));
+        return _V(arr.toString());
+    }
 
     return _V(Env.GetStaticObjectField(clz, fid));
 }
@@ -113,8 +118,7 @@ void JStaticField::operator()(JObject& obj, arg_type v)
     {
         Env.SetStaticObjectField(clz, fid, JValue(v));
     }
-    else
-    {
+    else {
         Env.SetStaticObjectField(clz, fid, *v.toObject());
     }
 }
@@ -167,6 +171,11 @@ return_type JMemberField::operator()(JObject& obj) const
     else if (stype == TypeSignature::STRING)
     {
         return _V((jstring)Env.GetObjectField(obj, fid));
+    }
+    else if (stype == TypeSignature::BYTEARRAY)
+    {
+        JArray arr((jarray)Env.GetObjectField(obj, fid));
+        return _V(arr.toString());
     }
 
     return _V(Env.GetObjectField(obj, fid));
@@ -258,6 +267,26 @@ return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, a
     return invoke({v, v1, v2, v3, v4});
 }
 
+return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
+{
+    return invoke({v, v1, v2, v3, v4, v5});
+}
+
+return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6});
+}
+
+return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6, v7});
+}
+
+return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6, v7, v8});
+}
+
 return_type JStaticMethod::operator()() const
 {
     return invoke({});
@@ -286,6 +315,26 @@ return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
     return invoke({v, v1, v2, v3, v4});
+}
+
+return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
+{
+    return invoke({v, v1, v2, v3, v4, v5});
+}
+
+return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6});
+}
+
+return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6, v7});
+}
+
+return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6, v7, v8});
 }
 
 string JMethod::signature(args_type const &args, args_signatures_type const &predefs) const
@@ -340,6 +389,26 @@ return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
     return invoke(obj, {v, v1, v2, v3, v4});
+}
+
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
+{
+    return invoke(obj, {v, v1, v2, v3, v4, v5});
+}
+
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
+{
+    return invoke(obj, {v, v1, v2, v3, v4, v5, v6});
+}
+
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
+{
+    return invoke(obj, {v, v1, v2, v3, v4, v5, v6, v7});
+}
+
+return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
+{
+    return invoke(obj, {v, v1, v2, v3, v4, v5, v6, v7, v8});
 }
 
 return_type JConstructMethod::invoke(::std::vector<JVariant> const &args) const
@@ -411,6 +480,11 @@ return_type JStaticMethod::invoke(::std::vector<JVariant> const &args) const
     else if (sreturn == TypeSignature::STRING)
     {
         return _V((jstring)Env.CallStaticObjectMethod(clz, mid, jvals));
+    }
+    else if (sreturn == TypeSignature::BYTEARRAY)
+    {
+        JArray arr((jarray)Env.CallStaticObjectMethod(clz, mid, jvals));
+        return _V(arr.toString());
     }
     else if (sreturn == TypeSignature::VOID)
     {

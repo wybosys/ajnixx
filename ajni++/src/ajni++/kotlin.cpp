@@ -192,29 +192,49 @@ return_type JGlobalMethod::operator()() const
     return invoke({});
 }
 
-return_type JGlobalMethod::operator()(JVariant const &v) const
+return_type JGlobalMethod::operator()(arg_type v) const
 {
     return invoke({v});
 }
 
-return_type JGlobalMethod::operator()(JVariant const &v, JVariant const &v1) const
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1) const
 {
     return invoke({v, v1});
 }
 
-return_type JGlobalMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2) const
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2) const
 {
     return invoke({v, v1, v2});
 }
 
-return_type JGlobalMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3) const
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
     return invoke({v, v1, v2, v3});
 }
 
-return_type JGlobalMethod::operator()(JVariant const &v, JVariant const &v1, JVariant const &v2, JVariant const &v3, JVariant const &v4) const
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
     return invoke({v, v1, v2, v3, v4});
+}
+
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
+{
+    return invoke({v, v1, v2, v3, v4, v5});
+}
+
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6});
+}
+
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6, v7});
+}
+
+return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
+{
+    return invoke({v, v1, v2, v3, v4, v5, v6, v7, v8});
 }
 
 return_type JGlobalMethod::invoke(::std::vector<JVariant> const &args) const

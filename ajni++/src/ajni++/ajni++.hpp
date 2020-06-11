@@ -103,6 +103,11 @@ public:
     return_type operator()(arg_type, arg_type, arg_type) const;
     return_type operator()(arg_type, arg_type, arg_type, arg_type) const;
     return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+
     virtual return_type invoke(::std::vector<JVariant> const &) const;
 };
 
@@ -118,6 +123,11 @@ public:
     return_type operator()(JObject&, arg_type, arg_type, arg_type) const;
     return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type) const;
     return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+
     virtual return_type invoke(JObject&, ::std::vector<JVariant> const &) const;
 };
 
@@ -133,6 +143,13 @@ public:
     return_type operator()(arg_type, arg_type, arg_type) const;
     return_type operator()(arg_type, arg_type, arg_type, arg_type) const;
     return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+
+
     virtual return_type invoke(::std::vector<JVariant> const &) const;
 
 };

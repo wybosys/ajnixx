@@ -66,11 +66,16 @@ public:
     JGlobalMethod(JClassPath const&);
 
     return_type operator()() const;
-    return_type operator()(JVariant const &) const;
-    return_type operator()(JVariant const &, JVariant const &) const;
-    return_type operator()(JVariant const &, JVariant const &, JVariant const &) const;
-    return_type operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
-    return_type operator()(JVariant const &, JVariant const &, JVariant const &, JVariant const &, JVariant const &) const;
+    return_type operator()(arg_type) const;
+    return_type operator()(arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+
     virtual return_type invoke(::std::vector<JVariant> const &) const;
 
     // 函数名
