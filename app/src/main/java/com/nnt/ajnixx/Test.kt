@@ -22,7 +22,9 @@ class Test {
     }
 
     fun info_async(cb:Callback) {
+        cb.grab()
         cb(123, "abc")
+        cb.drop()
     }
 
     companion object {

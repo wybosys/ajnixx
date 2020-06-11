@@ -281,7 +281,7 @@ JValue::~JValue()
 JValues::JValues(args_type const& vars)
 {
     for (auto &e:vars) {
-        auto t = make_shared<JValue>(e);
+        auto t = make_shared<JValue>(*e);
         _vals.emplace_back(t);
         _jvals.emplace_back(*t);
     }

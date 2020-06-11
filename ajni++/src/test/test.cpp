@@ -107,7 +107,9 @@ void Test0(::std::ostringstream& oss)
 
     // 测试异步
     obj->finfoasync(obj, (JVariant)[&](arg_type v0, arg_type v1)->return_type {
-        cout << "收到异步回调数据 " << v0 << " " << v1 << endl;
+        ostringstream oss;
+        oss << "收到异步回调数据 " << v0 << " " << v1;
+        Logger::Info(oss.str());
         return nullptr;
     });
 
