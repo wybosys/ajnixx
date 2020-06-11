@@ -9,6 +9,7 @@
 AJNI_BEGIN
 
 class JVariant;
+typedef ::std::vector<JVariant const*> args_type;
 
 class JObject {
 public:
@@ -131,7 +132,7 @@ class JValues {
 public:
 
     JValues() = default;
-    JValues(::std::vector<JVariant> const &);
+    JValues(args_type const &);
 
     typedef shared_ptr <JValue> value_type;
 

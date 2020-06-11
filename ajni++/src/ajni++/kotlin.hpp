@@ -32,7 +32,7 @@ public:
     : ::AJNI_NS::JStaticMethod(clz)
     {}
 
-    virtual return_type invoke(::std::vector<JVariant> const &) const;
+    virtual return_type invoke(args_type const &) const;
 };
 
 class JGlobalField
@@ -76,7 +76,7 @@ public:
     return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
     return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
 
-    virtual return_type invoke(::std::vector<JVariant> const &) const;
+    virtual return_type invoke(args_type const&) const;
 
     // 函数名
     string name;

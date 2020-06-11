@@ -244,47 +244,47 @@ return_type JConstructMethod::operator()() const
 
 return_type JConstructMethod::operator()(arg_type v) const
 {
-    return invoke({v});
+    return invoke({&v});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1) const
 {
-    return invoke({v, v1});
+    return invoke({&v, &v1});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2) const
 {
-    return invoke({v, v1, v2});
+    return invoke({&v, &v1, &v2});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
-    return invoke({v, v1, v2, v3});
+    return invoke({&v, &v1, &v2, &v3});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
-    return invoke({v, v1, v2, v3, v4});
+    return invoke({&v, &v1, &v2, &v3, &v4});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
 {
-    return invoke({v, v1, v2, v3, v4, v5});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6, v7});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
 return_type JConstructMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6, v7, v8});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
 
 return_type JStaticMethod::operator()() const
@@ -294,47 +294,47 @@ return_type JStaticMethod::operator()() const
 
 return_type JStaticMethod::operator()(arg_type v) const
 {
-    return invoke({v});
+    return invoke({&v});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1) const
 {
-    return invoke({v, v1});
+    return invoke({&v, &v1});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2) const
 {
-    return invoke({v, v1, v2});
+    return invoke({&v, &v1, &v2});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
-    return invoke({v, v1, v2, v3});
+    return invoke({&v, &v1, &v2, &v3});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
-    return invoke({v, v1, v2, v3, v4});
+    return invoke({&v, &v1, &v2, &v3, &v4});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
 {
-    return invoke({v, v1, v2, v3, v4, v5});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6, v7});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
 return_type JStaticMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6, v7, v8});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
 
 string JMethod::signature(args_type const &args, args_signatures_type const &predefs) const
@@ -354,7 +354,7 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
     ::std::vector<string> ps;
     for (auto &e : args)
     {
-        ps.emplace_back(e.signature());
+        ps.emplace_back(e->signature());
     }
 
     string sig = "(" + implode(ps, "") + ")" + sreturn;
@@ -368,50 +368,50 @@ return_type JMemberMethod::operator()(JObject& obj) const
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v) const
 {
-    return invoke(obj, {v});
+    return invoke(obj, {&v});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1) const
 {
-    return invoke(obj, {v, v1});
+    return invoke(obj, {&v, &v1});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2) const
 {
-    return invoke(obj, {v, v1, v2});
+    return invoke(obj, {&v, &v1, &v2});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
-    return invoke(obj, {v, v1, v2, v3});
+    return invoke(obj, {&v, &v1, &v2, &v3});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
-    return invoke(obj, {v, v1, v2, v3, v4});
+    return invoke(obj, {&v, &v1, &v2, &v3, &v4});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
 {
-    return invoke(obj, {v, v1, v2, v3, v4, v5});
+    return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
 {
-    return invoke(obj, {v, v1, v2, v3, v4, v5, v6});
+    return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
 {
-    return invoke(obj, {v, v1, v2, v3, v4, v5, v6, v7});
+    return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
 return_type JMemberMethod::operator()(JObject& obj, arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
 {
-    return invoke(obj, {v, v1, v2, v3, v4, v5, v6, v7, v8});
+    return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
 
-return_type JConstructMethod::invoke(::std::vector<JVariant> const &args) const
+return_type JConstructMethod::invoke(args_type const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -429,7 +429,7 @@ return_type JConstructMethod::invoke(::std::vector<JVariant> const &args) const
     return _V(Env.NewObject(clz, mid, jvals));
 }
 
-return_type JStaticMethod::invoke(::std::vector<JVariant> const &args) const
+return_type JStaticMethod::invoke(args_type const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -495,7 +495,7 @@ return_type JStaticMethod::invoke(::std::vector<JVariant> const &args) const
     return _V(Env.CallStaticObjectMethod(clz, mid, jvals));
 }
 
-return_type JMemberMethod::invoke(JObject& obj, ::std::vector<JVariant> const &args) const
+return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
 {
     AJNI_CHECKEXCEPTION;
 

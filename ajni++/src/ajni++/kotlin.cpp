@@ -34,7 +34,7 @@ jclass JClass::clazz$() const
     return _clazz$ ? (jclass)(jobject)*_clazz$ : (jclass)(jobject)_clazz;
 }
 
-return_type JStaticMethod::invoke(::std::vector<JVariant> const &args) const
+return_type JStaticMethod::invoke(args_type const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -169,8 +169,8 @@ void JGlobalField::operator()(JVariant const& v)
 
     auto clz = _clazz.clazz();
     auto setname = "set" + capitalize(name);
-    string sig = JMethod::Signature({v}, TypeSignature::VOID, {});
-    JValues jvals({v});
+    string sig = JMethod::Signature({&v}, TypeSignature::VOID, {});
+    JValues jvals({&v});
 
     auto mid = Env.GetStaticMethodID(clz, setname.c_str(), sig.c_str());
     if (!mid)
@@ -194,50 +194,50 @@ return_type JGlobalMethod::operator()() const
 
 return_type JGlobalMethod::operator()(arg_type v) const
 {
-    return invoke({v});
+    return invoke({&v});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1) const
 {
-    return invoke({v, v1});
+    return invoke({&v, &v1});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2) const
 {
-    return invoke({v, v1, v2});
+    return invoke({&v, &v1, &v2});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3) const
 {
-    return invoke({v, v1, v2, v3});
+    return invoke({&v, &v1, &v2, &v3});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const
 {
-    return invoke({v, v1, v2, v3, v4});
+    return invoke({&v, &v1, &v2, &v3, &v4});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const
 {
-    return invoke({v, v1, v2, v3, v4, v5});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6, v7});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
 return_type JGlobalMethod::operator()(arg_type v, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const
 {
-    return invoke({v, v1, v2, v3, v4, v5, v6, v7, v8});
+    return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
 
-return_type JGlobalMethod::invoke(::std::vector<JVariant> const &args) const
+return_type JGlobalMethod::invoke(args_type const &args) const
 {
     AJNI_CHECKEXCEPTION;
 

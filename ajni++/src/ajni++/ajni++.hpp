@@ -76,8 +76,6 @@ public:
     typedef ::std::vector<JTypeSignature> args_signatures_type;
     args_signatures_type sargs;
 
-    typedef ::std::vector<JVariant> args_type;
-
     // 生成函数标记
     string signature(args_type const &, args_signatures_type const & = {}) const;
 
@@ -108,7 +106,7 @@ public:
     return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
     return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
 
-    virtual return_type invoke(::std::vector<JVariant> const &) const;
+    virtual return_type invoke(args_type const&) const;
 };
 
 class JMemberMethod : public JMethod
@@ -128,7 +126,7 @@ public:
     return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
     return_type operator()(JObject&, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
 
-    virtual return_type invoke(JObject&, ::std::vector<JVariant> const &) const;
+    virtual return_type invoke(JObject&, args_type const &) const;
 };
 
 class JStaticMethod : public JMethod
@@ -150,7 +148,7 @@ public:
     return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
 
 
-    virtual return_type invoke(::std::vector<JVariant> const &) const;
+    virtual return_type invoke(args_type const &) const;
 
 };
 

@@ -190,10 +190,14 @@ string JArray::toString() const
 }
 
 JValue::JValue(JValue const& r)
-: _val(r._val), _free(r._free)
+: _val(r._val), _free(r._free), _fnidx(r._fnidx)
 {
     if (_free && _val.l) {
         _val.l = Env.NewLocalRef(_val.l);
+    }
+
+    if (_fnidx) {
+        Env.context().function_grab(_fnidx);
     }
 }
 
@@ -274,7 +278,7 @@ JValue::~JValue()
     }
 }
 
-JValues::JValues(::std::vector<JVariant> const& vars)
+JValues::JValues(args_type const& vars)
 {
     for (auto &e:vars) {
         auto t = make_shared<JValue>(e);

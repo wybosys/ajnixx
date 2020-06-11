@@ -36,6 +36,7 @@ AJNI_API(void) AJNI_FUNC(Callback, jni_1invoke1)(JNIEnv *env, jobject thiz, jlon
 
 AJNI_API(void) AJNI_FUNC(Callback, jni_1invoke2)(JNIEnv *env, jobject thiz, jlong fnidx, jobject v0,
                                                  jobject v1) {
+    return;
     _AJNI_CALLBACK_IMPL_BEGIN
     (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant());
     _AJNI_CALLBACK_IMPL_END
