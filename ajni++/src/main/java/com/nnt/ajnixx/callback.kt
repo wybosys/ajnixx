@@ -26,4 +26,7 @@ class Callback
     {
 
     }
+
+    // 对应的计数函数
+    var id: Long = 0
 }

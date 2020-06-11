@@ -1,5 +1,7 @@
 #include "core.hpp"
+#include "ajni++.hpp"
 #include "variant.hpp"
+#include "jre.hpp"
 #include <sstream>
 #include <cmath>
 
@@ -48,6 +50,11 @@ JObject &JObject::operator=(JObject const &r)
     return *this;
 }
 
+jobject JObject::asReturn() const
+{
+    return Env.NewLocalRef(_obj);
+}
+
 JGlobalObject::JGlobalObject(jobject obj)
     : _obj(obj)
 {
@@ -84,6 +91,11 @@ JGlobalObject &JGlobalObject::operator=(JGlobalObject const &r) {
     }
 
     return *this;
+}
+
+jobject JGlobalObject::asReturn() const
+{
+    return Env.NewLocalRef(_obj);
 }
 
 JString::JString(jstring v)
@@ -169,6 +181,15 @@ JValue::JValue(JVariant const& var)
         } break;
         case VT::NIL:
             break;
+        case VT::FUNCTION: {
+            auto cls = Env.context().register_class<jre::Callback>();
+            JEntry<jre::Callback> cb(cls->construct());
+            // 将当前的函数保存到全局监听，执行结束后进行释放
+            _fnidx = Env.context().add(var.toFunction());
+            cb->id(cb, (jlong)_fnidx);
+            _val.l = cb.asReturn();
+            _free = true;
+        } break;
         default:
             Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int)comvar.vt));
             break;
@@ -180,6 +201,11 @@ JValue::~JValue()
     if (_free && _val.l) {
         Env.DeleteLocalRef(_val.l);
         _val.l = nullptr;
+    }
+
+    if (_fnidx) {
+        Env.context().function_drop(_fnidx);
+        _fnidx = 0;
     }
 }
 
@@ -258,52 +284,52 @@ JVariant::JVariant(string const &v)
 }
 
 JVariant::JVariant(function_type::fun0_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun1_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun2_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun3_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun4_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun5_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun6_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun7_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun8_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun9_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn))
+        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
@@ -370,10 +396,15 @@ bool JVariant::toBool() const
     return toNumber() != 0;
 }
 
-JTypeSignature JVariant::FromVT(variant_type::VT vt)
-{
-    switch (vt)
+JTypeSignature JVariant::signature() const {
+    // 函数类型
+    if (vt == VT::FUNCTION)
     {
+        return jre::TypeSignature::CALLBACK;
+    }
+
+    // 普通pod数据类型
+    switch (_var.vt) {
         case variant_type::VT::BOOLEAN:
             return TypeSignature::BOOLEAN;
         case variant_type::VT::INT:
@@ -396,19 +427,13 @@ JTypeSignature JVariant::FromVT(variant_type::VT vt)
             return TypeSignature::CHAR;
         case variant_type::VT::STRING:
             return TypeSignature::STRING;
-        case variant_type::VT::OBJECT:
-            return TypeSignature::OBJECT;
         case variant_type::VT::NIL:
             return TypeSignature::VOID;
-        case variant_type::VT::FUNCTION:
-        case variant_type::VT::POINTER:
-        case variant_type::VT::BYTES:
-            return TypeSignature::OBJECT;
+        default:
+            break;
     }
-}
 
-JTypeSignature JVariant::signature() const {
-    return FromVT(_var.vt);
+    return TypeSignature::OBJECT;
 }
 
 void grab(jobject obj)

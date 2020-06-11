@@ -1,11 +1,15 @@
 #include "core.hpp"
 #include "ajni++.hpp"
 #include "jre.hpp"
+#include "variant.hpp"
+#include <atomic>
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
 
 AJNI_BEGIN
+
+USE_CROSS
 
 JVariant JStaticField::operator()() const
 {
@@ -168,12 +172,8 @@ JVariant JMemberField::operator()(JObject& obj) const
     {
         return (jstring)Env.GetObjectField(obj, fid);
     }
-    else
-    {
-        return Env.GetObjectField(obj, fid);
-    }
 
-    return JVariant();
+    return Env.GetObjectField(obj, fid);
 }
 
 void JMemberField::operator()(JObject& obj, JVariant const& v)
@@ -302,7 +302,7 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
     if (predefs.size())
     {
         ::std::vector<string> tss(predefs.begin(), predefs.end());
-        string sig = "(" + CROSS_NS::implode(tss, "") + ")" + sreturn;
+        string sig = "(" + implode(tss, "") + ")" + sreturn;
         return sig;
     }
 
@@ -312,7 +312,7 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
         ps.emplace_back(e.signature());
     }
 
-    string sig = "(" + CROSS_NS::implode(ps, "") + ")" + sreturn;
+    string sig = "(" + implode(ps, "") + ")" + sreturn;
     return sig;
 }
 
@@ -514,8 +514,32 @@ class JContextPrivate
 {
 public:
 
+    JContextPrivate()
+    : index_functions(0)
+    {}
+
     typedef ::std::map<JClassPath, JContext::class_type> classes_type;
     classes_type classes;
+
+    class FunctionType {
+    public:
+
+        typedef shared_ptr<JVariant::function_type> function_type;
+
+        FunctionType(function_type _fn)
+        : fn(_fn), referencedCount(1)
+        {}
+
+        function_type fn;
+        ::std::atomic<size_t> referencedCount;
+    };
+
+    typedef shared_ptr<FunctionType> function_type;
+    typedef ::std::map<size_t, function_type> functions_type;
+    functions_type functions;
+
+    ::std::atomic<size_t> index_functions;
+    ::std::mutex mtx_functions;
 };
 
 JContext::JContext()
@@ -545,6 +569,42 @@ JContext::class_type JContext::find_class(JClassPath const& ph) const
 void JContext::clear()
 {
     d_ptr->classes.clear();
+    d_ptr->functions.clear();
+    d_ptr->index_functions = 0;
+}
+
+size_t JContext::add(shared_ptr<function_type> const& fn)
+{
+    size_t idx = ++d_ptr->index_functions;
+    NNT_AUTOGUARD(d_ptr->mtx_functions);
+    d_ptr->functions[idx] = make_shared<private_class_type::FunctionType>(fn);
+    return idx;
+}
+
+void JContext::function_grad(function_index_type fnid)
+{
+    NNT_AUTOGUARD(d_ptr->mtx_functions);
+    auto fnd = d_ptr->functions.find(fnid);
+    if (fnd != d_ptr->functions.end()) {
+        ++fnd->second->referencedCount;
+    } else {
+        Logger::Error("没有找到函数索引 " + tostr((int)fnid));
+    }
+}
+
+bool JContext::function_drop(function_index_type fnid)
+{
+    NNT_AUTOGUARD(d_ptr->mtx_functions);
+    auto fnd = d_ptr->functions.find(fnid);
+    if (fnd != d_ptr->functions.end()) {
+        if (--fnd->second->referencedCount == 0) {
+            d_ptr->functions.erase(fnd);
+            return true;
+        }
+    } else {
+        Logger::Error("没有找到函数索引 " + tostr((int)fnid));
+    }
+    return false;
 }
 
 AJNI_END

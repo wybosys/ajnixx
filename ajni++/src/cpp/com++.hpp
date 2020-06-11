@@ -51,9 +51,7 @@ template<typename Types = VariantTypes<> >
 class Variant {
 public:
 
-    typedef ::std::function<Variant(::std::initializer_list<Variant> const &)>
-    func_type;
-
+    typedef void (*func_type)();
     typedef typename Types::object_type object_type;
     typedef typename Types::bytes_type bytes_type;
     typedef typename Types::string_type string_type;
@@ -120,7 +118,7 @@ public:
 
     Variant(char const *);
 
-    Variant(func_type const &);
+    Variant(func_type);
 
     Variant(Variant const &);
 
@@ -164,7 +162,7 @@ public:
 
     ::std::string const &toString() const;
 
-    func_type const &toFunction() const;
+    func_type toFunction() const;
 
     Variant &operator=(Variant const &);
 
@@ -185,11 +183,11 @@ private:
         char c;
         unsigned char uc;
         bool b;
+        func_type fn;
     } _pod;
 
     ::std::shared_ptr<bytes_type> _bytes;
     ::std::shared_ptr<string_type> _str;
-    ::std::shared_ptr<func_type> _func;
 };
 
 template <typename V>
@@ -388,14 +386,13 @@ template<typename Types>
 inline Variant<Types>::Variant(char const *v) : vt(VT::STRING) { _str = ::std::make_shared<string_type>(v); }
 
 template<typename Types>
-inline Variant<Types>::Variant(func_type const &v) : vt(VT::FUNCTION) { _func = ::std::make_shared<func_type>(v); }
+inline Variant<Types>::Variant(func_type v) : vt(VT::FUNCTION) { _pod.fn = v; }
 
 template<typename Types>
 inline Variant<Types>::Variant(Variant const &r) : vt(r.vt) {
     _pod = r._pod;
     _bytes = r._bytes;
     _str = r._str;
-    _func = r._func;
     if (r.vt == VT::OBJECT && _pod.o) {
         grab(_pod.o);
     }
@@ -406,7 +403,6 @@ inline Variant<Types>::Variant(::std::shared_ptr<Variant> const &r) : vt(r->vt) 
     _pod = r->_pod;
     _bytes = r->_bytes;
     _str = r->_str;
-    _func = r->_func;
     if (r->vt == VT::OBJECT && _pod.o) {
         grab(_pod.o);
     }
@@ -535,14 +531,13 @@ template<typename Types>
 inline ::std::string const &Variant<Types>::toString() const { return *_str; }
 
 template<typename Types>
-inline typename Variant<Types>::func_type const &Variant<Types>::toFunction() const { return *_func; }
+inline typename Variant<Types>::func_type Variant<Types>::toFunction() const { return _pod.fn; }
 
 template<typename Types>
 inline Variant<Types> &Variant<Types>::operator=(Variant const &r) {
     if (this != &r) {
         _bytes = r._bytes;
         _str = r._str;
-        _func = r._func;
 
         object_type *old = nullptr;
         if (vt == VT::OBJECT && _pod.o) {

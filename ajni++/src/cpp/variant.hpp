@@ -2,6 +2,7 @@
 #define __AJNI_VARIANT_H_INCLUDED
 
 #include "com++.hpp"
+#include "ajni++.hpp"
 #include <vector>
 #include <functional>
 
@@ -24,6 +25,9 @@ public:
 
     JObject &operator=(JObject const &);
 
+    // 作为程序返回值输出
+    jobject asReturn() const;
+
 private:
     jobject _obj;
 };
@@ -42,6 +46,9 @@ public:
     inline operator jobject () const {
         return _obj;
     }
+
+    // 作为程序返回值输出
+    jobject asReturn() const;
 
     JGlobalObject &operator=(JGlobalObject const &);
 
@@ -92,6 +99,7 @@ public:
 private:
     jvalue _val = {0};
     bool _free = false;
+    size_t _fnidx = 0;
 };
 
 class JValues {
@@ -211,14 +219,16 @@ public:
         return toObject();
     }
 
-    static JTypeSignature FromVT(variant_type::VT);
+    inline shared_ptr<function_type> toFunction() const {
+        return _fun;
+    }
 
     // 获得签名
     JTypeSignature signature() const;
 
 private:
 
-    variant_type const _var;
+    variant_type _var;
     shared_ptr<function_type> _fun;
 
 };

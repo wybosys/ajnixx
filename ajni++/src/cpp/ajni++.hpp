@@ -196,6 +196,19 @@ public:
         return add(r) ? r : nullptr;
     }
 
+    typedef typename JVariant::function_type function_type;
+    typedef size_t function_index_type;
+
+    // 保存函数返回索引
+    function_index_type add(shared_ptr<function_type> const&);
+
+    // 增加函数计数
+    void function_grad(function_index_type);
+
+    // 减少函数技术，释放返回true，否则返回false
+    bool function_drop(function_index_type);
+
+    // 清空
     void clear();
 };
 
@@ -223,6 +236,10 @@ public:
 
     inline operator JObject& () {
         return _obj;
+    }
+
+    inline jobject asReturn() const {
+        return _obj.asReturn();
     }
 
 private:
