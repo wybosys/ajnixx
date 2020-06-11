@@ -2,7 +2,8 @@
 #include <kotlin.hpp>
 #include <sstream>
 
-USE_AJNI;
+USE_AJNI
+USE_STL
 
 AJNI_IMP_LOADED({})
 AJNI_IMP_UNLOADED({})
@@ -97,11 +98,10 @@ void Test0(::std::ostringstream& oss)
     oss << obj_info->fabc(obj_info) << endl;
 
     // 测试异步
-    /*
     obj->finfoasync(obj, (JVariant)[&](JVariant const& v0, JVariant const& v1)->JVariant {
+        cout << "收到异步回调数据 " << v0 << " " << v1 << endl;
         return JVariant();
     });
-     */
 
     // 获得全局函数
     oss << "全局" << endl;
@@ -121,7 +121,7 @@ void Test0(::std::ostringstream& oss)
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)
 {
-    ::std::ostringstream oss;
+    ostringstream oss;
     Test0(oss);
     return JString(oss.str()).asReturn();
 }
