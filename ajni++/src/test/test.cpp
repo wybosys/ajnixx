@@ -1,5 +1,5 @@
-#include <ajni++.hpp>
-#include <kotlin.hpp>
+#include <ajni++/ajni++.hpp>
+#include <ajni++/kotlin.hpp>
 #include <sstream>
 
 USE_AJNI

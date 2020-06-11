@@ -1,9 +1,10 @@
 cmake_minimum_required(VERSION 3.1)
 
-include_directories(../cpp)
+include_directories(..)
 
 add_library(tester SHARED
 test.cpp
+../ajni++/must_link.cpp
 )
 
 target_link_libraries(tester ajni++)
