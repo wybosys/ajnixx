@@ -26,7 +26,7 @@ public:
     static JClassPath const CLASSPATH;
 
     Number(JClassPath const& = CLASSPATH);
-    JMemberField longValue;
+    JMemberMethod longValue;
 };
 
 class Float : public Number
@@ -35,7 +35,7 @@ public:
     static JClassPath const CLASSPATH;
 
     Float(JClassPath const& = CLASSPATH);
-    JMemberField floatValue;
+    JMemberMethod floatValue;
 };
 
 class Double : public Number
@@ -44,7 +44,7 @@ public:
     static JClassPath const CLASSPATH;
 
     Double(JClassPath const& = CLASSPATH);
-    JMemberField doubleValue;
+    JMemberMethod doubleValue;
 };
 
 class String : public Object
@@ -53,7 +53,7 @@ public:
     static JClassPath const CLASSPATH;
 
     String(JClassPath const& = CLASSPATH);
-    JMemberField getBytes;
+    JMemberMethod getBytes;
 };
 
 namespace TypeSignature

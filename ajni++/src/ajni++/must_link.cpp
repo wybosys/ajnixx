@@ -36,11 +36,13 @@ AJNI_API(void) AJNI_FUNC(Callback, jni_1invoke1)(JNIEnv *env, jobject thiz, jlon
 
 AJNI_API(void) AJNI_FUNC(Callback, jni_1invoke2)(JNIEnv *env, jobject thiz, jlong fnidx, jobject v0, jobject v1)
 {
-    auto fn = Env.context().find_function(fnidx);
+    auto &ctx = Env.context();
+    auto fn = ctx.find_function(fnidx);
     if (!fn) {
         Logger::Error("没有找到回调函数");
         return;
     }
 
-    (*fn)();
+    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant());
+    ctx.function_drop(fnidx);
 }

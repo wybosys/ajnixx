@@ -440,6 +440,21 @@ void JEnv::CallVoidMethod(jobject cls, jmethodID id, JValues const& vals)
     JENV_IMPL_EXPAND(CallVoidMethod, cls NNT_COMMA id);
 }
 
+size_t JEnv::GetArrayLength(jarray arr)
+{
+    return tls_env->GetArrayLength(arr);
+}
+
+jbyte const* JEnv::GetBytes(jbyteArray arr)
+{
+    return tls_env->GetByteArrayElements(arr, JNI_FALSE);
+}
+
+jchar const* JEnv::GetChars(jcharArray arr)
+{
+    return tls_env->GetCharArrayElements(arr, JNI_FALSE);
+}
+
 jobject JEnv::NewLocalRef(jobject obj)
 {
     return tls_env->NewLocalRef(obj);

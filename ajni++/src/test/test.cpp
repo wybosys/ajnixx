@@ -106,9 +106,9 @@ void Test0(::std::ostringstream& oss)
     oss << obj_info->fabc(obj_info) << endl;
 
     // 测试异步
-    obj->finfoasync(obj, (JVariant)[&](JVariant const& v0, JVariant const& v1)->JVariant {
+    obj->finfoasync(obj, (JVariant)[&](arg_type v0, arg_type v1)->return_type {
         cout << "收到异步回调数据 " << v0 << " " << v1 << endl;
-        return JVariant();
+        return nullptr;
     });
 
     // 获得全局函数

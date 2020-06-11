@@ -198,6 +198,10 @@ public:
     jobject CallObjectMethod(jobject, jmethodID, JValues const&);
     void CallVoidMethod(jobject, jmethodID, JValues const&);
 
+    size_t GetArrayLength(jarray);
+    jbyte const* GetBytes(jbyteArray);
+    jchar const* GetChars(jcharArray);
+
     jobject NewLocalRef(jobject);
     void DeleteLocalRef(jobject);
 

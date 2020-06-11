@@ -27,7 +27,7 @@ Number::Number(JClassPath const& cp)
 longValue(*this)
 {
     longValue.name = "longValue";
-    longValue.stype = ::AJNI_NS::TypeSignature::LONG;
+    longValue.sreturn = ::AJNI_NS::TypeSignature::LONG;
 }
 
 JClassPath const Float::CLASSPATH = "java/lang/Float";
@@ -37,7 +37,7 @@ Float::Float(JClassPath const& cp)
 floatValue(*this)
 {
     floatValue.name = "floatValue";
-    floatValue.stype = ::AJNI_NS::TypeSignature::FLOAT;
+    floatValue.sreturn = ::AJNI_NS::TypeSignature::FLOAT;
 }
 
 JClassPath const Double::CLASSPATH = "java/lang/Double";
@@ -47,7 +47,7 @@ Double::Double(JClassPath const& cp)
 doubleValue(*this)
 {
     doubleValue.name = "doubleValue";
-    doubleValue.stype = ::AJNI_NS::TypeSignature::DOUBLE;
+    doubleValue.sreturn = ::AJNI_NS::TypeSignature::DOUBLE;
 }
 
 JClassPath const String::CLASSPATH = "java/lang/String";
@@ -57,7 +57,7 @@ String::String(JClassPath const& cp)
 getBytes(*this)
 {
     getBytes.name = "getBytes";
-    getBytes.stype = ::AJNI_NS::TypeSignature::BYTEARRAY;
+    getBytes.sreturn = ::AJNI_NS::TypeSignature::BYTEARRAY;
 }
 
 namespace TypeSignature

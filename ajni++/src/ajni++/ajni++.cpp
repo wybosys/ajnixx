@@ -473,6 +473,11 @@ return_type JMemberMethod::invoke(JObject& obj, ::std::vector<JVariant> const &a
     {
         return _V((jstring)Env.CallObjectMethod(obj, mid, jvals));
     }
+    else if (sreturn == TypeSignature::BYTEARRAY)
+    {
+        JArray arr((jarray)Env.CallObjectMethod(obj, mid, jvals));
+        return _V(arr.toString());
+    }
     else if (sreturn == TypeSignature::VOID)
     {
         Env.CallVoidMethod(obj, mid, jvals);

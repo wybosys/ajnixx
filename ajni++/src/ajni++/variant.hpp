@@ -84,6 +84,24 @@ private:
     string _str;
 };
 
+class JArray
+{
+public:
+
+    JArray(jarray);
+    ~JArray();
+
+    inline size_t size() const {
+        return _sz;
+    }
+
+    string toString() const;
+
+private:
+    jarray _arr = nullptr;
+    size_t _sz;
+};
+
 class JVariant;
 
 class JValue {
@@ -144,7 +162,7 @@ private:
 
     class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
             JVariant,
-            JVariant,
+            shared_ptr<JVariant>,
             JVariant const&
             > {};
 

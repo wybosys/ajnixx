@@ -166,6 +166,29 @@ jstring JString::asReturn() const {
     return Env.NewStringUTF(_str);
 }
 
+JArray::JArray(jarray arr)
+{
+    if (arr) {
+        _arr = Env.NewLocalRef(arr);
+        _sz = Env.GetArrayLength(arr);
+    }
+}
+
+JArray::~JArray()
+{
+    if (_arr) {
+        Env.DeleteLocalRef(_arr);
+    }
+}
+
+string JArray::toString() const
+{
+    if (!_arr)
+        return "";
+    jbyte const* cs = Env.GetBytes((jbyteArray)_arr);
+    return string((char const*)cs, _sz);
+}
+
 JValue::JValue(JValue const& r)
 : _val(r._val), _free(r._free)
 {

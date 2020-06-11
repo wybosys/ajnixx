@@ -15,8 +15,11 @@ JClass::JClass(JClassPath const& cp)
     {
         AJNI_CHECKEXCEPTION(false);
         _classpath$ = cp + "$Companion";
-        _clazz$ = make_shared<JObject>(Env.FindClass(_classpath$));
-        if (_clazz$) {
+
+        jclass jclz = Env.FindClass(_classpath$);
+        if (jclz) {
+            _clazz$ = make_shared<JObject>(jclz);
+
             // 获取静态对象地址
             ::AJNI_NS::JStaticField sf(*this);
             sf.name = "Companion";
