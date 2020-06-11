@@ -436,15 +436,15 @@ public:
     typedef typename Types::arg_type arg_type;
 
     typedef ::std::function<return_type()> fun0_type;
-    typedef ::std::function<return_type(arg_type)> fun1_type;
-    typedef ::std::function<return_type(arg_type, arg_type)> fun2_type;
-    typedef ::std::function<return_type(arg_type, arg_type, arg_type)> fun3_type;
-    typedef ::std::function<return_type(arg_type, arg_type, arg_type, arg_type)> fun4_type;
-    typedef ::std::function<return_type(arg_type, arg_type, arg_type, arg_type, arg_type)> fun5_type;
-    typedef ::std::function<return_type(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type)> fun6_type;
-    typedef ::std::function<return_type(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type)> fun7_type;
-    typedef ::std::function<return_type(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type)> fun8_type;
-    typedef ::std::function<return_type(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type)> fun9_type;
+    typedef ::std::function<return_type(arg_type const&)> fun1_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&)> fun2_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&, arg_type const&)> fun3_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&, arg_type const&, arg_type const&)> fun4_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&)> fun5_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&)> fun6_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&)> fun7_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&)> fun8_type;
+    typedef ::std::function<return_type(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&)> fun9_type;
 
     Function() = default;
     Function(fun0_type fn);
@@ -461,15 +461,15 @@ public:
     ~Function();
 
     return_type operator ()() const;
-    return_type operator ()(arg_type) const;
-    return_type operator ()(arg_type, arg_type) const;
-    return_type operator ()(arg_type, arg_type, arg_type) const;
-    return_type operator ()(arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator ()(arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator ()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator ()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator ()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator ()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator ()(arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator ()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
 
     operator bool () const;
 
@@ -774,55 +774,55 @@ inline typename Function<Types>::return_type Function<Types>::operator()() const
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0) const {
     assert(_count == 1);
     return (*(fun1_type*)_mem)(v0);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1) const {
     assert(_count == 2);
     return (*(fun2_type*)_mem)(v0, v1);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1, arg_type v2) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2) const {
     assert(_count == 3);
     return (*(fun3_type*)_mem)(v0, v1, v2);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1, arg_type v2, arg_type v3) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2, arg_type const& v3) const {
     assert(_count == 4);
     return (*(fun4_type*)_mem)(v0, v1, v2, v3);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1, arg_type v2, arg_type v3, arg_type v4) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4) const {
     assert(_count == 5);
     return (*(fun5_type*)_mem)(v0, v1, v2, v3, v4);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5) const {
     assert(_count == 6);
     return (*(fun6_type*)_mem)(v0, v1, v2, v3, v4, v5);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6) const {
     assert(_count == 7);
     return (*(fun7_type*)_mem)(v0, v1, v2, v3, v4, v5, v6);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7) const {
     assert(_count == 8);
     return (*(fun8_type*)_mem)(v0, v1, v2, v3, v4, v5, v6, v7);
 }
 
 template <typename Types>
-inline typename Function<Types>::return_type Function<Types>::operator()(arg_type v0, arg_type v1, arg_type v2, arg_type v3, arg_type v4, arg_type v5, arg_type v6, arg_type v7, arg_type v8) const {
+inline typename Function<Types>::return_type Function<Types>::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7, arg_type const& v8) const {
     assert(_count == 9);
     return (*(fun9_type*)_mem)(v0, v1, v2, v3, v4, v5, v6, v7, v8);
 }

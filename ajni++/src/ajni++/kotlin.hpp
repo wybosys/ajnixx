@@ -66,15 +66,15 @@ public:
     JGlobalMethod(JClassPath const&);
 
     return_type operator()() const;
-    return_type operator()(arg_type) const;
-    return_type operator()(arg_type, arg_type) const;
-    return_type operator()(arg_type, arg_type, arg_type) const;
-    return_type operator()(arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
-    return_type operator()(arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type, arg_type) const;
+    return_type operator()(arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
 
     virtual return_type invoke(args_type const&) const;
 
