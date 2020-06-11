@@ -7,49 +7,49 @@ class Callback {
         jni_invoke(id)
     }
 
-    external fun jni_invoke(id: Long): Void
+    private external fun jni_invoke(id: Long): Void
 
     operator fun invoke(v0: Any) {
         jni_invoke1(id, v0)
     }
 
-    external fun jni_invoke1(id: Long, v0: Any): Void
+    private external fun jni_invoke1(id: Long, v0: Any): Void
 
     operator fun invoke(v0: Any, v1: Any) {
         jni_invoke2(id, v0, v1)
     }
 
-    external fun jni_invoke2(id: Long, v0: Any, v1: Any): Void
+    private external fun jni_invoke2(id: Long, v0: Any, v1: Any): Void
 
     operator fun invoke(v0: Any, v1: Any, v2: Any) {
         jni_invoke3(id, v0, v1, v2)
     }
 
-    external fun jni_invoke3(id: Long, v0: Any, v1: Any, v2: Any): Void
+    private external fun jni_invoke3(id: Long, v0: Any, v1: Any, v2: Any): Void
 
     operator fun invoke(v0: Any, v1: Any, v2: Any, v3: Any) {
         jni_invoke4(id, v0, v1, v2, v3)
     }
 
-    external fun jni_invoke4(id: Long, v0: Any, v1: Any, v2: Any, v3: Any): Void
+    private external fun jni_invoke4(id: Long, v0: Any, v1: Any, v2: Any, v3: Any): Void
 
     operator fun invoke(v0: Any, v1: Any, v2: Any, v3: Any, v4: Any) {
         jni_invoke5(id, v0, v1, v2, v3, v4)
     }
 
-    external fun jni_invoke5(id: Long, v0: Any, v1: Any, v2: Any, v3: Any, v4: Any): Void
+    private external fun jni_invoke5(id: Long, v0: Any, v1: Any, v2: Any, v3: Any, v4: Any): Void
 
     operator fun invoke(v0: Any, v1: Any, v2: Any, v3: Any, v4: Any, v5: Any) {
         jni_invoke6(id, v0, v1, v2, v3, v4, v5)
     }
 
-    external fun jni_invoke6(id: Long, v0: Any, v1: Any, v2: Any, v3: Any, v4: Any, v5: Any): Void
+    private external fun jni_invoke6(id: Long, v0: Any, v1: Any, v2: Any, v3: Any, v4: Any, v5: Any): Void
 
     operator fun invoke(v0: Any, v1: Any, v2: Any, v3: Any, v4: Any, v5: Any, v6: Any) {
         jni_invoke7(id, v0, v1, v2, v3, v4, v5, v6)
     }
 
-    external fun jni_invoke7(
+    private external fun jni_invoke7(
         id: Long,
         v0: Any,
         v1: Any,
@@ -64,7 +64,7 @@ class Callback {
         jni_invoke8(id, v0, v1, v2, v3, v4, v5, v6, v7)
     }
 
-    external fun jni_invoke8(
+    private external fun jni_invoke8(
         id: Long,
         v0: Any,
         v1: Any,
@@ -90,7 +90,7 @@ class Callback {
         jni_invoke9(id, v0, v1, v2, v3, v4, v5, v6, v7, v8)
     }
 
-    external fun jni_invoke9(
+    private external fun jni_invoke9(
         id: Long,
         v0: Any,
         v1: Any,
@@ -108,14 +108,14 @@ class Callback {
         jni_grab(id)
     }
 
-    external fun jni_grab(id: Long): Void
+    private external fun jni_grab(id: Long): Void
 
     // 释放计数，如果计数=0则会释放native层的函数
     fun drop(): Boolean {
         return jni_drop(id)
     }
 
-    external fun jni_drop(id: Long): Boolean
+    private external fun jni_drop(id: Long): Boolean
 
     // 对应的计数函数
     var id: Long = 0

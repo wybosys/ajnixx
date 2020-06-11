@@ -23,8 +23,13 @@ class Test {
 
     fun info_async(cb:Callback) {
         cb.grab()
-        cb(123, "abc")
-        cb.drop()
+        Thread({
+            // 开个线程回调主线程
+            Activity.Invoke {
+                cb(123, "abc")
+                cb.drop()
+            }
+        }).start()
     }
 
     companion object {

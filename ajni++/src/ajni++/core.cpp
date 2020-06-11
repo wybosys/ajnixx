@@ -48,21 +48,21 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
 {
     Logger::Info("启动AJNI++环境");
 
-    ajni::gs_vm = vm;
+    gs_vm = vm;
 
     if (!env) {
         vm->GetEnv((void **) &env, JNI_VERSION_1_4);
         vm->AttachCurrentThread(&env, nullptr);
     }
 
-    ajni::gs_env = ajni::tls_env = env;
-    ajni::tls_ismain = true;
+    gs_env = tls_env = env;
+    tls_ismain = true;
 }
 
 void JEnv::UnbindVM()
 {
-    ajni::gs_vm = nullptr;
-    ajni::tls_env = nullptr;
+    gs_vm = nullptr;
+    tls_env = nullptr;
     d_ptr->clear();
 
     Logger::Info("释放AJNI++环境");
