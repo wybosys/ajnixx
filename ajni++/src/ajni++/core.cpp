@@ -73,6 +73,11 @@ jclass JEnv::FindClass(string const& str)
     return tls_env->FindClass(str.c_str());
 }
 
+bool JEnv::IsAssignableFrom(jclass l, jclass r)
+{
+    return tls_env->IsAssignableFrom(l, r);
+}
+
 jfieldID JEnv::GetStaticFieldID(jclass cls, const string &name, const string &typ)
 {
     return tls_env->GetStaticFieldID(cls, name.c_str(), typ.c_str());
@@ -305,6 +310,11 @@ jobject JEnv::NewObject(jclass cls, jmethodID id, JValues const &vals)
 {
     JENV_IMPL_EXPAND(NewObject, cls NNT_COMMA id);
     return nullptr;
+}
+
+jclass JEnv::GetObjectClass(jobject obj)
+{
+    return tls_env->GetObjectClass(obj);
 }
 
 jboolean JEnv::CallStaticBooleanMethod(jclass cls, jmethodID id, JValues const& vals)

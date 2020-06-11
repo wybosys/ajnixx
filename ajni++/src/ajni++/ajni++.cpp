@@ -581,7 +581,7 @@ size_t JContext::add(shared_ptr<function_type> const& fn)
     return idx;
 }
 
-void JContext::function_grad(function_index_type fnid)
+void JContext::function_grab(function_index_type fnid)
 {
     NNT_AUTOGUARD(d_ptr->mtx_functions);
     auto fnd = d_ptr->functions.find(fnid);
@@ -605,6 +605,13 @@ bool JContext::function_drop(function_index_type fnid)
         Logger::Error("没有找到函数索引 " + tostr((int)fnid));
     }
     return false;
+}
+
+shared_ptr<JContext::function_type> JContext::find_function(function_index_type fnid) const
+{
+    NNT_AUTOGUARD(d_ptr->mtx_functions);
+    auto fnd = d_ptr->functions.find(fnid);
+    return fnd == d_ptr->functions.end() ? nullptr : fnd->second->fn;
 }
 
 AJNI_END

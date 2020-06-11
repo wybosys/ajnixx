@@ -203,10 +203,13 @@ public:
     function_index_type add(shared_ptr<function_type> const&);
 
     // 增加函数计数
-    void function_grad(function_index_type);
+    void function_grab(function_index_type);
 
     // 减少函数技术，释放返回true，否则返回false
     bool function_drop(function_index_type);
+
+    // 获得函数
+    shared_ptr<function_type> find_function(function_index_type) const;
 
     // 清空
     void clear();

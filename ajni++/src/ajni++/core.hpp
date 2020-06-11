@@ -125,6 +125,7 @@ public:
     JContext& context();
 
     jclass FindClass(string const&);
+    bool IsAssignableFrom(jclass, jclass);
 
     jfieldID GetStaticFieldID(jclass, string const& name, string const& typ);
     jobject GetStaticObjectField(jclass, jfieldID);
@@ -172,6 +173,7 @@ public:
     jmethodID GetStaticMethodID(jclass, string const& name, string const& sig);
 
     jobject NewObject(jclass, jmethodID, JValues const&);
+    jclass GetObjectClass(jobject);
 
     jboolean CallStaticBooleanMethod(jclass, jmethodID, JValues const&);
     jbyte CallStaticByteMethod(jclass, jmethodID, JValues const&);
