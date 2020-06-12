@@ -58,15 +58,24 @@ return_type JStaticField::operator()() const
     }
     else if (stype == TypeSignature::STRING)
     {
-        return _V((jstring)Env.GetStaticObjectField(clz, fid));
+        jstring v = (jstring)Env.GetStaticObjectField(clz, fid);
+        if (!v)
+            return nullptr;
+        return _V(v);
     }
     else if (stype == TypeSignature::BYTEARRAY)
     {
-        JArray arr((jarray)Env.GetStaticObjectField(clz, fid));
+        jarray v = (jarray)Env.GetStaticObjectField(clz, fid);
+        if (!v)
+            return nullptr;
+        JArray arr(v);
         return _V(arr.toString());
     }
 
-    return _V(Env.GetStaticObjectField(clz, fid));
+    jobject v = Env.GetStaticObjectField(clz, fid);
+    if (!v)
+        return nullptr;
+    return _V(v);
 }
 
 void JStaticField::operator()(JObject& obj, arg_type const& v)
@@ -170,15 +179,24 @@ return_type JMemberField::operator()(JObject& obj) const
     }
     else if (stype == TypeSignature::STRING)
     {
-        return _V((jstring)Env.GetObjectField(obj, fid));
+        jstring v = (jstring)Env.GetObjectField(obj, fid);
+        if (!v)
+            return nullptr;
+        return _V(v);
     }
     else if (stype == TypeSignature::BYTEARRAY)
     {
-        JArray arr((jarray)Env.GetObjectField(obj, fid));
+        jarray v = (jarray)Env.GetObjectField(obj, fid);
+        if (!v)
+            return nullptr;
+        JArray arr(v);
         return _V(arr.toString());
     }
 
-    return _V(Env.GetObjectField(obj, fid));
+    jobject v = Env.GetObjectField(obj, fid);
+    if (!v)
+        return nullptr;
+    return _V(v);
 }
 
 void JMemberField::operator()(JObject& obj, arg_type const& v)
@@ -479,11 +497,17 @@ return_type JStaticMethod::invoke(args_type const &args) const
     }
     else if (sreturn == TypeSignature::STRING)
     {
-        return _V((jstring)Env.CallStaticObjectMethod(clz, mid, jvals));
+        jstring v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+        if (!v)
+            return nullptr;
+        return _V(v);
     }
     else if (sreturn == TypeSignature::BYTEARRAY)
     {
-        JArray arr((jarray)Env.CallStaticObjectMethod(clz, mid, jvals));
+        jarray v = (jarray)Env.CallStaticObjectMethod(clz, mid, jvals);
+        if (!v)
+            return nullptr;
+        JArray arr(v);
         return _V(arr.toString());
     }
     else if (sreturn == TypeSignature::VOID)
@@ -492,7 +516,10 @@ return_type JStaticMethod::invoke(args_type const &args) const
         return nullptr;
     }
 
-    return _V(Env.CallStaticObjectMethod(clz, mid, jvals));
+    jobject v = Env.CallStaticObjectMethod(clz, mid, jvals);
+    if (!v)
+        return nullptr;
+    return _V(v);
 }
 
 return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
@@ -545,11 +572,17 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
     }
     else if (sreturn == TypeSignature::STRING)
     {
-        return _V((jstring)Env.CallObjectMethod(obj, mid, jvals));
+        jstring v = (jstring)Env.CallObjectMethod(obj, mid, jvals);
+        if (!v)
+            return nullptr;
+        return _V(v);
     }
     else if (sreturn == TypeSignature::BYTEARRAY)
     {
-        JArray arr((jarray)Env.CallObjectMethod(obj, mid, jvals));
+        jarray v = (jarray)Env.CallObjectMethod(obj, mid, jvals);
+        if (!v)
+            return nullptr;
+        JArray arr(v);
         return _V(arr.toString());
     }
     else if (sreturn == TypeSignature::VOID)
@@ -558,7 +591,10 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
         return nullptr;
     }
 
-    return _V(Env.CallObjectMethod(obj, mid, jvals));
+    jobject v = Env.CallObjectMethod(obj, mid, jvals);
+    if (!v)
+        return nullptr;
+    return _V(v);
 }
 
 JClass::JClass(JClassPath const&path)

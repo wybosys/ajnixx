@@ -127,6 +127,7 @@ public:
     jclass FindClass(string const&);
     bool IsAssignableFrom(jclass, jclass);
     bool IsInstanceOf(jobject, jclass);
+    bool IsSameObject(jobject, jobject);
 
     jfieldID GetStaticFieldID(jclass, string const& name, string const& typ);
     jobject GetStaticObjectField(jclass, jfieldID);

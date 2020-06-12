@@ -83,6 +83,11 @@ bool JEnv::IsInstanceOf(jobject obj, jclass clz)
     return tls_env->IsInstanceOf(obj, clz);
 }
 
+bool JEnv::IsSameObject(jobject l, jobject r)
+{
+    return tls_env->IsSameObject(l, r);
+}
+
 jfieldID JEnv::GetStaticFieldID(jclass cls, const string &name, const string &typ)
 {
     return tls_env->GetStaticFieldID(cls, name.c_str(), typ.c_str());

@@ -187,6 +187,8 @@ public:
 
     JVariant();
 
+    JVariant(nullptr_t);
+
     JVariant(const char s[]);
 
     JVariant(jstring);

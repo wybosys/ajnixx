@@ -2,6 +2,7 @@
 #include "ajni++.hpp"
 #include "variant.hpp"
 #include "jre.hpp"
+#include "com++.hpp"
 #include <sstream>
 #include <cmath>
 
@@ -300,6 +301,11 @@ JValues::JValues(args_type const& vars)
 }
 
 JVariant::JVariant()
+    : vt(VT::NIL)
+{
+}
+
+JVariant::JVariant(nullptr_t)
     : vt(VT::NIL)
 {
 }

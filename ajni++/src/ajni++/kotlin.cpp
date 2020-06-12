@@ -86,7 +86,10 @@ return_type JStaticMethod::invoke(args_type const &args) const
     }
     else if (sreturn == TypeSignature::STRING)
     {
-        return _V((jstring)Env.CallObjectMethod(obj$, mid, jvals));
+        jstring v = (jstring)Env.CallObjectMethod(obj$, mid, jvals);
+        if (!v)
+            return nullptr;
+        return _V(v);
     }
     else if (sreturn == TypeSignature::VOID)
     {
@@ -94,7 +97,10 @@ return_type JStaticMethod::invoke(args_type const &args) const
         return nullptr;
     }
 
-    return _V(Env.CallObjectMethod(obj$, mid, jvals));
+    jobject v = Env.CallObjectMethod(obj$, mid, jvals);
+    if (!v)
+        return nullptr;
+    return _V(v);
 }
 
 JGlobalField::JGlobalField(JClassPath const& cp)
@@ -152,7 +158,10 @@ return_type JGlobalField::operator()() const
     }
     else if (stype == TypeSignature::STRING)
     {
-        return _V((jstring)Env.CallStaticObjectMethod(clz, mid, jvals));
+        jstring v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+        if (!v)
+            return nullptr;
+        return _V(v);
     }
     else if (stype == TypeSignature::VOID)
     {
@@ -160,7 +169,10 @@ return_type JGlobalField::operator()() const
         return nullptr;
     }
 
-    return _V(Env.CallStaticObjectMethod(clz, mid, jvals));
+    jobject v = Env.CallStaticObjectMethod(clz, mid, jvals);
+    if (!v)
+        return nullptr;
+    return _V(v);
 }
 
 void JGlobalField::operator()(JVariant const& v)
@@ -287,7 +299,10 @@ return_type JGlobalMethod::invoke(args_type const &args) const
     }
     else if (sreturn == TypeSignature::STRING)
     {
-        return _V((jstring)Env.CallStaticObjectMethod(clz, mid, jvals));
+        jstring v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+        if (!v)
+            return nullptr;
+        return _V(v);
     }
     else if (sreturn == TypeSignature::VOID)
     {
@@ -295,7 +310,10 @@ return_type JGlobalMethod::invoke(args_type const &args) const
         return nullptr;
     }
 
-    return _V(Env.CallStaticObjectMethod(clz, mid, jvals));
+    jobject v = Env.CallStaticObjectMethod(clz, mid, jvals);
+    if (!v)
+        return nullptr;
+    return _V(v);
 }
 
 AJNI_END_NS
