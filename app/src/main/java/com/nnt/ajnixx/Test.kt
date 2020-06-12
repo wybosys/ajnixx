@@ -1,7 +1,6 @@
 package com.nnt.ajnixx
 
-class Info
-{
+class Info {
     var abc: String? = "abc"
     var cde: Int = 123
     var nul: Any? = null
@@ -9,33 +8,38 @@ class Info
 
 class Test {
 
-    fun test0(): String
-    {
+    fun test0(): String {
         return "Test0 Member Function String"
     }
 
     val test0 = "Test0 Member Variable String"
 
-    fun info(): Info
-    {
+    fun info(): Info {
         return Info()
     }
 
-    fun info_async(cb:Callback) {
+    fun value_async(cb: Callback) {
         cb.grab()
-        Thread({
+        //Thread({
             // 开个线程回调主线程
             Activity.Invoke {
                 cb(123, "abc")
                 cb.drop()
             }
-        }).start()
+        //}).start()
     }
 
-    fun null_async(cb:Callback) {
+    fun null_async(cb: Callback) {
         cb.grab()
         cb(null)
         cb.drop()
+    }
+
+    fun info_async(cb: Callback) {
+        val info = Info()
+        info.abc = "cde"
+        info.cde = 456
+        cb(info)
     }
 
     companion object {
@@ -51,8 +55,7 @@ class Test {
     }
 }
 
-fun GetInfo(): Info
-{
+fun GetInfo(): Info {
     return Info()
 }
 

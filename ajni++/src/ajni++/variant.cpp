@@ -508,15 +508,4 @@ JTypeSignature JVariant::signature() const {
     return TypeSignature::OBJECT;
 }
 
-void grab(jobject obj)
-{
-    Env.NewLocalRef(obj);
-}
-
-bool drop(jobject obj)
-{
-    Env.DeleteLocalRef(obj);
-    return false;
-}
-
 AJNI_END

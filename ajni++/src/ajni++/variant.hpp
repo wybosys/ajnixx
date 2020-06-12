@@ -268,9 +268,6 @@ inline shared_ptr<JVariant> _V(T const& v) {
     return make_shared<JVariant>(v);
 }
 
-extern void grab(jobject);
-extern bool drop(jobject);
-
 template<typename _CharT, typename _Traits>
 static ::std::basic_ostream <_CharT, _Traits> &operator<<(::std::basic_ostream <_CharT, _Traits> &stm, JVariant const &v) {
     switch (v.vt) {
@@ -303,5 +300,20 @@ static ::std::basic_ostream <_CharT, _Traits> &operator<<(::std::basic_ostream <
 }
 
 AJNI_END
+
+COMXX_BEGIN
+
+template <>
+inline jobject grab<jobject>(jobject obj) {
+    return AJNI_NS::Env.NewLocalRef(obj);
+}
+
+template <>
+inline bool drop<jobject>(jobject obj) {
+    AJNI_NS::Env.DeleteLocalRef(obj);
+    return true;
+}
+
+COMXX_END
 
 #endif

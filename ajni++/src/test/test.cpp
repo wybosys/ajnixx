@@ -39,7 +39,7 @@ public:
     Test() : kotlin::JClass(CLASSPATH),
     test0(*this), ftest0(*this),
     Test0(*this), fTest0(*this),
-    finfo(*this), finfoasync(*this), fnullasync(*this)
+    finfo(*this), fvalueasync(*this), finfoasync(*this), fnullasync(*this)
     {
         test0.name = "test0";
         test0.sreturn = TypeSignature::STRING;
@@ -56,6 +56,9 @@ public:
         finfo.name = "info";
         finfo.sreturn = Info::CLASSPATH;
 
+        fvalueasync.name = "value_async";
+        fvalueasync.sreturn = TypeSignature::VOID;
+
         finfoasync.name = "info_async";
         finfoasync.sreturn = TypeSignature::VOID;
 
@@ -68,7 +71,7 @@ public:
     kotlin::JStaticMethod Test0;
     JStaticField fTest0;
     JMemberMethod finfo;
-    JMemberMethod finfoasync, fnullasync;
+    JMemberMethod fvalueasync, finfoasync, fnullasync;
 
     static const JClassPath CLASSPATH;
 };
@@ -109,7 +112,7 @@ void Test0(::std::ostringstream& oss)
     oss << obj_info->fabc(obj_info) << endl;
 
     // 测试异步
-    obj->finfoasync(obj, (JVariant)[&](arg_type const& v0, arg_type const& v1)->return_type {
+    obj->fvalueasync(obj, (JVariant)[&](arg_type const& v0, arg_type const& v1)->return_type {
         ostringstream oss;
         oss << "收到异步回调数据 " << v0 << " " << v1 << endl;
         Logger::Info(oss.str());
@@ -119,6 +122,12 @@ void Test0(::std::ostringstream& oss)
     obj->fnullasync(obj, (JVariant)[&](arg_type const& v0)->return_type {
         if (!v0.isnil())
             oss << "应该为nil但是收到不为nil" << endl;
+        return nullptr;
+    });
+
+    obj->finfoasync(obj, (JVariant)[&](arg_type const& v0)->return_type {
+        JEntry<Info> info(v0);
+        oss << "收到异步回调数据 " << info->fabc(info) << " " << info->fcde(info) << endl;
         return nullptr;
     });
 
