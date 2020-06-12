@@ -351,19 +351,6 @@ private:
     friend shared_ref<TT> make_ref(Args &&...);
 };
 
-template <typename T, typename... Args>
-static shared_ref<T> make_ref(Args &&... args)
-{
-    return shared_ref<T>::_assign(new T(::std::forward<Args>(args)...));
-};
-
-template <typename T, typename TI, typename... Args>
-static shared_ptr<TI> make_dynamic_shared(Args &&... args)
-{
-    shared_ptr<TI> r(new T(::std::forward<Args>(args)...));
-    return r;
-}
-
 template <typename TShared>
 class shared_object
 {
@@ -417,6 +404,19 @@ public:
 private:
     shared_type _so;
 };
+
+template <typename T, typename... Args>
+static shared_ref<T> make_ref(Args &&... args)
+{
+    return shared_ref<T>::_assign(new T(::std::forward<Args>(args)...));
+};
+
+template <typename T, typename TI, typename... Args>
+static shared_ptr<TI> make_dynamic_shared(Args &&... args)
+{
+    shared_ptr<TI> r((TI *)new T(::std::forward<Args>(args)...));
+    return r;
+}
 
 NNT_END
 
