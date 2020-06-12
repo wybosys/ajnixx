@@ -334,7 +334,7 @@ static shared_ref<T> make_ref(Args &&... args) {
 
 template<typename T, typename TI, typename... Args>
 static shared_ptr<TI> make_dynamic_shared(Args &&... args) {
-    shared_ptr<TI> r(new T(::std::forward<Args>(args)...));
+    shared_ptr<TI> r((TI*)new T(::std::forward<Args>(args)...));
     return r;
 }
 
