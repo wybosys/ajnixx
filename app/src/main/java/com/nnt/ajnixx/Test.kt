@@ -20,13 +20,13 @@ class Test {
 
     fun value_async(cb: Callback) {
         cb.grab()
-        //Thread({
+        Thread({
             // 开个线程回调主线程
             Activity.Invoke {
                 cb(123, "abc")
                 cb.drop()
             }
-        //}).start()
+        }).start()
     }
 
     fun null_async(cb: Callback) {

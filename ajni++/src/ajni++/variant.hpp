@@ -124,8 +124,9 @@ public:
 
 private:
     jvalue _val = {0};
-    bool _free = false;
-    size_t _fnidx = 0;
+    bool _free = false; // 是否需要释放
+    bool _local = true; // 是否是局部对象
+    size_t _fnidx = 0; // 如果是函数对象，保存函数的本地索引
 };
 
 class JValues {

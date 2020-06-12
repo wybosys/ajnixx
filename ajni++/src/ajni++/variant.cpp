@@ -52,7 +52,7 @@ JObject &JObject::operator=(JObject const &r)
 
 jobject JObject::asReturn() const
 {
-    return Env.NewLocalRef(_obj);
+    return Env.NewGlobalRef(_obj);
 }
 
 shared_ptr<JVariant> ReadToVariant(jobject _obj)
@@ -135,7 +135,7 @@ JGlobalObject &JGlobalObject::operator=(JGlobalObject const &r) {
 
 jobject JGlobalObject::asReturn() const
 {
-    return Env.NewLocalRef(_obj);
+    return Env.NewGlobalRef(_obj);
 }
 
 shared_ptr<JVariant> JGlobalObject::toVariant() const
@@ -193,10 +193,14 @@ string JArray::toString() const
 }
 
 JValue::JValue(JValue const& r)
-: _val(r._val), _free(r._free), _fnidx(r._fnidx)
+: _val(r._val), _free(r._free), _local(r._local), _fnidx(r._fnidx)
 {
     if (_free && _val.l) {
-        _val.l = Env.NewLocalRef(_val.l);
+        if (_local) {
+            _val.l = Env.NewLocalRef(_val.l);
+        } else {
+            _val.l = Env.NewGlobalRef(_val.l);
+        }
     }
 
     if (_fnidx) {
@@ -260,6 +264,7 @@ JValue::JValue(JVariant const& var)
             _fnidx = Env.context().add(var.toFunction());
             cb->id(cb, (jlong)_fnidx);
             _val.l = cb.asReturn();
+            _local = false;
             _free = true;
         } break;
         default:
@@ -271,7 +276,11 @@ JValue::JValue(JVariant const& var)
 JValue::~JValue()
 {
     if (_free && _val.l) {
-        Env.DeleteLocalRef(_val.l);
+        if (_local) {
+            Env.DeleteLocalRef(_val.l);
+        } else {
+            Env.DeleteGlobalRef(_val.l);
+        }
         _val.l = nullptr;
     }
 

@@ -182,7 +182,7 @@ public:
 
 protected:
 
-    JObject _clazz;
+    JGlobalObject _clazz;
     JClassPath _clazzpath;
 };
 

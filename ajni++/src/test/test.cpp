@@ -127,7 +127,8 @@ void Test0(::std::ostringstream& oss)
 
     obj->finfoasync(obj, (JVariant)[&](arg_type const& v0)->return_type {
         JEntry<Info> info(v0);
-        oss << "收到异步回调数据 " << info->fabc(info) << " " << info->fcde(info) << endl;
+        auto v = info->fnul(info);
+        oss << "收到异步回调数据 " << info->fabc(info) << " " << info->fcde(info) << info->fnul(info) << endl;
         return nullptr;
     });
 
