@@ -5,6 +5,10 @@
 
 AJNI_BEGIN_NS(kotlin)
 
+using ::AJNI_NS::JMemberField;
+using ::AJNI_NS::JMemberMethod;
+using ::AJNI_NS::JStaticField;
+
 class JClass : public ::AJNI_NS::JClass
 {
 public:
