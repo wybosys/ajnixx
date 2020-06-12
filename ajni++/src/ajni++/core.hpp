@@ -126,7 +126,7 @@ public:
 
     // 外部业务层提供的创建线程中JNIEnv的实现
     typedef ::std::function<JNIEnv*()> jnienv_retrieve_impl;
-    jnienv_retrieve_impl ImpJniEnvRetrieve;
+    jnienv_retrieve_impl GetCurrentJniEnv;
 
     // 获得上下文，之后类均从该对象获得
     JContext& context();

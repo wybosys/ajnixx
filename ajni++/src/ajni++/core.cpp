@@ -92,8 +92,8 @@ void JEnv::Check()
     if (tls_env)
         return;
 
-    if (ImpJniEnvRetrieve) {
-        tls_env = ImpJniEnvRetrieve();
+    if (GetCurrentJniEnv) {
+        tls_env = GetCurrentJniEnv();
         if (tls_env)
             return;
     }
