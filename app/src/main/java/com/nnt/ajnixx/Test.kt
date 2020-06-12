@@ -32,6 +32,12 @@ class Test {
         }).start()
     }
 
+    fun null_async(cb:Callback) {
+        cb.grab()
+        cb(null)
+        cb.drop()
+    }
+
     companion object {
 
         // 返回测试结果

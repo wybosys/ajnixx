@@ -57,6 +57,9 @@ jobject JObject::asReturn() const
 
 shared_ptr<JVariant> ReadToVariant(jobject _obj)
 {
+    if (_obj == nullptr)
+        return make_shared<JVariant>(); // 不能返回null，客户端收到的是引用类型，通过vt判断
+
     auto& ctx = Env.context();
     auto obj = make_shared<JObject>(_obj);
 

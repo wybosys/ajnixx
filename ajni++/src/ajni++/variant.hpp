@@ -249,6 +249,10 @@ public:
         return _fun;
     }
 
+    inline bool isnil() const {
+        return vt == VT::NIL;
+    }
+
     // 获得签名
     JTypeSignature signature() const;
 
