@@ -15,6 +15,25 @@ static JNIEnv *gs_env = nullptr;
 static thread_local bool tls_ismain = false;
 static thread_local JNIEnv *tls_env = nullptr;
 
+// 退出时是否释放env
+class JEnvThreadAutoGuard
+{
+public:
+
+    ~JEnvThreadAutoGuard()
+    {
+        if (tls_env && need_detach) {
+            gs_vm->DetachCurrentThread();
+        }
+    }
+
+    bool need_detach = false;
+};
+
+// 随着当前线程和设置回收jni
+static thread_local JEnvThreadAutoGuard tls_guard;
+
+// 全局唯一的Env
 JEnv Env;
 
 class JEnvPrivate
@@ -66,6 +85,25 @@ void JEnv::UnbindVM()
     d_ptr->clear();
 
     Logger::Info("释放AJNI++环境");
+}
+
+void JEnv::Check()
+{
+    if (tls_env)
+        return;
+
+    if (ImpJniEnvRetrieve) {
+        tls_env = ImpJniEnvRetrieve();
+        if (tls_env)
+            return;
+    }
+
+    // 使用内置的创建函数创建
+    jint ret = gs_vm->GetEnv((void**)&tls_env, JNI_VERSION_1_4);
+    if (ret == JNI_EDETACHED) {
+        gs_vm->AttachCurrentThread(&tls_env, nullptr);
+        tls_guard.need_detach = true;
+    }
 }
 
 jclass JEnv::FindClass(string const& str)

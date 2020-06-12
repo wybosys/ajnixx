@@ -121,6 +121,13 @@ public:
     // 取消注册
     void UnbindVM();
 
+    // 检查线程安全行
+    void Check();
+
+    // 外部业务层提供的创建线程中JNIEnv的实现
+    typedef ::std::function<JNIEnv*()> jnienv_retrieve_impl;
+    jnienv_retrieve_impl ImpJniEnvRetrieve;
+
     // 获得上下文，之后类均从该对象获得
     JContext& context();
 

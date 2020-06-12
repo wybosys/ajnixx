@@ -242,11 +242,17 @@ class JEntry
 public:
 
     typedef JContext::class_type class_type;
+    typedef JEntry<TClass> self_type;
 
     JEntry(shared_ptr<JObject> const& obj)
     : _obj(obj)
     {
         _clazz = Env.context().register_class<TClass>();
+    }
+
+    JEntry(self_type const& r)
+    : _obj(r._obj), _clazz(r._clazz)
+    {
     }
 
     inline TClass* operator -> () {
