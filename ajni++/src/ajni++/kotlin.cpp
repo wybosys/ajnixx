@@ -1,6 +1,7 @@
 #include "core.hpp"
 #include "ajni++.hpp"
 #include "kotlin.hpp"
+#include "java-prv.hpp"
 
 AJNI_BEGIN_NS(kotlin)
 
@@ -55,49 +56,44 @@ return_type JStaticMethod::invoke(args_type const &args) const
         return nullptr;
     }
 
-    if (sreturn == TypeSignature::BOOLEAN)
-    {
-        return _V(Env.CallBooleanMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::BYTE)
-    {
-        return _V(Env.CallByteMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::CHAR)
-    {
-        return _V(Env.CallCharMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::SHORT)
-    {
-        return _V(Env.CallShortMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::INT)
-    {
-        return _V(Env.CallIntMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::LONG)
-    {
-        return _V(Env.CallLongMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::FLOAT)
-    {
-        return _V(Env.CallFloatMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::DOUBLE)
-    {
-        return _V(Env.CallDoubleMethod(obj$, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::STRING)
-    {
-        jstring v = (jstring)Env.CallObjectMethod(obj$, mid, jvals);
-        if (!v)
+    switch (TypeSignature::GetTypeForSwitch(sreturn)) {
+        case TypeSignature::TS::BOOLEAN:
+            return _V(Env.CallBooleanMethod(obj$, mid, jvals));
+        case TypeSignature::TS::BYTE:
+            return _V(Env.CallByteMethod(obj$, mid, jvals));
+        case TypeSignature::TS::CHAR:
+            return _V(Env.CallCharMethod(obj$, mid, jvals));
+        case TypeSignature::TS::SHORT:
+            return _V(Env.CallShortMethod(obj$, mid, jvals));
+        case TypeSignature::TS::INT:
+            return _V(Env.CallIntMethod(obj$, mid, jvals));
+        case TypeSignature::TS::LONG:
+            return _V(Env.CallLongMethod(obj$, mid, jvals));
+        case TypeSignature::TS::FLOAT:
+            return _V(Env.CallFloatMethod(obj$, mid, jvals));
+        case TypeSignature::TS::DOUBLE:
+            return _V(Env.CallDoubleMethod(obj$, mid, jvals));
+        case TypeSignature::TS::STRING: {
+            auto v = (jstring) Env.CallObjectMethod(obj$, mid, jvals);
+            if (!v)
+                return nullptr;
+            return _V(v);
+        }
+        case TypeSignature::TS::BYTEARRAY: {
+            auto v = (jarray) Env.CallObjectMethod(obj$, mid, jvals);
+            if (!v)
+                return nullptr;
+            JArray arr(v);
+            return _V(arr.toString());
+        }
+        case TypeSignature::TS::VOID: {
+            Env.CallVoidMethod(obj$, mid, jvals);
             return nullptr;
-        return _V(v);
-    }
-    else if (sreturn == TypeSignature::VOID)
-    {
-        Env.CallVoidMethod(obj$, mid, jvals);
-        return nullptr;
+        }
+        case TypeSignature::TS::CLASS:
+        case TypeSignature::TS::OBJECT:
+        case TypeSignature::TS::UNKNOWN:
+            break;
     }
 
     jobject v = Env.CallObjectMethod(obj$, mid, jvals);
@@ -126,49 +122,38 @@ return_type JGlobalField::operator()() const
         return nullptr;
     }
 
-    if (stype == TypeSignature::BOOLEAN)
-    {
-        return _V(Env.CallStaticBooleanMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::BYTE)
-    {
-        return _V(Env.CallStaticByteMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::CHAR)
-    {
-        return _V(Env.CallStaticCharMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::SHORT)
-    {
-        return _V(Env.CallStaticShortMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::INT)
-    {
-        return _V(Env.CallStaticIntMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::LONG)
-    {
-        return _V(Env.CallStaticLongMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::FLOAT)
-    {
-        return _V(Env.CallStaticFloatMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::DOUBLE)
-    {
-        return _V(Env.CallStaticDoubleMethod(clz, mid, jvals));
-    }
-    else if (stype == TypeSignature::STRING)
-    {
-        auto v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
-        if (!v)
+    switch (TypeSignature::GetTypeForSwitch(stype)) {
+        case TypeSignature::TS::BOOLEAN:
+            return _V(Env.CallStaticBooleanMethod(clz, mid, jvals));
+        case TypeSignature::TS::BYTE:
+            return _V(Env.CallStaticByteMethod(clz, mid, jvals));
+        case TypeSignature::TS::CHAR:
+            return _V(Env.CallStaticCharMethod(clz, mid, jvals));
+        case TypeSignature::TS::SHORT:
+            return _V(Env.CallStaticShortMethod(clz, mid, jvals));
+        case TypeSignature::TS::INT:
+            return _V(Env.CallStaticIntMethod(clz, mid, jvals));
+        case TypeSignature::TS::LONG:
+            return _V(Env.CallStaticLongMethod(clz, mid, jvals));
+        case TypeSignature::TS::FLOAT:
+            return _V(Env.CallStaticFloatMethod(clz, mid, jvals));
+        case TypeSignature::TS::DOUBLE:
+            return _V(Env.CallStaticDoubleMethod(clz, mid, jvals));
+        case TypeSignature::TS::STRING: {
+            auto v = (jstring) Env.CallStaticObjectMethod(clz, mid, jvals);
+            if (!v)
+                return nullptr;
+            return _V(v);
+        }
+        case TypeSignature::TS::VOID: {
+            Env.CallStaticVoidMethod(clz, mid, jvals);
             return nullptr;
-        return _V(v);
-    }
-    else if (stype == TypeSignature::VOID)
-    {
-        Env.CallStaticVoidMethod(clz, mid, jvals);
-        return nullptr;
+        }
+        case TypeSignature::TS::CLASS:
+        case TypeSignature::TS::OBJECT:
+        case TypeSignature::TS::BYTEARRAY:
+        case TypeSignature::TS::UNKNOWN:
+            break;
     }
 
     jobject v = Env.CallStaticObjectMethod(clz, mid, jvals);
@@ -265,49 +250,38 @@ return_type JGlobalMethod::invoke(args_type const &args) const
         return nullptr;
     }
 
-    if (sreturn == TypeSignature::BOOLEAN)
-    {
-        return _V(Env.CallStaticBooleanMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::BYTE)
-    {
-        return _V(Env.CallStaticByteMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::CHAR)
-    {
-        return _V(Env.CallStaticCharMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::SHORT)
-    {
-        return _V(Env.CallStaticShortMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::INT)
-    {
-        return _V(Env.CallStaticIntMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::LONG)
-    {
-        return _V(Env.CallStaticLongMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::FLOAT)
-    {
-        return _V(Env.CallStaticFloatMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::DOUBLE)
-    {
-        return _V(Env.CallStaticDoubleMethod(clz, mid, jvals));
-    }
-    else if (sreturn == TypeSignature::STRING)
-    {
-        auto v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
-        if (!v)
+    switch (TypeSignature::GetTypeForSwitch(sreturn)) {
+        case TypeSignature::TS::BOOLEAN:
+            return _V(Env.CallStaticBooleanMethod(clz, mid, jvals));
+        case TypeSignature::TS::BYTE:
+            return _V(Env.CallStaticByteMethod(clz, mid, jvals));
+        case TypeSignature::TS::CHAR:
+            return _V(Env.CallStaticCharMethod(clz, mid, jvals));
+        case TypeSignature::TS::SHORT:
+            return _V(Env.CallStaticShortMethod(clz, mid, jvals));
+        case TypeSignature::TS::INT:
+            return _V(Env.CallStaticIntMethod(clz, mid, jvals));
+        case TypeSignature::TS::LONG:
+            return _V(Env.CallStaticLongMethod(clz, mid, jvals));
+        case TypeSignature::TS::FLOAT:
+            return _V(Env.CallStaticFloatMethod(clz, mid, jvals));
+        case TypeSignature::TS::DOUBLE:
+            return _V(Env.CallStaticDoubleMethod(clz, mid, jvals));
+        case TypeSignature::TS::STRING: {
+            auto v = (jstring) Env.CallStaticObjectMethod(clz, mid, jvals);
+            if (!v)
+                return nullptr;
+            return _V(v);
+        }
+        case TypeSignature::TS::VOID: {
+            Env.CallStaticVoidMethod(clz, mid, jvals);
             return nullptr;
-        return _V(v);
-    }
-    else if (sreturn == TypeSignature::VOID)
-    {
-        Env.CallStaticVoidMethod(clz, mid, jvals);
-        return nullptr;
+        }
+        case TypeSignature::TS::BYTEARRAY:
+        case TypeSignature::TS::OBJECT:
+        case TypeSignature::TS::CLASS:
+        case TypeSignature::TS::UNKNOWN:
+            break;
     }
 
     jobject v = Env.CallStaticObjectMethod(clz, mid, jvals);

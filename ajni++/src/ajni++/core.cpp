@@ -699,6 +699,7 @@ JTypeSignature& JTypeSignature::operator = (JClassPath const& cp)
         goto LABEL_RETURN;
     }
     *this = (string const&)cp;
+
     LABEL_RETURN:
     return *this;
 }

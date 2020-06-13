@@ -43,6 +43,29 @@ public:
     static shared_ptr<JObject> make_shared(jobject);
 };
 
+namespace TypeSignature {
+
+    enum struct TS {
+        UNKNOWN,
+        CLASS,
+        STRING,
+        OBJECT,
+        BOOLEAN,
+        BYTE,
+        CHAR,
+        SHORT,
+        INT,
+        LONG,
+        FLOAT,
+        DOUBLE,
+        VOID,
+        BYTEARRAY
+    };
+
+    // 简化switch写法的工具函数
+    extern TS GetTypeForSwitch(JTypeSignature const&);
+}
+
 AJNI_END
 
 #endif

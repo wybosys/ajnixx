@@ -23,7 +23,7 @@
     }               \
     AJNI_END
 
-#define _AJNI_LOG_IDR "ajni"
+#define _AJNI_LOG_IDR "log@ajni++"
 #define AJNI_LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, _AJNI_LOG_IDR, __VA_ARGS__)
 #define AJNI_LOGI(...) __android_log_print(ANDROID_LOG_INFO, _AJNI_LOG_IDR, __VA_ARGS__)
 #define AJNI_LOGW(...) __android_log_print(ANDROID_LOG_WARN, _AJNI_LOG_IDR, __VA_ARGS__)

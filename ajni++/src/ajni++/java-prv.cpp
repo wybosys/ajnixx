@@ -103,4 +103,29 @@ shared_ptr<JVariant> ReadToVariant(jobject _obj)
     return _V(_obj);
 }
 
+namespace TypeSignature {
+
+    // 简化switch写法的工具函数
+    TS GetTypeForSwitch(JTypeSignature const& ts)
+    {
+        static ::std::map<string, TS> gs_types = {
+                {CLASS, TS::CLASS},
+                {STRING, TS::STRING},
+                {OBJECT, TS::OBJECT},
+                {BOOLEAN, TS::BOOLEAN},
+                {BYTE, TS::BYTE},
+                {CHAR, TS::CHAR},
+                {SHORT, TS::SHORT},
+                {INT, TS::INT},
+                {LONG, TS::LONG},
+                {FLOAT, TS::FLOAT},
+                {DOUBLE, TS::DOUBLE},
+                {VOID, TS::VOID},
+                {BYTEARRAY, TS::BYTEARRAY}
+        };
+        auto fnd = gs_types.find(ts);
+        return fnd == gs_types.end() ? TS::UNKNOWN : fnd->second;
+    }
+}
+
 AJNI_END
