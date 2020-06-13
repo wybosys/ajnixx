@@ -152,9 +152,7 @@ void JEnv::BindContext(jobject jact, jobject jctx)
     gs_context = jctx;
 
     if (gs_context) {
-        AJNI_CHECKEXCEPTION;
-
-        // 绑定新的context
+        // 绑定新的context, 必须获取到，否则整个ajni++运行失败
         jclass clz_context = Env.FindClass("android/content/Context");
         jmethodID mid_getclassloader = Env.GetMethodID(clz_context, "getClassLoader", "()Ljava/lang/ClassLoader;");
         jobject obj_classloader = Env.CallObjectMethod(gs_context, mid_getclassloader, JValues());

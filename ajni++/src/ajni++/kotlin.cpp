@@ -12,7 +12,6 @@ string capitalize(string const& str)
 JClass::JClass(JClassPath const& cp)
 : ::AJNI_NS::JClass(cp)
 {
-    AJNI_CHECKEXCEPTION(false);
     _classpath$ = cp + "$Companion";
 
     jclass jclz = Env.SearchClass(_classpath$);
@@ -24,6 +23,9 @@ JClass::JClass(JClassPath const& cp)
         sf.name = "Companion";
         sf.stype = "L" + _classpath$ + ";";
         _object$ = *sf()->toObject();
+    } else {
+        // 只有存在 companion object 段的 kotlin类 才存在，不存在也不代表错误
+        Env.ExceptionClear();
     }
 }
 
@@ -38,8 +40,6 @@ JObject const& JClass::object$() const {
 
 return_type JStaticMethod::invoke(args_type const &args) const
 {
-    AJNI_CHECKEXCEPTION;
-
     string sig = signature(args, sargs);
     JValues jvals(args);
 
@@ -50,6 +50,7 @@ return_type JStaticMethod::invoke(args_type const &args) const
     auto mid = Env.GetMethodID(clz, name, sig);
     if (!mid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到函数 " + name + sig);
         return nullptr;
     }
@@ -112,8 +113,6 @@ JGlobalField::JGlobalField(JClassPath const& cp)
 
 return_type JGlobalField::operator()() const
 {
-    AJNI_CHECKEXCEPTION;
-
     auto clz = _clazz.clazz();
     auto getname = "get" + capitalize(name);
     string sig = JMethod::Signature({}, stype, {});
@@ -122,6 +121,7 @@ return_type JGlobalField::operator()() const
     auto mid = Env.GetStaticMethodID(clz, getname.c_str(), sig.c_str());
     if (!mid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到全局变量 " + name + stype);
         return nullptr;
     }
@@ -160,7 +160,7 @@ return_type JGlobalField::operator()() const
     }
     else if (stype == TypeSignature::STRING)
     {
-        jstring v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+        auto v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
         if (!v)
             return nullptr;
         return _V(v);
@@ -179,8 +179,6 @@ return_type JGlobalField::operator()() const
 
 void JGlobalField::operator()(JVariant const& v)
 {
-    AJNI_CHECKEXCEPTION;
-
     auto clz = _clazz.clazz();
     auto setname = "set" + capitalize(name);
     string sig = JMethod::Signature({&v}, TypeSignature::VOID, {});
@@ -189,6 +187,7 @@ void JGlobalField::operator()(JVariant const& v)
     auto mid = Env.GetStaticMethodID(clz, setname.c_str(), sig.c_str());
     if (!mid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到全局变量 " + name + stype);
         return;
     }
@@ -253,8 +252,6 @@ return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg
 
 return_type JGlobalMethod::invoke(args_type const &args) const
 {
-    AJNI_CHECKEXCEPTION;
-
     string sig = JMethod::Signature(args, sreturn, sargs);
     JValues jvals(args);
 
@@ -263,6 +260,7 @@ return_type JGlobalMethod::invoke(args_type const &args) const
     auto mid = Env.GetStaticMethodID(clz, name, sig);
     if (!mid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到函数 " + name + sig);
         return nullptr;
     }
@@ -301,7 +299,7 @@ return_type JGlobalMethod::invoke(args_type const &args) const
     }
     else if (sreturn == TypeSignature::STRING)
     {
-        jstring v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
+        auto v = (jstring)Env.CallStaticObjectMethod(clz, mid, jvals);
         if (!v)
             return nullptr;
         return _V(v);

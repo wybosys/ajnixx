@@ -30,7 +30,7 @@
 #define AJNI_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, _AJNI_LOG_IDR, __VA_ARGS__)
 #define AJNI_LOGF(...) __android_log_print(ANDROID_LOG_FATAL, _AJNI_LOG_IDR, __VA_ARGS__)
 
-#define AJNI_CHECKEXCEPTION ::AJNI_NS::ExceptionGuard _NNT_COMBINE(__exception_guard_, __LINE__)
+// #define AJNI_CHECKEXCEPTION ::AJNI_NS::ExceptionGuard _NNT_COMBINE(__exception_guard_, __LINE__)
 
 #define AJNI_API(ret) extern "C" JNIEXPORT ret JNICALL
 #define AJNI_FUNC(cls, name) Java_com_nnt_ajnixx_##cls##_##name

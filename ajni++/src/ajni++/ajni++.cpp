@@ -19,13 +19,11 @@ JField::JField(JClass& clz)
 
 return_type JStaticField::operator()() const
 {
-    AJNI_CHECKEXCEPTION;
-
     auto clz = _clazz.clazz();
-
     auto fid = Env.GetStaticFieldID(clz, name.c_str(), stype.c_str());
     if (!fid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到静态变量 " + name + stype);
         return nullptr;
     }
@@ -86,13 +84,11 @@ return_type JStaticField::operator()() const
 
 void JStaticField::operator()(JWeakObject& obj, arg_type const& v)
 {
-    AJNI_CHECKEXCEPTION;
-
     auto clz = _clazz.clazz();
-
     auto fid = Env.GetStaticFieldID(clz, name.c_str(), stype.c_str());
     if (!fid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到静态变量 " + name + stype);
         return;
     }
@@ -140,13 +136,11 @@ void JStaticField::operator()(JWeakObject& obj, arg_type const& v)
 
 return_type JMemberField::operator()(JWeakObject& obj) const
 {
-    AJNI_CHECKEXCEPTION;
-
     auto clz = _clazz.clazz();
-
     auto fid = Env.GetFieldID(clz, name.c_str(), stype.c_str());
     if (!fid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到成员变量 " + name + stype);
         return nullptr;
     }
@@ -207,13 +201,11 @@ return_type JMemberField::operator()(JWeakObject& obj) const
 
 void JMemberField::operator()(JWeakObject& obj, arg_type const& v)
 {
-    AJNI_CHECKEXCEPTION;
-
     auto clz = _clazz.clazz();
-
     auto fid = Env.GetFieldID(clz, name.c_str(), stype.c_str());
     if (!fid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到成员变量 " + name + stype);
         return;
     }
@@ -442,8 +434,6 @@ return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_t
 
 return_type JConstructMethod::invoke(args_type const &args) const
 {
-    AJNI_CHECKEXCEPTION;
-
     string sig = signature(args, sargs);
     JValues jvals(args);
 
@@ -451,6 +441,7 @@ return_type JConstructMethod::invoke(args_type const &args) const
     auto mid = Env.GetMethodID(clz, "<init>", sig);
     if (!mid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到构造函数 " + name + " " + sig);
         return nullptr;
     }
@@ -460,8 +451,6 @@ return_type JConstructMethod::invoke(args_type const &args) const
 
 return_type JStaticMethod::invoke(args_type const &args) const
 {
-    AJNI_CHECKEXCEPTION;
-
     string sig = signature(args, sargs);
     JValues jvals(args);
 
@@ -470,6 +459,7 @@ return_type JStaticMethod::invoke(args_type const &args) const
     auto mid = Env.GetStaticMethodID(clz, name, sig);
     if (!mid)
     {
+        Env.ExceptionClear();
         Logger::Error("没有找到函数 " + name + sig);
         return nullptr;
     }
@@ -535,21 +525,15 @@ return_type JStaticMethod::invoke(args_type const &args) const
 
 return_type JMemberMethod::invoke(JWeakObject& obj, args_type const &args) const
 {
-    AJNI_CHECKEXCEPTION;
-
     string sig = signature(args, sargs);
     JValues jvals(args);
 
     auto clz = _clazz.clazz();
-
-    jmethodID mid;
-    {
-        AJNI_CHECKEXCEPTION;
-        mid = Env.GetMethodID(clz, name, sig);
-        if (!mid) {
-            Logger::Error("没有找到函数 " + name + sig);
-            return nullptr;
-        }
+    auto mid = Env.GetMethodID(clz, name, sig);
+    if (!mid) {
+        Env.ExceptionClear();
+        Logger::Error("没有找到函数 " + name + sig);
+        return nullptr;
     }
 
     if (sreturn == TypeSignature::BOOLEAN)
@@ -615,8 +599,13 @@ JClass::JClass(JClassPath const& cp)
 : _clazzpath(cp), construct(*this)
 {
     if (cp.size()) {
-        AJNI_CHECKEXCEPTION;
-        _clazz = Env.SearchClass(cp);
+        auto clz = Env.SearchClass(cp);
+        if (clz == nullptr) {
+            Env.ExceptionClear();
+            Logger::Fatal("没有找到类 " + cp);
+        } else {
+            _clazz = clz;
+        }
     }
 }
 
