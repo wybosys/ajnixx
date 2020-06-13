@@ -10,8 +10,6 @@
 
 AJNI_BEGIN
 
-USE_CROSS
-
 JField::JField(JClass& clz)
 : _clazz(clz)
 {
@@ -346,7 +344,7 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
     if (predefs)
     {
         ::std::vector<string> tss(predefs->begin(), predefs->end());
-        string sig = "(" + implode(tss, "") + ")" + sreturn;
+        string sig = "(" + ::CROSS_NS::implode(tss, "") + ")" + sreturn;
         return sig;
     }
 
@@ -356,7 +354,7 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
         ps.emplace_back(e->signature());
     }
 
-    string sig = "(" + implode(ps, "") + ")" + sreturn;
+    string sig = "(" + ::CROSS_NS::implode(ps, "") + ")" + sreturn;
     return sig;
 }
 
@@ -631,7 +629,7 @@ void JContext::function_grab(function_index_type fnid)
     if (fnd != d_ptr->functions.end()) {
         ++fnd->second->referencedCount;
     } else {
-        Logger::Error("没有找到函数索引 " + tostr((int)fnid));
+        Logger::Error("没有找到函数索引 " + ::CROSS_NS::tostr((int)fnid));
     }
 }
 
@@ -645,7 +643,7 @@ bool JContext::function_drop(function_index_type fnid)
             return true;
         }
     } else {
-        Logger::Error("没有找到函数索引 " + tostr((int)fnid));
+        Logger::Error("没有找到函数索引 " + ::CROSS_NS::tostr((int)fnid));
     }
     return false;
 }
@@ -655,6 +653,12 @@ shared_ptr<JContext::function_type> JContext::find_function(function_index_type 
     NNT_AUTOGUARD(d_ptr->mtx_functions);
     auto fnd = d_ptr->functions.find(fnid);
     return fnd == d_ptr->functions.end() ? nullptr : fnd->second->fn;
+}
+
+string tostr(jstring str)
+{
+    Env.Check();
+    return Env.GetStringUTFChars(str);
 }
 
 AJNI_END

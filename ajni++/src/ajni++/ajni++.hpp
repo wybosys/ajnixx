@@ -282,6 +282,8 @@ private:
     shared_ptr<JObject> _obj;
 };
 
+extern string tostr(jstring);
+
 AJNI_END
 
 #endif
