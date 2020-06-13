@@ -18,7 +18,7 @@ public:
     static JEnvThreadAutoGuard& tls();
 
     // 保存于线程上的注册类列表
-    typedef ::std::map<JClassPath, JContext::class_type> classes_type;
+    typedef ::std::map<JClassPath, JContext::class_typep> classes_type;
     classes_type classes;
 };
 

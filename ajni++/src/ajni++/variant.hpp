@@ -17,6 +17,10 @@ public:
     JWeakObject(jobject obj) : _obj(obj) {}
     virtual ~JWeakObject() {}
 
+    inline jobject toObject() const {
+        return _obj;
+    }
+
     inline operator jobject () const {
         return _obj;
     }
@@ -230,12 +234,8 @@ public:
         return _var;
     }
 
-    inline shared_ptr<JWeakObject> toObject() const {
-        return make_shared<JWeakObject>(_var.toObject());
-    }
-
-    inline operator shared_ptr<JWeakObject> () const {
-        return make_shared<JWeakObject>(_var.toObject());
+    inline jobject toObject() const {
+        return _var.toObject();
     }
 
     inline shared_ptr<function_type> toFunction() const {

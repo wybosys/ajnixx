@@ -194,17 +194,17 @@ public:
     JContext();
     ~JContext();
 
-    typedef shared_ptr<JClass> class_type;
+    typedef shared_ptr<JClass> class_typep;
 
     // 添加类
-    bool add(class_type const&);
+    bool add(class_typep const&);
 
     // 查找类
-    class_type find_class(JClassPath const&) const;
+    class_typep find_class(JClassPath const&) const;
 
     // 注册类
     template <typename T>
-    class_type register_class() {
+    class_typep register_class() {
         auto fnd = find_class(T::CLASSPATH);
         if (fnd)
             return fnd;
@@ -232,7 +232,7 @@ public:
 };
 
 // 实例定义
-template <typename TClass, typename TObject = JWeakObject>
+template <typename TClass, typename TObject = JObject>
 class JEntry
 {
 public:
@@ -240,10 +240,13 @@ public:
     typedef TClass class_type;
     typedef TObject object_type;
     typedef JEntry<TClass, TObject> self_type;
+    typedef shared_ptr<JClass> class_typep;
 
-    JEntry(shared_ptr<object_type> const& obj, JContext::class_type const& clz = nullptr)
-    : _obj(obj), _clazz(clz)
+    JEntry(JVariant const& var, class_typep const& clz = nullptr)
+    : _clazz(clz)
     {
+        _obj = make_shared<object_type >(var.toObject());
+
         if (!_clazz) {
             _clazz = Env.context().register_class<class_type >();
         }
@@ -273,7 +276,7 @@ public:
 
 private:
 
-    JContext::class_type _clazz;
+    class_typep _clazz;
     shared_ptr<object_type> _obj;
 };
 

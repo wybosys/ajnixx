@@ -22,7 +22,7 @@ JClass::JClass(JClassPath const& cp)
         ::AJNI_NS::JStaticField sf(*this);
         sf.name = "Companion";
         sf.stype = "L" + _classpath$ + ";";
-        _object$ = *sf()->toObject();
+        _object$ = sf()->toObject();
     } else {
         // 只有存在 companion object 段的 kotlin类 才存在，不存在也不代表错误
         Env.ExceptionClear();

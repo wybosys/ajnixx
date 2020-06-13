@@ -75,29 +75,28 @@ shared_ptr<JVariant> ReadToVariant(jobject _obj)
         return make_shared<JVariant>(); // 不能返回null，客户端收到的是引用类型，通过vt判断
 
     auto& ctx = Env.context();
-    auto obj = make_shared<JWeakObject>(_obj);
 
     auto STD_NUMBER = ctx.register_class<jre::Number>();
-    if (Env.IsInstanceOf(*obj, *STD_NUMBER)) {
+    if (Env.IsInstanceOf(_obj, *STD_NUMBER)) {
         auto STD_DOUBLE = ctx.register_class<jre::Double>();
-        if (Env.IsInstanceOf(*obj, *STD_DOUBLE)) {
-            JEntry<jre::Double> ref(obj);
+        if (Env.IsInstanceOf(_obj, *STD_DOUBLE)) {
+            JEntry<jre::Double> ref(_obj);
             return ref->doubleValue(ref);
         }
 
         auto STD_FLOAT = ctx.register_class<jre::Float>();
-        if (Env.IsInstanceOf(*obj, *STD_FLOAT)) {
-            JEntry<jre::Float> ref(obj);
+        if (Env.IsInstanceOf(_obj, *STD_FLOAT)) {
+            JEntry<jre::Float> ref(_obj);
             return ref->floatValue(ref);
         }
 
-        JEntry<jre::Number> ref(obj);
+        JEntry<jre::Number> ref(_obj);
         return ref->longValue(ref);
     }
 
     auto STD_STRING = ctx.register_class<jre::String>();
-    if (Env.IsInstanceOf(*obj, *STD_STRING)) {
-        JEntry<jre::String> ref(obj);
+    if (Env.IsInstanceOf(_obj, *STD_STRING)) {
+        JEntry<jre::String> ref(_obj);
         return ref->getBytes(ref);
     }
 

@@ -643,7 +643,7 @@ ExceptionGuard::~ExceptionGuard()
     jthrowable err = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
     if (_print) {
-        JEntry<jre::Throwable> obj(make_shared<JWeakObject>(err));
+        JEntry<jre::Throwable> obj(JVariant((jobject)err));
         string msg = *obj->toString(obj);
         Logger::Error("捕获JNI异常 " + msg);
     }

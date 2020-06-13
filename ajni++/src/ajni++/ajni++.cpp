@@ -130,7 +130,7 @@ void JStaticField::operator()(JWeakObject& obj, arg_type const& v)
         Env.SetStaticObjectField(clz, fid, JValue(v));
     }
     else {
-        Env.SetStaticObjectField(clz, fid, *v.toObject());
+        Env.SetStaticObjectField(clz, fid, v.toObject());
     }
 }
 
@@ -249,7 +249,7 @@ void JMemberField::operator()(JWeakObject& obj, arg_type const& v)
     }
     else
     {
-        Env.SetObjectField(obj, fid, *v.toObject());
+        Env.SetObjectField(obj, fid, v.toObject());
     }
 }
 
@@ -668,7 +668,7 @@ JContext::~JContext()
     NNT_CLASS_DESTORY();
 }
 
-bool JContext::add(class_type const& cls)
+bool JContext::add(class_typep const& cls)
 {
     if (!cls->exists())
         return false;
@@ -676,7 +676,7 @@ bool JContext::add(class_type const& cls)
     return true;
 }
 
-JContext::class_type JContext::find_class(JClassPath const& ph) const
+JContext::class_typep JContext::find_class(JClassPath const& ph) const
 {
     auto const& clss = JEnvThreadAutoGuard::tls().classes;
     auto fnd = clss.find(ph);
