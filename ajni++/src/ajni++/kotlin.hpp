@@ -23,6 +23,8 @@ public:
 
 protected:
 
+    virtual void _asglobal();
+
     // kt的comp可以不存在
     shared_ptr<JObject> _object$;
     shared_ptr<jvm_class_type> _clazz$;

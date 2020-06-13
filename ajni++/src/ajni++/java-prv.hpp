@@ -16,10 +16,6 @@ public:
     bool detach = false;
 
     static JEnvThreadAutoGuard& tls();
-
-    // 保存于线程上的注册类列表
-    // typedef ::std::map<JClassPath, JContext::class_typep> classes_type;
-    // classes_type classes;
 };
 
 namespace TypeSignature {

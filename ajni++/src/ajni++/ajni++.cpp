@@ -540,16 +540,24 @@ JClass::JClass(JClassPath const& cp)
     }
 }
 
-JClassName JClass::name() const {
+JClassName JClass::name() const
+{
     return _clazzpath;
 }
 
-JClassPath const& JClass::path() const {
+JClassPath const& JClass::path() const
+{
     return _clazzpath;
 }
 
-bool JClass::exists() const {
+bool JClass::exists() const
+{
     return !_clazz.isnil();
+}
+
+void JClass::_asglobal()
+{
+    _clazz._asglobal();
 }
 
 class JContextPrivate
@@ -579,6 +587,10 @@ public:
 
     ::std::atomic<size_t> index_functions;
     ::std::mutex mtx_functions;
+
+    // 全局注册类列表
+    typedef ::std::map<JClassPath, JContext::class_typep> classes_type;
+    classes_type classes;
 };
 
 JContext::JContext()
@@ -595,21 +607,25 @@ bool JContext::add(class_typep const& cls)
 {
     if (!cls->exists())
         return false;
-    // JEnvThreadAutoGuard::tls().classes[cls->path()] = cls;
+
+    // 将类提权到global
+    cls->_asglobal();
+
+    // 添加到线程级的全局类管理器中
+    d_ptr->classes[cls->path()] = cls;
     return true;
 }
 
 JContext::class_typep JContext::find_class(JClassPath const& ph) const
 {
-    // auto const& clss = JEnvThreadAutoGuard::tls().classes;
-    // auto fnd = clss.find(ph);
-    // return fnd == clss.end() ? nullptr : fnd->second;
-    return nullptr;
+    auto const& clss = d_ptr->classes;
+    auto fnd = clss.find(ph);
+    return fnd == clss.end() ? nullptr : fnd->second;
 }
 
 void JContext::clear()
 {
-    // JEnvThreadAutoGuard::tls().classes.clear();
+    d_ptr->classes.clear();
     d_ptr->functions.clear();
     d_ptr->index_functions = 0;
 }

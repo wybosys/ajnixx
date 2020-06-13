@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.1)
 add_library(cross STATIC
 cross.cpp
 str.cpp
+sys.cpp
 )
 
 set_target_properties(cross

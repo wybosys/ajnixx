@@ -34,8 +34,12 @@ JObject::JObject(JObject const& r)
 
 JObject::~JObject()
 {
-    if (_obj)
-        Env.DeleteLocalRef(_obj);
+    if (_obj) {
+        if (_local)
+            Env.DeleteLocalRef(_obj);
+        else
+            Env.DeleteGlobalRef(_obj);
+    }
 }
 
 jobject JObject::asReturn() const
@@ -57,8 +61,12 @@ JObject& JObject::operator = (JObject const& r)
     _obj = r._obj;
     if (_obj)
         _obj = Env.NewLocalRef(_obj);
-    if (old)
-        Env.DeleteLocalRef(old);
+    if (old) {
+        if (_local)
+            Env.DeleteLocalRef(old);
+        else
+            Env.DeleteGlobalRef(old);
+    }
 
     return *this;
 }
@@ -69,8 +77,23 @@ void JObject::_reset(jobject obj)
         return;
     jobject old = _obj;
     _obj = Env.NewLocalRef(obj);
+    if (old) {
+        if (_local)
+            Env.DeleteLocalRef(old);
+        else
+            Env.DeleteGlobalRef(old);
+    }
+}
+
+void JObject::_asglobal()
+{
+    if (!_local || !_obj)
+        return;
+    auto old = _obj;
+    _obj = Env.NewGlobalRef(old);
     if (old)
         Env.DeleteLocalRef(old);
+    _local = false;
 }
 
 JString::JString()

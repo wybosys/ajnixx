@@ -177,8 +177,13 @@ protected:
     JObject _clazz;
     JClassPath _clazzpath;
 
+    // 提权到global
+    virtual void _asglobal();
+
     friend class JEnv;
     friend class JEnvPrivate;
+    friend class JContext;
+    friend class kotlin::JClass;
 };
 
 NNT_CLASS_PREPARE(JContext);

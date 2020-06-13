@@ -8,6 +8,10 @@
 
 AJNI_BEGIN
 
+namespace kotlin {
+    class JClass;
+}
+
 class JVariant;
 class JArray;
 
@@ -41,11 +45,17 @@ protected:
     void _reset(jobject);
 
     jobject _obj = nullptr;
+    bool _local = true;
+
+    // 提权到global
+    virtual void _asglobal();
 
     friend class JEnv;
     friend class JEnvPrivate;
+    friend class JClass;
     friend class JArray;
     friend class JVariant;
+    friend class kotlin::JClass;
 };
 
 class JString {

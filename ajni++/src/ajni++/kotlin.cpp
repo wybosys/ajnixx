@@ -39,6 +39,15 @@ JClass::jvm_class_type const& JClass::clazz$() const
     return *_clazz$;
 }
 
+void JClass::_asglobal()
+{
+    jvm_class_type::_asglobal();
+    if (_clazz$)
+        _clazz$->_asglobal();
+    if (_object$)
+        _object$->_asglobal();
+}
+
 return_type JStaticMethod::invoke(args_type const &args) const
 {
     string sig = signature(args, sargs);

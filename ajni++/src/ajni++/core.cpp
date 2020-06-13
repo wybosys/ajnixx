@@ -7,6 +7,7 @@
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
+#include <cross/sys.hpp>
 
 AJNI_BEGIN
 
@@ -145,7 +146,7 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
         jint jret = vm->GetEnv((void **) &env, JNI_VERSION_1_4);
         if (jret == JNI_EDETACHED) {
             gs_vm->AttachCurrentThread(&tls_env, nullptr);
-            tls_guard.detach = true;
+            tls_guard.detach = false;
         }
     }
 
@@ -167,10 +168,14 @@ void JEnv::Check()
     if (tls_env)
         return;
 
+    string pid = ::CROSS_NS::tostr(::CROSS_NS::get_thread_id());
+
     if (GetCurrentJniEnv) {
         tls_env = GetCurrentJniEnv();
-        if (tls_env)
+        if (tls_env) {
+            Logger::Info("线程" + pid + ": 获得业务定义的线程级JNIEnv");
             return;
+        }
     }
 
     // 使用内置的创建函数创建
@@ -179,6 +184,8 @@ void JEnv::Check()
         gs_vm->AttachCurrentThread(&tls_env, nullptr);
         tls_guard.detach = true;
     }
+
+    Logger::Info("线程" + pid + ": 获得线程级JNIEnv");
 }
 
 void JEnv::BindContext(jobject jact, jobject jctx)

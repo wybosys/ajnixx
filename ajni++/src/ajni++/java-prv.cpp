@@ -3,14 +3,19 @@
 #include "java-prv.hpp"
 #include "jre.hpp"
 
+#include <cross/cross.hpp>
+#include <cross/str.hpp>
+#include <cross/sys.hpp>
+
 AJNI_BEGIN
 
 JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
 {
-    // classes.clear();
-
     // 清理结束后才能释放env
     free_env();
+
+    string pid = ::CROSS_NS::tostr(::CROSS_NS::get_thread_id());
+    Logger::Info("线程" + pid + ": 释放线程级JNIEnv资源");
 }
 
 shared_ptr<JVariant> JObject::Extract(jobject _obj) {
