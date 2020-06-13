@@ -16,10 +16,12 @@ extern shared_ptr<JVariant> ReadToVariant(jobject _obj);
 JObject::JObject(jobject obj)
     : _obj(obj)
 {
+    // pass
 }
 
 JObject::~JObject()
 {
+    // pass
 }
 
 jobject JObject::asReturn() const

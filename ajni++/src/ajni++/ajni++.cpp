@@ -672,20 +672,21 @@ bool JContext::add(class_typep const& cls)
 {
     if (!cls->exists())
         return false;
-    JEnvThreadAutoGuard::tls().classes[cls->path()] = cls;
+    // JEnvThreadAutoGuard::tls().classes[cls->path()] = cls;
     return true;
 }
 
 JContext::class_typep JContext::find_class(JClassPath const& ph) const
 {
-    auto const& clss = JEnvThreadAutoGuard::tls().classes;
-    auto fnd = clss.find(ph);
-    return fnd == clss.end() ? nullptr : fnd->second;
+    // auto const& clss = JEnvThreadAutoGuard::tls().classes;
+    // auto fnd = clss.find(ph);
+    // return fnd == clss.end() ? nullptr : fnd->second;
+    return nullptr;
 }
 
 void JContext::clear()
 {
-    JEnvThreadAutoGuard::tls().classes.clear();
+    // JEnvThreadAutoGuard::tls().classes.clear();
     d_ptr->functions.clear();
     d_ptr->index_functions = 0;
 }

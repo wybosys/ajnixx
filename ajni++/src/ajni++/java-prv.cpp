@@ -7,7 +7,7 @@ AJNI_BEGIN
 
 JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
 {
-    classes.clear();
+    // classes.clear();
 
     // 清理结束后才能释放env
     free_env();
