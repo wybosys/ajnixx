@@ -231,20 +231,29 @@ public:
 };
 
 // 实例定义
-template <typename TClass, typename TObject = JObject>
+template <typename TClass>
 class JEntry
 {
 public:
 
     typedef TClass class_type;
-    typedef TObject object_type;
-    typedef JEntry<TClass, TObject> self_type;
+    typedef JEntry<TClass> self_type;
     typedef shared_ptr<JClass> class_typep;
 
-    JEntry(JVariant const& var, class_typep const& clz = nullptr)
+    explicit JEntry(JVariant const& var, class_typep const& clz = nullptr)
     : _clazz(clz)
     {
         _obj = var.toObject();
+
+        if (!_clazz) {
+            _clazz = Env.context().register_class<class_type >();
+        }
+    }
+
+    explicit JEntry(shared_ptr<JObject> const& var, class_typep const& clz = nullptr)
+            : _clazz(clz)
+    {
+        _obj = var;
 
         if (!_clazz) {
             _clazz = Env.context().register_class<class_type >();
@@ -259,7 +268,7 @@ public:
         return dynamic_cast<class_type const*>(_clazz.get());
     }
 
-    inline operator object_type& () {
+    inline operator JObject& () {
         return *_obj;
     }
 
@@ -270,7 +279,7 @@ public:
 private:
 
     class_typep _clazz;
-    shared_ptr<object_type> _obj;
+    shared_ptr<JObject> _obj;
 };
 
 AJNI_END

@@ -26,7 +26,7 @@ public:
     virtual jobject asReturn() const;
 
     // 转换成具体的Variant类型，和Variant(JObject)不同，转换会读取具体对象内部信息，返回C++数据构成的Variant对象
-    shared_ptr<JVariant> extract() const;
+    static shared_ptr<JVariant> Extract(jobject);
 
     // 是否时空对象
     bool isnil() const;
@@ -36,7 +36,7 @@ public:
 protected:
 
     // 自动引用计数
-    JObject(jobject);
+    explicit JObject(jobject);
 
     void _reset(jobject);
 

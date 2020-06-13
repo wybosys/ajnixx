@@ -13,33 +13,37 @@ JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
     free_env();
 }
 
-shared_ptr<JVariant> JObject::extract() const {
-    if (_obj == nullptr)
+shared_ptr<JVariant> JObject::Extract(jobject _obj) {
+    if (_obj == nullptr) {
         return ::std::make_shared<JVariant>(); // 不能返回null，客户端收到的是引用类型，通过vt判断
+    }
+
+    auto obj = make_shared<JObject>();
+    obj->_reset(_obj);
 
     auto& ctx = Env.context();
 
     auto STD_NUMBER = ctx.register_class<jre::Number>();
-    if (Env.IsInstanceOf(_obj, *STD_NUMBER)) {
+    if (Env.IsInstanceOf(*obj, *STD_NUMBER)) {
         auto STD_DOUBLE = ctx.register_class<jre::Double>();
-        if (Env.IsInstanceOf(_obj, *STD_DOUBLE)) {
-            JEntry<jre::Double> ref(_obj);
+        if (Env.IsInstanceOf(*obj, *STD_DOUBLE)) {
+            JEntry<jre::Double> ref(obj);
             return ref->doubleValue(ref);
         }
 
         auto STD_FLOAT = ctx.register_class<jre::Float>();
-        if (Env.IsInstanceOf(_obj, *STD_FLOAT)) {
-            JEntry<jre::Float> ref(_obj);
+        if (Env.IsInstanceOf(*obj, *STD_FLOAT)) {
+            JEntry<jre::Float> ref(obj);
             return ref->floatValue(ref);
         }
 
-        JEntry<jre::Number> ref(_obj);
+        JEntry<jre::Number> ref(obj);
         return ref->longValue(ref);
     }
 
     auto STD_STRING = ctx.register_class<jre::String>();
-    if (Env.IsInstanceOf(_obj, *STD_STRING)) {
-        JEntry<jre::String> ref(_obj);
+    if (Env.IsInstanceOf(*obj, *STD_STRING)) {
+        JEntry<jre::String> ref(obj);
         return ref->getBytes(ref);
     }
 

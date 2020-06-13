@@ -221,7 +221,7 @@ JEnv::class_type JEnv::FindClass(string const& str)
     }
 
     auto r = make_shared<JClass>();
-    r->_clazz = clz;
+    r->_clazz._reset(clz);
     return r;
 }
 
