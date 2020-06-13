@@ -22,7 +22,7 @@ public:
     classes_type classes;
 };
 
-class JGlobalObject : public JWeakObject {
+class JGlobalObject : public JObject {
 public:
     // 自动引用计数
     JGlobalObject(jobject = nullptr);
@@ -40,7 +40,7 @@ public:
 
     JGlobalObject &operator = (jobject);
 
-    static shared_ptr<JWeakObject> make_shared(jobject);
+    static shared_ptr<JObject> make_shared(jobject);
 };
 
 AJNI_END

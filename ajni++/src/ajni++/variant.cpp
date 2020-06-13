@@ -14,48 +14,17 @@ AJNI_BEGIN
 extern shared_ptr<JVariant> ReadToVariant(jobject _obj);
 
 JObject::JObject(jobject obj)
-: JWeakObject(obj)
+    : _obj(obj)
 {
-    if (_obj)
-        _obj = Env.NewLocalRef(_obj);
-}
-
-JObject::JObject(JObject const &r)
-: JWeakObject(r._obj)
-{
-    if (_obj)
-        _obj = Env.NewLocalRef(_obj);
 }
 
 JObject::~JObject()
 {
-    if (_obj)
-    {
-        Env.DeleteLocalRef(_obj);
-        _obj = nullptr;
-    }
-}
-
-JObject &JObject::operator = (jobject r)
-{
-    if (_obj == r)
-        return *this;
-
-    if (_obj)
-        Env.DeleteLocalRef(_obj);
-
-    _obj = r;
-    if (_obj)
-    {
-        _obj = Env.NewLocalRef(_obj);
-    }
-
-    return *this;
 }
 
 jobject JObject::asReturn() const
 {
-    return Env.NewGlobalRef(_obj);
+    return Env.NewLocalRef(_obj);
 }
 
 shared_ptr<JVariant> JObject::toVariant() const
@@ -63,9 +32,9 @@ shared_ptr<JVariant> JObject::toVariant() const
     return ReadToVariant(_obj);
 }
 
-shared_ptr<JWeakObject> JObject::make_shared(jobject obj)
+shared_ptr<JObject> JObject::make_shared(jobject obj)
 {
-    ::std::shared_ptr<JWeakObject> r((JWeakObject*)(new JObject(obj)));
+    ::std::shared_ptr<JObject> r((JObject *)(new JObject(obj)));
     return r;
 }
 
@@ -91,145 +60,135 @@ JString::~JString()
     // pass
 }
 
-jstring JString::asReturn() const {
+jstring JString::asReturn() const
+{
     return Env.NewStringUTF(_str);
 }
 
 JArray::JArray(jarray arr)
 {
-    if (arr) {
-        _arr = Env.NewLocalRef(arr);
+    if (arr)
+    {
+        _arr = arr;
         _sz = Env.GetArrayLength(arr);
     }
 }
 
 JArray::~JArray()
 {
-    if (_arr) {
-        Env.DeleteLocalRef(_arr);
-    }
 }
 
 string JArray::toString() const
 {
     if (!_arr)
         return "";
-    jbyte const* cs = Env.GetBytes((jbyteArray)_arr);
-    return string((char const*)cs, _sz);
+    jbyte const *cs = Env.GetBytes((jbyteArray)_arr);
+    return string((char const *)cs, _sz);
 }
 
-JValue::JValue(JValue const& r)
-: _val(r._val), _free(r._free), _local(r._local), _fnidx(r._fnidx)
+JValue::JValue(JValue const &r)
+    : _val(r._val), _fnidx(r._fnidx)
 {
-    if (_free && _val.l) {
-        if (_local) {
-            _val.l = Env.NewLocalRef(_val.l);
-        } else {
-            _val.l = Env.NewGlobalRef(_val.l);
-        }
-    }
-
-    if (_fnidx) {
+    if (_fnidx)
+    {
         Env.context().function_grab(_fnidx);
     }
 }
 
-JValue::JValue(JVariant const& var)
+JValue::JValue(JVariant const &var)
 {
-    JVariant::variant_type const& comvar = var;
+    JVariant::variant_type const &comvar = var;
     typedef JVariant::variant_type::VT VT;
     switch (comvar.vt)
     {
-        case VT::INT:
-        case VT::UINT:
-            _val.i = comvar.toInt();
-            break;
-        case VT::FLOAT:
-            _val.f = comvar.toFloat();
-            break;
-        case VT::DOUBLE:
-            _val.d = comvar.toDouble();
-            break;
-        case VT::SHORT:
-        case VT::USHORT:
-            _val.s = comvar.toShort();
-            break;
-        case VT::LONG:
-        case VT::ULONG:
-            _val.j = comvar.toLong();
-            break;
-        case VT::LONGLONG:
-        case VT::ULONGLONG:
-            _val.j = (jlong)comvar.toLonglong();
-            break;
-        case VT::CHAR:
-        case VT::UCHAR:
-            _val.c = comvar.toChar();
-            break;
-        case VT::BOOLEAN:
-            _val.z = comvar.toBool();
-            break;
-        case VT::OBJECT: {
-            jobject obj = comvar.toObject();
-            if (obj) {
-                obj = Env.NewLocalRef(obj);
-            }
-            _val.l = obj;
-            _free = true;
-        } break;
-        case VT::STRING: {
-            _val.l = Env.NewStringUTF(comvar.toString());
-            _free = true;
-        } break;
-        case VT::NIL:
-            break;
-        case VT::FUNCTION: {
-            /*
-            auto cls = Env.context().register_class<jre::Callback>();
-            JEntry<jre::Callback> cb(*cls->construct());
-            // 将当前的函数保存到全局监听，执行结束后进行释放
-            _fnidx = Env.context().add(var.toFunction());
-            cb->id(cb, (jlong)_fnidx);
-            _val.l = cb.asReturn();
-            _local = false;
-            _free = true;
-             */
-        } break;
-        default:
-            Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int)comvar.vt));
-            break;
+    case VT::INT:
+    case VT::UINT:
+        _val.i = comvar.toInt();
+        break;
+    case VT::FLOAT:
+        _val.f = comvar.toFloat();
+        break;
+    case VT::DOUBLE:
+        _val.d = comvar.toDouble();
+        break;
+    case VT::SHORT:
+    case VT::USHORT:
+        _val.s = comvar.toShort();
+        break;
+    case VT::LONG:
+    case VT::ULONG:
+        _val.j = comvar.toLong();
+        break;
+    case VT::LONGLONG:
+    case VT::ULONGLONG:
+        _val.j = (jlong)comvar.toLonglong();
+        break;
+    case VT::CHAR:
+    case VT::UCHAR:
+        _val.c = comvar.toChar();
+        break;
+    case VT::BOOLEAN:
+        _val.z = comvar.toBool();
+        break;
+    case VT::OBJECT:
+    {
+        _val.l = comvar.toObject();
+    }
+    break;
+    case VT::STRING:
+    {
+        _val.l = Env.NewStringUTF(comvar.toString());
+        _free = true;
+    }
+    break;
+    case VT::NIL:
+        break;
+    case VT::FUNCTION:
+    {
+        auto cls = Env.context().register_class<jre::Callback>();
+        JEntry<jre::Callback> cb(*cls->construct());
+        // 将当前的函数保存到全局监听，执行结束后进行释放
+        _fnidx = Env.context().add(var.toFunction());
+        cb->id(cb, (jlong)_fnidx);
+        _val.l = cb;
+        _free = true;
+    }
+    break;
+    default:
+        Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int)comvar.vt));
+        break;
     }
 }
 
 JValue::~JValue()
 {
-    if (_free && _val.l) {
-        if (_local) {
-            Env.DeleteLocalRef(_val.l);
-        } else {
-            Env.DeleteGlobalRef(_val.l);
-        }
+    if (_free && _val.l)
+    {
+        Env.DeleteLocalRef(_val.l);
         _val.l = nullptr;
     }
 
-    if (_fnidx) {
+    if (_fnidx)
+    {
         Env.context().function_drop(_fnidx);
         _fnidx = 0;
     }
 }
 
-JValues::JValues(::std::initializer_list<args_type::value_type> const& vars)
+JValues::JValues(::std::initializer_list<args_type::value_type> const &vars)
 {
-    for (auto &e:vars) {
+    for (auto &e : vars)
+    {
         auto t = make_shared<JValue>(*e);
         _vals.emplace_back(t);
         _jvals.emplace_back(*t);
     }
 }
 
-JValues::JValues(args_type const& vars)
+JValues::JValues(args_type const &vars)
 {
-    for (auto &e:vars) {
+    for (auto &e : vars)
+    {
         auto t = make_shared<JValue>(*e);
         _vals.emplace_back(t);
         _jvals.emplace_back(*t);
@@ -307,107 +266,110 @@ JVariant::JVariant(string const &v)
 }
 
 JVariant::JVariant(function_type::fun0_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun1_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun2_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun3_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun4_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun5_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun6_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun7_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun8_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
 JVariant::JVariant(function_type::fun9_type fn)
-        : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
+    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
 {
 }
 
-string const& JVariant::toString() const {
+string const &JVariant::toString() const
+{
     return _var.toString();
 }
 
 integer JVariant::toInteger() const
 {
-    switch (_var.vt) {
-        case variant_type::VT::INT:
-            return _var.toInt();
-        case variant_type::VT::UINT:
-            return _var.toUInt();
-        case variant_type::VT::LONG:
-            return _var.toLong();
-        case variant_type::VT::ULONG:
-            return _var.toULong();
-        case variant_type::VT::SHORT:
-            return _var.toShort();
-        case variant_type::VT::USHORT:
-            return _var.toUShort();
-        case variant_type::VT::LONGLONG:
-            return (integer) _var.toLonglong();
-        case variant_type::VT::ULONGLONG:
-            return (integer) _var.toULonglong();
-        case variant_type::VT::CHAR:
-            return _var.toChar();
-        case variant_type::VT::UCHAR:
-            return _var.toUChar();
-        case variant_type::VT::BOOLEAN:
-            return _var.toBool();
-        case variant_type::VT::FLOAT:
-            return (integer) round(_var.toFloat());
-        case variant_type::VT::DOUBLE:
-            return (integer) round(_var.toDouble());
-        case variant_type::VT::STRING:
-            return ::CROSS_NS::toint(_var.toString());
-        default:
-            break;
+    switch (_var.vt)
+    {
+    case variant_type::VT::INT:
+        return _var.toInt();
+    case variant_type::VT::UINT:
+        return _var.toUInt();
+    case variant_type::VT::LONG:
+        return _var.toLong();
+    case variant_type::VT::ULONG:
+        return _var.toULong();
+    case variant_type::VT::SHORT:
+        return _var.toShort();
+    case variant_type::VT::USHORT:
+        return _var.toUShort();
+    case variant_type::VT::LONGLONG:
+        return (integer)_var.toLonglong();
+    case variant_type::VT::ULONGLONG:
+        return (integer)_var.toULonglong();
+    case variant_type::VT::CHAR:
+        return _var.toChar();
+    case variant_type::VT::UCHAR:
+        return _var.toUChar();
+    case variant_type::VT::BOOLEAN:
+        return _var.toBool();
+    case variant_type::VT::FLOAT:
+        return (integer)round(_var.toFloat());
+    case variant_type::VT::DOUBLE:
+        return (integer)round(_var.toDouble());
+    case variant_type::VT::STRING:
+        return ::CROSS_NS::toint(_var.toString());
+    default:
+        break;
     }
     return 0;
 }
 
 number JVariant::toNumber() const
 {
-    switch (_var.vt) {
-        case variant_type::VT::FLOAT:
-            return _var.toFloat();
-        case variant_type::VT::DOUBLE:
-            return _var.toDouble();
-        case variant_type::VT::STRING:
-            return ::CROSS_NS::todouble(_var.toString());
-        default:
-            break;
+    switch (_var.vt)
+    {
+    case variant_type::VT::FLOAT:
+        return _var.toFloat();
+    case variant_type::VT::DOUBLE:
+        return _var.toDouble();
+    case variant_type::VT::STRING:
+        return ::CROSS_NS::todouble(_var.toString());
+    default:
+        break;
     }
     return toInteger();
 }
@@ -419,7 +381,8 @@ bool JVariant::toBool() const
     return toNumber() != 0;
 }
 
-JTypeSignature JVariant::signature() const {
+JTypeSignature JVariant::signature() const
+{
     // 函数类型
     if (vt == VT::FUNCTION)
     {
@@ -427,33 +390,34 @@ JTypeSignature JVariant::signature() const {
     }
 
     // 普通pod数据类型
-    switch (_var.vt) {
-        case variant_type::VT::BOOLEAN:
-            return TypeSignature::BOOLEAN;
-        case variant_type::VT::INT:
-        case variant_type::VT::UINT:
-            return TypeSignature::INT;
-        case variant_type::VT::SHORT:
-        case variant_type::VT::USHORT:
-            return TypeSignature::SHORT;
-        case variant_type::VT::LONG:
-        case variant_type::VT::ULONG:
-        case variant_type::VT::LONGLONG:
-        case variant_type::VT::ULONGLONG:
-            return TypeSignature::LONG;
-        case variant_type::VT::FLOAT:
-            return TypeSignature::FLOAT;
-        case variant_type::VT::DOUBLE:
-            return TypeSignature::DOUBLE;
-        case variant_type::VT::CHAR:
-        case variant_type::VT::UCHAR:
-            return TypeSignature::CHAR;
-        case variant_type::VT::STRING:
-            return TypeSignature::STRING;
-        case variant_type::VT::NIL:
-            return TypeSignature::VOID;
-        default:
-            break;
+    switch (_var.vt)
+    {
+    case variant_type::VT::BOOLEAN:
+        return TypeSignature::BOOLEAN;
+    case variant_type::VT::INT:
+    case variant_type::VT::UINT:
+        return TypeSignature::INT;
+    case variant_type::VT::SHORT:
+    case variant_type::VT::USHORT:
+        return TypeSignature::SHORT;
+    case variant_type::VT::LONG:
+    case variant_type::VT::ULONG:
+    case variant_type::VT::LONGLONG:
+    case variant_type::VT::ULONGLONG:
+        return TypeSignature::LONG;
+    case variant_type::VT::FLOAT:
+        return TypeSignature::FLOAT;
+    case variant_type::VT::DOUBLE:
+        return TypeSignature::DOUBLE;
+    case variant_type::VT::CHAR:
+    case variant_type::VT::UCHAR:
+        return TypeSignature::CHAR;
+    case variant_type::VT::STRING:
+        return TypeSignature::STRING;
+    case variant_type::VT::NIL:
+        return TypeSignature::VOID;
+    default:
+        break;
     }
 
     return TypeSignature::OBJECT;

@@ -38,10 +38,10 @@ public:
     JMemberField(JClass& clz) : JField(clz) {}
 
     // get
-    return_type operator()(JWeakObject&) const;
+    return_type operator()(JObject&) const;
 
     // set
-    void operator()(JWeakObject&, arg_type const&);
+    void operator()(JObject&, arg_type const&);
 };
 
 class JStaticField : public JField
@@ -54,7 +54,7 @@ public:
     return_type operator()() const;
 
     // set
-    void operator()(JWeakObject&, arg_type const&);
+    void operator()(JObject&, arg_type const&);
 };
 
 // 方法定义
@@ -116,18 +116,18 @@ public:
 
     JMemberMethod(JClass& clz) : JMethod(clz) {}
 
-    return_type operator()(JWeakObject&) const;
-    return_type operator()(JWeakObject&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&) const;
+    return_type operator()(JObject&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
 
-    virtual return_type invoke(JWeakObject&, args_type const &) const;
+    virtual return_type invoke(JObject&, args_type const &) const;
 
 };
 
@@ -272,6 +272,10 @@ public:
 
     inline jobject asReturn() const {
         return _obj->asReturn();
+    }
+
+    inline operator jobject() const {
+        return *_obj;
     }
 
 private:

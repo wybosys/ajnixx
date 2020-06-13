@@ -16,14 +16,14 @@ JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
 extern shared_ptr<JVariant> ReadToVariant(jobject _obj);
 
 JGlobalObject::JGlobalObject(jobject obj)
-        : JWeakObject(obj)
+        : JObject(obj)
 {
     if (_obj)
         _obj = Env.NewGlobalRef(_obj);
 }
 
 JGlobalObject::JGlobalObject(JGlobalObject const &r)
-        : JWeakObject(r._obj)
+        : JObject(r._obj)
 {
     if (_obj)
         _obj = Env.NewGlobalRef(_obj);
@@ -63,9 +63,9 @@ shared_ptr<JVariant> JGlobalObject::toVariant() const
     return ReadToVariant(_obj);
 }
 
-shared_ptr<JWeakObject> JGlobalObject::make_shared(jobject obj)
+shared_ptr<JObject> JGlobalObject::make_shared(jobject obj)
 {
-    ::std::shared_ptr<JWeakObject> r((JWeakObject*)(new JGlobalObject(obj)));
+    ::std::shared_ptr<JObject> r((JObject*)(new JGlobalObject(obj)));
     return r;
 }
 

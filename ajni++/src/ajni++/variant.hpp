@@ -11,11 +11,14 @@ AJNI_BEGIN
 class JVariant;
 typedef ::std::vector<JVariant const*> args_type;
 
-class JWeakObject {
+class JObject {
 public:
 
-    JWeakObject(jobject obj) : _obj(obj) {}
-    virtual ~JWeakObject() {}
+    // 自动引用计数
+    JObject(jobject = nullptr);
+
+    // 释放引用计数
+    virtual ~JObject();
 
     inline jobject toObject() const {
         return _obj;
@@ -25,36 +28,17 @@ public:
         return _obj;
     }
 
-    virtual jobject asReturn() const {
-        return _obj;
-    }
-
-protected:
-
-    jobject _obj;
-};
-
-class JObject : public JWeakObject {
-public:
-
-    // 自动引用计数
-    JObject(jobject = nullptr);
-
-    // 复制，动引用计数
-    JObject(JObject const &);
-
-    // 释放引用计数
-    virtual ~JObject();
-
-    JObject &operator = (jobject);
-
     // 作为程序返回值输出
     virtual jobject asReturn() const;
 
     // 转换成具体的Variant类型，和Variant(JObject)不同，转换会读取具体对象内部信息，返回C++数据构成的Variant对象
     shared_ptr<JVariant> toVariant() const;
 
-    static shared_ptr<JWeakObject> make_shared(jobject);
+    static shared_ptr<JObject> make_shared(jobject);
+
+protected:
+
+    jobject _obj;
 };
 
 class JString {
@@ -117,8 +101,7 @@ public:
 
 private:
     jvalue _val = {0};
-    bool _free = false; // 是否需要释放
-    bool _local = true; // 是否是局部对象
+    bool _free = false;
     size_t _fnidx = 0; // 如果是函数对象，保存函数的本地索引
 };
 
@@ -298,13 +281,12 @@ COMXX_BEGIN
 
 template <>
 inline jobject grab<jobject>(jobject obj) {
-    return AJNI_NS::Env.NewLocalRef(obj);
+    return obj;
 }
 
 template <>
 inline bool drop<jobject>(jobject obj) {
-    AJNI_NS::Env.DeleteLocalRef(obj);
-    return true;
+    return false;
 }
 
 COMXX_END
