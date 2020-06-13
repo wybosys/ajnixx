@@ -151,7 +151,6 @@ JValue::JValue(JVariant const &var)
         _fnidx = Env.context().add(var.toFunction());
         cb->id(cb, (jlong)_fnidx);
         _val.l = cb;
-        _free = true;
     }
     break;
     default:
