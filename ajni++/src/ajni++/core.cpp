@@ -207,6 +207,8 @@ JEnv::class_type JEnv::FindClass(string const& str)
 {
     jclass clz;
     if (d_ptr->clz_classloader) {
+        // 如果从其他逻辑而不是JNI回调调用，则大概率tls_env==null，需要加以保护
+        Check();
         clz = d_ptr->safeFindClass(str);
     } else if (tls_ismain) {
         clz = tls_env->FindClass(str.c_str());
