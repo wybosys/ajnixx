@@ -21,11 +21,11 @@ class Test {
     fun value_async(cb: Callback) {
         cb.grab()
         Thread({
-            // 开个线程回调主线程
-            MainThread.Invoke {
-                cb(123, "abc")
-                cb.drop()
-            }
+            // 不需要于主线程中回调
+            //MainThread.Invoke {
+            cb(123, "abc")
+            cb.drop()
+            //}
         }).start()
     }
 
