@@ -3,6 +3,7 @@
 
 #include "core.hpp"
 #include "variant.hpp"
+#include <set>
 
 AJNI_BEGIN
 
@@ -13,7 +14,7 @@ class JField
 {
 public:
 
-    JField(JClass const& clz) : _clazz(clz) {}
+    JField(JClass& clz);
     virtual ~JField() {}
 
     // 变量名
@@ -24,7 +25,7 @@ public:
 
 protected:
 
-    JClass const& _clazz;
+    JClass& _clazz;
 };
 
 typedef shared_ptr<JVariant> return_type;
@@ -34,26 +35,26 @@ class JMemberField : public JField
 {
 public:
 
-    JMemberField(JClass const& clz) : JField(clz) {}
+    JMemberField(JClass& clz) : JField(clz) {}
 
     // get
-    return_type operator()(JObject&) const;
+    return_type operator()(JWeakObject&) const;
 
     // set
-    void operator()(JObject&, arg_type const&);
+    void operator()(JWeakObject&, arg_type const&);
 };
 
 class JStaticField : public JField
 {
 public:
 
-    JStaticField(JClass const& clz) : JField(clz) {}
+    JStaticField(JClass& clz) : JField(clz) {}
 
     // get
     return_type operator()() const;
 
     // set
-    void operator()(JObject&, arg_type const&);
+    void operator()(JWeakObject&, arg_type const&);
 };
 
 // 方法定义
@@ -61,9 +62,7 @@ class JMethod
 {
 public:
 
-    typedef shared_ptr<JClass> class_type;
-
-    JMethod(JClass const& clz) : _clazz(clz) {}
+    JMethod(JClass& clz);
     virtual ~JMethod() {}
 
     // 函数名
@@ -74,23 +73,24 @@ public:
 
     // 参数类型, 设置则代表不使用自动推导，手动指定入参表
     typedef ::std::vector<JTypeSignature> args_signatures_type;
-    args_signatures_type sargs;
+    typedef shared_ptr<args_signatures_type> args_signatures_typep;
+    args_signatures_typep sargs;
 
     // 生成函数标记
-    string signature(args_type const &, args_signatures_type const & = {}) const;
+    string signature(args_type const &, args_signatures_typep const & = {}) const;
 
-    static string Signature(args_type const &, JTypeSignature const& sreturn, args_signatures_type const & = {});
+    static string Signature(args_type const &, JTypeSignature const& sreturn, args_signatures_typep const & = {});
 
 protected:
 
-    JClass const& _clazz;
+    JClass& _clazz;
 };
 
 class JConstructMethod : public JMethod
 {
 public:
 
-    JConstructMethod(JClass const& clz) : JMethod(clz)
+    JConstructMethod(JClass& clz) : JMethod(clz)
     {
         sreturn = TypeSignature::VOID;
     }
@@ -107,33 +107,35 @@ public:
     return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
 
     virtual return_type invoke(args_type const&) const;
+
 };
 
 class JMemberMethod : public JMethod
 {
 public:
 
-    JMemberMethod(JClass const& clz) : JMethod(clz) {}
+    JMemberMethod(JClass& clz) : JMethod(clz) {}
 
-    return_type operator()(JObject&) const;
-    return_type operator()(JObject&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&) const;
+    return_type operator()(JWeakObject&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JWeakObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
 
-    virtual return_type invoke(JObject&, args_type const &) const;
+    virtual return_type invoke(JWeakObject&, args_type const &) const;
+
 };
 
 class JStaticMethod : public JMethod
 {
 public:
 
-    JStaticMethod(JClass const& clz) : JMethod(clz) {}
+    JStaticMethod(JClass& clz) : JMethod(clz) {}
 
     return_type operator()() const;
     return_type operator()(arg_type const&) const;
@@ -158,31 +160,25 @@ public:
     JClass(JClassPath const&);
     virtual ~JClass() {}
 
-    // 类路径
-    inline JClassPath const& path() const {
-        return _clazzpath;
-    }
-
     // 类名
     JClassName name() const;
+
+    // 类路径
+    JClassPath const& path() const;
 
     // 是否存在
     bool exists() const;
 
+    jclass clazz() const;
+
+    operator jclass () const;
+
     // 定义构造函数
     JConstructMethod construct;
 
-    inline jclass clazz() const {
-        return (jclass)(jobject)_clazz;
-    }
-
-    inline operator jclass () const {
-        return (jclass)(jobject)_clazz;
-    }
-
 protected:
 
-    JGlobalObject _clazz;
+    JObject _clazz;
     JClassPath _clazzpath;
 };
 
@@ -201,12 +197,13 @@ public:
     typedef shared_ptr<JClass> class_type;
 
     // 添加类
-    bool add(class_type const&);
+    // bool add(class_type const&);
 
     // 查找类
-    class_type find_class(JClassPath const&) const;
+    // class_type find_class(JClassPath const&) const;
 
     // 注册类
+    /*
     template <typename T>
     class_type register_class() {
         auto fnd = find_class(T::CLASSPATH);
@@ -215,6 +212,7 @@ public:
         auto r = ::NNT_NS::make_dynamic_shared<T, JClass>();
         return add(r) ? r : nullptr;
     }
+     */
 
     typedef typename JVariant::function_type function_type;
     typedef size_t function_index_type;
@@ -236,34 +234,38 @@ public:
 };
 
 // 实例定义
-template <typename TClass>
+template <typename TClass, typename TObject = JWeakObject>
 class JEntry
 {
 public:
 
-    typedef JContext::class_type class_type;
-    typedef JEntry<TClass> self_type;
+    typedef TClass class_type;
+    typedef TObject object_type;
+    typedef JEntry<TClass, TObject> self_type;
 
-    JEntry(shared_ptr<JObject> const& obj)
-    : _obj(obj)
+    JEntry(shared_ptr<object_type> const& obj, JContext::class_type const& clz = nullptr)
+    : _obj(obj), _clazz(clz)
     {
-        _clazz = Env.context().register_class<TClass>();
+        if (!_clazz) {
+            _clazz = make_shared<class_type>();
+        }
     }
 
     JEntry(self_type const& r)
     : _obj(r._obj), _clazz(r._clazz)
     {
+        // pass
     }
 
-    inline TClass* operator -> () {
-        return dynamic_cast<TClass*>(_clazz.get());
+    inline class_type* operator -> () {
+        return dynamic_cast<class_type*>(_clazz.get());
     }
 
-    inline TClass const* operator -> () const {
-        return dynamic_cast<TClass const*>(_clazz.get());
+    inline class_type const* operator -> () const {
+        return dynamic_cast<class_type const*>(_clazz.get());
     }
 
-    inline operator JObject& () {
+    inline operator object_type& () {
         return *_obj;
     }
 
@@ -274,7 +276,7 @@ public:
 private:
 
     JContext::class_type _clazz;
-    shared_ptr<JObject> _obj;
+    shared_ptr<object_type> _obj;
 };
 
 AJNI_END

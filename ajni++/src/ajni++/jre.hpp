@@ -12,6 +12,16 @@ public:
     JMemberMethod toString;
 };
 
+class ClassLoader : public JClass
+{
+public:
+    static JClassPath const CLASSPATH;
+
+    ClassLoader(JClassPath const& = CLASSPATH);
+
+    JMemberMethod loadClass;
+};
+
 class Throwable : public Object
 {
 public:
@@ -20,7 +30,7 @@ public:
     Throwable(JClassPath const& = CLASSPATH);
 };
 
-class Number : public Object
+class Number : public JClass
 {
 public:
     static JClassPath const CLASSPATH;
@@ -47,7 +57,7 @@ public:
     JMemberMethod doubleValue;
 };
 
-class String : public Object
+class String : public JClass
 {
 public:
     static JClassPath const CLASSPATH;
@@ -61,7 +71,7 @@ namespace TypeSignature
     extern const JTypeSignature CALLBACK;
 }
 
-class Callback : public Object
+class Callback : public JClass
 {
 public:
     static JClassPath const CLASSPATH;

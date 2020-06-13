@@ -2,6 +2,8 @@
 #include "ajni++.hpp"
 #include "jre.hpp"
 #include "variant.hpp"
+#include "android.hpp"
+#include "java-prv.hpp"
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
@@ -12,6 +14,8 @@ const jobject jnull = nullptr;
 
 static JavaVM *gs_vm = nullptr;
 static JNIEnv *gs_env = nullptr;
+static jobject gs_activity = nullptr;
+static jobject gs_context = nullptr;
 static thread_local bool tls_ismain = false;
 static thread_local JNIEnv *tls_env = nullptr;
 
@@ -40,12 +44,38 @@ class JEnvPrivate
 {
 public:
 
+    // 清理
     void clear()
     {
+        // 清理ajni中构造的局部数据
         ctx.clear();
+
+        // 清理全局obj
+        if (clz_classloader) {
+            Env.DeleteGlobalRef(clz_classloader);
+            Env.DeleteGlobalRef(obj_classloader);
+            clz_classloader = nullptr;
+            obj_classloader = nullptr;
+            mid_loadclass = nullptr;
+        }
     }
 
+    // ajni增加的数据上下文
     JContext ctx;
+
+    // 用于跨线程查找类id
+    jclass clz_classloader = nullptr;
+    jobject obj_classloader = nullptr;
+    jmethodID mid_loadclass = nullptr;
+
+    // 其他线程中不能使用FindClass查找类型，并且也无法使用GetMethod等对GlobalClass查找其成员，所以需要使用classloder查找出local的class对象
+    jclass safeFindClass(JClassPath const& cp) const
+    {
+        jstring str = tls_env->NewStringUTF(cp.c_str());
+        auto clz = (jclass)tls_env->CallObjectMethod(obj_classloader, mid_loadclass, str);
+        tls_env->DeleteLocalRef(str);
+        return clz;
+    }
 };
 
 JEnv::JEnv()
@@ -65,13 +95,21 @@ JContext& JEnv::context()
 
 void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
 {
+    if (gs_vm) {
+        Logger::Fatal("AJNI++环境已经初始化");
+        return;
+    }
+
     Logger::Info("启动AJNI++环境");
 
     gs_vm = vm;
 
     if (!env) {
-        vm->GetEnv((void **) &env, JNI_VERSION_1_4);
-        vm->AttachCurrentThread(&env, nullptr);
+        jint jret = vm->GetEnv((void **) &env, JNI_VERSION_1_4);
+        if (jret == JNI_EDETACHED) {
+            gs_vm->AttachCurrentThread(&tls_env, nullptr);
+            tls_guard.need_detach = true;
+        }
     }
 
     gs_env = tls_env = env;
@@ -104,6 +142,38 @@ void JEnv::Check()
         gs_vm->AttachCurrentThread(&tls_env, nullptr);
         tls_guard.need_detach = true;
     }
+}
+
+void JEnv::BindContext(jobject jact, jobject jctx)
+{
+    // 清理
+    d_ptr->clear();
+
+    // 绑定当前，有可能为置空
+    gs_activity = jact;
+    gs_context = jctx;
+
+    if (gs_context) {
+        AJNI_CHECKEXCEPTION;
+
+        // 绑定新的context
+        jclass clz_context = Env.FindClass("android/content/Context");
+        jmethodID mid_getclassloader = Env.GetMethodID(clz_context, "getClassLoader", "()Ljava/lang/ClassLoader;");
+        jobject obj_classloader = Env.CallObjectMethod(gs_context, mid_getclassloader, JValues());
+        jclass clz_classloader = Env.FindClass("java/lang/ClassLoader");
+        jmethodID mid_loadclass = Env.GetMethodID(clz_classloader, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;");
+        d_ptr->clz_classloader = Env.NewGlobalRef(clz_classloader);
+        d_ptr->obj_classloader = Env.NewGlobalRef(obj_classloader);
+        d_ptr->mid_loadclass = mid_loadclass;
+    }
+}
+
+jclass JEnv::SearchClass(string const& str)
+{
+    if (d_ptr->clz_classloader) {
+        return d_ptr->safeFindClass(str);
+    }
+    return FindClass(str);
 }
 
 jclass JEnv::FindClass(string const& str)
@@ -541,6 +611,11 @@ jstring JEnv::NewStringUTF(string const& str)
     return tls_env->NewStringUTF(str.c_str());
 }
 
+void JEnv::ExceptionClear()
+{
+    tls_env->ExceptionClear();
+}
+
 namespace TypeSignature
 {
     const JTypeSignature CLASS = "Ljava/lang/Class;";
@@ -560,12 +635,19 @@ namespace TypeSignature
 
 ExceptionGuard::~ExceptionGuard()
 {
+    // 如果运行在子线程中，则为自动清理，否则JNI会每次都抛出 using JNIEnv* from thread Thread 的异常
+    if (!tls_ismain) {
+        // 不进行Clear操作，也会报这个问题，采用业务层遇到错误时自己清理
+        return;
+    }
+
     if (!gs_env->ExceptionCheck())
         return;
+
     jthrowable err = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
     if (_print) {
-        JEntry<jre::Throwable> obj(make_shared<JObject>(err));
+        JEntry<jre::Throwable> obj(make_shared<JWeakObject>(err));
         string msg = *obj->toString(obj);
         Logger::Error("捕获JNI异常 " + msg);
     }

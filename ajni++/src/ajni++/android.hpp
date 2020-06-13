@@ -12,6 +12,16 @@ namespace TypeSignature
     extern const JTypeSignature VIEWGROUP_LAYOUTPARAMS;
 } // namespace TypeSignature
 
+class Context : public JClass
+{
+public:
+    static JClassPath const CLASSPATH;
+
+    Context(JClassPath const& = CLASSPATH);
+
+    JMemberMethod getClassLoader;
+};
+
 class Activity : public JClass
 {
 public:

@@ -13,6 +13,17 @@ Object::Object(JClassPath const& cp)
     toString.sreturn = ::AJNI_NS::TypeSignature::STRING;
 }
 
+JClassPath const ClassLoader::CLASSPATH = "java/lang/ClassLoader";
+
+ClassLoader::ClassLoader(JClassPath const& cp)
+        : JClass(cp), loadClass(*this)
+{
+    loadClass.name = "loadClass";
+    loadClass.sreturn = ::AJNI_NS::TypeSignature::CLASS;
+    loadClass.sargs = make_shared<JMethod::args_signatures_type>();
+    loadClass.sargs->emplace_back(::AJNI_NS::TypeSignature::STRING);
+}
+
 JClassPath const Throwable::CLASSPATH = "java/lang/Throwable";
 
 Throwable::Throwable(JClassPath const& cp)
@@ -23,7 +34,7 @@ Throwable::Throwable(JClassPath const& cp)
 JClassPath const Number::CLASSPATH = "java/lang/Number";
 
 Number::Number(JClassPath const& cp)
-: Object(cp),
+: JClass(cp),
 longValue(*this)
 {
     longValue.name = "longValue";
@@ -53,7 +64,7 @@ doubleValue(*this)
 JClassPath const String::CLASSPATH = "java/lang/String";
 
 String::String(JClassPath const& cp)
-: Object(cp),
+: JClass(cp),
 getBytes(*this)
 {
     getBytes.name = "getBytes";
@@ -68,7 +79,7 @@ namespace TypeSignature
 JClassPath const Callback::CLASSPATH = "com/nnt/ajnixx/Callback";
 
 Callback::Callback(JClassPath const& cp)
-: Object(cp),
+: JClass(cp),
 id(*this)
 {
     id.name = "id";

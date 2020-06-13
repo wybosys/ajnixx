@@ -17,14 +17,12 @@ public:
 
     jclass clazz$() const;
 
-    inline JObject const& object$() const {
-        return *_object$;
-    }
+    JObject const& object$() const;
 
 protected:
 
-    shared_ptr<JObject> _object$;
-    shared_ptr<JObject> _clazz$;
+    JObject _object$;
+    JObject _clazz$;
     JClassPath _classpath$;
 };
 
@@ -32,7 +30,7 @@ class JStaticMethod : public ::AJNI_NS::JStaticMethod
 {
 public:
 
-    JStaticMethod(JClass const& clz)
+    JStaticMethod(JClass& clz)
     : ::AJNI_NS::JStaticMethod(clz)
     {}
 
@@ -88,7 +86,7 @@ public:
     // 返回类型
     JTypeSignature sreturn;
 
-    JMethod::args_signatures_type sargs;
+    JMethod::args_signatures_typep sargs;
 
 protected:
 

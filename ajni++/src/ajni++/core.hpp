@@ -30,7 +30,7 @@
 #define AJNI_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, _AJNI_LOG_IDR, __VA_ARGS__)
 #define AJNI_LOGF(...) __android_log_print(ANDROID_LOG_FATAL, _AJNI_LOG_IDR, __VA_ARGS__)
 
-#define AJNI_CHECKEXCEPTION ExceptionGuard _NNT_COMBINE(__exception_guard_, __LINE__)
+#define AJNI_CHECKEXCEPTION ::AJNI_NS::ExceptionGuard _NNT_COMBINE(__exception_guard_, __LINE__)
 
 #define AJNI_API(ret) extern "C" JNIEXPORT ret JNICALL
 #define AJNI_FUNC(cls, name) Java_com_nnt_ajnixx_##cls##_##name
@@ -124,12 +124,18 @@ public:
     // 检查线程安全行
     void Check();
 
+    // 绑定当前上下文，用于在JNI环境中获得资源访问
+    void BindContext(jobject act, jobject ctx);
+
     // 外部业务层提供的创建线程中JNIEnv的实现
     typedef ::std::function<JNIEnv*()> jnienv_retrieve_impl;
     jnienv_retrieve_impl GetCurrentJniEnv;
 
     // 获得上下文，之后类均从该对象获得
     JContext& context();
+
+    // 跨线程安全获得classid，FindClass只能运行在主线程
+    jclass SearchClass(string const&);
 
     jclass FindClass(string const&);
     bool IsAssignableFrom(jclass, jclass);
@@ -226,6 +232,7 @@ public:
     string GetStringUTFChars(jstring);
     jstring NewStringUTF(string const&);
 
+    void ExceptionClear();
 };
 
 // 获得全局env
@@ -252,8 +259,10 @@ namespace TypeSignature
 class ExceptionGuard
 {
 public:
+
     ExceptionGuard(bool print = true) : _print(print) {}
     ~ExceptionGuard();
+
 private:
     bool _print;
 };

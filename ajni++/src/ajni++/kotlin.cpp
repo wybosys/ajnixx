@@ -12,26 +12,28 @@ string capitalize(string const& str)
 JClass::JClass(JClassPath const& cp)
 : ::AJNI_NS::JClass(cp)
 {
-    {
-        AJNI_CHECKEXCEPTION(false);
-        _classpath$ = cp + "$Companion";
+    AJNI_CHECKEXCEPTION(false);
+    _classpath$ = cp + "$Companion";
 
-        jclass jclz = Env.FindClass(_classpath$);
-        if (jclz) {
-            _clazz$ = make_shared<JObject>(jclz);
+    jclass jclz = Env.SearchClass(_classpath$);
+    if (jclz) {
+        _clazz$ = jclz;
 
-            // 获取静态对象地址
-            ::AJNI_NS::JStaticField sf(*this);
-            sf.name = "Companion";
-            sf.stype = "L" + _classpath$ + ";";
-            _object$ = *sf();
-        }
+        // 获取静态对象地址
+        ::AJNI_NS::JStaticField sf(*this);
+        sf.name = "Companion";
+        sf.stype = "L" + _classpath$ + ";";
+        _object$ = *sf()->toObject();
     }
 }
 
 jclass JClass::clazz$() const
 {
-    return _clazz$ ? (jclass)(jobject)*_clazz$ : (jclass)(jobject)_clazz;
+    return _clazz$ ? (jclass)(jobject)_clazz$ : (jclass)(jobject)_clazz;
+}
+
+JObject const& JClass::object$() const {
+    return _object$;
 }
 
 return_type JStaticMethod::invoke(args_type const &args) const

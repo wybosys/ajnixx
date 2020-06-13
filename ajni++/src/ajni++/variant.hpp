@@ -11,8 +11,28 @@ AJNI_BEGIN
 class JVariant;
 typedef ::std::vector<JVariant const*> args_type;
 
-class JObject {
+class JWeakObject {
 public:
+
+    JWeakObject(jobject obj) : _obj(obj) {}
+    virtual ~JWeakObject() {}
+
+    inline operator jobject () const {
+        return _obj;
+    }
+
+    virtual jobject asReturn() const {
+        return _obj;
+    }
+
+protected:
+
+    jobject _obj;
+};
+
+class JObject : public JWeakObject {
+public:
+
     // 自动引用计数
     JObject(jobject = nullptr);
 
@@ -20,48 +40,17 @@ public:
     JObject(JObject const &);
 
     // 释放引用计数
-    ~JObject();
+    virtual ~JObject();
 
-    inline operator jobject () const {
-        return _obj;
-    }
-
-    JObject &operator=(JObject const &);
+    JObject &operator = (jobject);
 
     // 作为程序返回值输出
-    jobject asReturn() const;
+    virtual jobject asReturn() const;
 
     // 转换成具体的Variant类型，和Variant(JObject)不同，转换会读取具体对象内部信息，返回C++数据构成的Variant对象
     shared_ptr<JVariant> toVariant() const;
 
-private:
-    jobject _obj;
-};
-
-class JGlobalObject {
-public:
-    // 自动引用计数
-    JGlobalObject(jobject = nullptr);
-
-    // 复制，动引用计数
-    JGlobalObject(JGlobalObject const &);
-
-    // 释放引用计数
-    ~JGlobalObject();
-
-    inline operator jobject () const {
-        return _obj;
-    }
-
-    // 作为程序返回值输出
-    jobject asReturn() const;
-
-    shared_ptr<JVariant> toVariant() const;
-
-    JGlobalObject &operator=(JGlobalObject const &);
-
-private:
-    jobject _obj;
+    static shared_ptr<JWeakObject> make_shared(jobject);
 };
 
 class JString {
@@ -133,6 +122,7 @@ class JValues {
 public:
 
     JValues() = default;
+    JValues(::std::initializer_list<args_type::value_type> const&);
     JValues(args_type const &);
 
     typedef shared_ptr <JValue> value_type;
@@ -240,12 +230,12 @@ public:
         return _var;
     }
 
-    inline shared_ptr<JObject> toObject() const {
-        return make_shared<JObject>(_var.toObject());
+    inline shared_ptr<JWeakObject> toObject() const {
+        return make_shared<JWeakObject>(_var.toObject());
     }
 
-    inline operator shared_ptr<JObject> () const {
-        return make_shared<JObject>(_var.toObject());
+    inline operator shared_ptr<JWeakObject> () const {
+        return make_shared<JWeakObject>(_var.toObject());
     }
 
     inline shared_ptr<function_type> toFunction() const {

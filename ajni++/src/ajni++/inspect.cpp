@@ -13,7 +13,9 @@ public:
     {
         ForName.name = "forName";
         ForName.sreturn = TypeSignature::CLASS;
-        ForName.sargs.emplace_back(TypeSignature::STRING);
+
+        ForName.sargs = make_shared<JMethod::args_signatures_type>();
+        ForName.sargs->emplace_back(::AJNI_NS::TypeSignature::STRING);
     }
 
     JStaticMethod ForName;

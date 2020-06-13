@@ -2,6 +2,7 @@
 #include "ajni++.hpp"
 #include "jre.hpp"
 #include "variant.hpp"
+#include "java-prv.hpp"
 #include <atomic>
 
 #include <cross/cross.hpp>
@@ -10,6 +11,11 @@
 AJNI_BEGIN
 
 USE_CROSS
+
+JField::JField(JClass& clz)
+: _clazz(clz)
+{
+}
 
 return_type JStaticField::operator()() const
 {
@@ -78,7 +84,7 @@ return_type JStaticField::operator()() const
     return _V(v);
 }
 
-void JStaticField::operator()(JObject& obj, arg_type const& v)
+void JStaticField::operator()(JWeakObject& obj, arg_type const& v)
 {
     AJNI_CHECKEXCEPTION;
 
@@ -132,7 +138,7 @@ void JStaticField::operator()(JObject& obj, arg_type const& v)
     }
 }
 
-return_type JMemberField::operator()(JObject& obj) const
+return_type JMemberField::operator()(JWeakObject& obj) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -199,7 +205,7 @@ return_type JMemberField::operator()(JObject& obj) const
     return _V(v);
 }
 
-void JMemberField::operator()(JObject& obj, arg_type const& v)
+void JMemberField::operator()(JWeakObject& obj, arg_type const& v)
 {
     AJNI_CHECKEXCEPTION;
 
@@ -355,16 +361,21 @@ return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
 
-string JMethod::signature(args_type const &args, args_signatures_type const &predefs) const
+JMethod::JMethod(JClass& clz)
+: _clazz(clz)
+{
+}
+
+string JMethod::signature(args_type const &args, args_signatures_typep const &predefs) const
 {
     return Signature(args, sreturn, predefs);
 }
 
-string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, args_signatures_type const &predefs)
+string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, args_signatures_typep const &predefs)
 {
-    if (predefs.size())
+    if (predefs)
     {
-        ::std::vector<string> tss(predefs.begin(), predefs.end());
+        ::std::vector<string> tss(predefs->begin(), predefs->end());
         string sig = "(" + implode(tss, "") + ")" + sreturn;
         return sig;
     }
@@ -379,52 +390,52 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
     return sig;
 }
 
-return_type JMemberMethod::operator()(JObject& obj) const
+return_type JMemberMethod::operator()(JWeakObject& obj) const
 {
     return invoke(obj, {});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v) const
 {
     return invoke(obj, {&v});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1) const
 {
     return invoke(obj, {&v, &v1});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2) const
 {
     return invoke(obj, {&v, &v1, &v2});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7, arg_type const& v8) const
+return_type JMemberMethod::operator()(JWeakObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7, arg_type const& v8) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
@@ -522,7 +533,7 @@ return_type JStaticMethod::invoke(args_type const &args) const
     return _V(v);
 }
 
-return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
+return_type JMemberMethod::invoke(JWeakObject& obj, args_type const &args) const
 {
     AJNI_CHECKEXCEPTION;
 
@@ -531,11 +542,14 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
 
     auto clz = _clazz.clazz();
 
-    auto mid = Env.GetMethodID(clz, name, sig);
-    if (!mid)
+    jmethodID mid;
     {
-        Logger::Error("没有找到函数 " + name + sig);
-        return nullptr;
+        AJNI_CHECKEXCEPTION;
+        mid = Env.GetMethodID(clz, name, sig);
+        if (!mid) {
+            Logger::Error("没有找到函数 " + name + sig);
+            return nullptr;
+        }
     }
 
     if (sreturn == TypeSignature::BOOLEAN)
@@ -597,22 +611,33 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
     return _V(v);
 }
 
-JClass::JClass(JClassPath const&path)
-    : _clazzpath(path), construct(*this)
+JClass::JClass(JClassPath const& cp)
+: _clazzpath(cp), construct(*this)
 {
-    if (!path.empty()) {
+    if (cp.size()) {
         AJNI_CHECKEXCEPTION;
-        _clazz = Env.FindClass(path);
+        _clazz = Env.SearchClass(cp);
     }
 }
 
-JClassName JClass::name() const
-{
+JClassName JClass::name() const {
+    return _clazzpath;
+}
+
+JClassPath const& JClass::path() const {
     return _clazzpath;
 }
 
 bool JClass::exists() const {
     return _clazz != nullptr;
+}
+
+jclass JClass::clazz() const {
+    return (jclass)(jobject)_clazz;
+}
+
+JClass::operator jclass () const {
+    return (jclass)(jobject)_clazz;
 }
 
 class JContextPrivate
@@ -657,6 +682,7 @@ JContext::~JContext()
     NNT_CLASS_DESTORY();
 }
 
+/*
 bool JContext::add(class_type const& cls)
 {
     if (!cls->exists())
@@ -670,6 +696,7 @@ JContext::class_type JContext::find_class(JClassPath const& ph) const
     auto fnd = d_ptr->classes.find(ph);
     return fnd == d_ptr->classes.end() ? nullptr : fnd->second;
 }
+*/
 
 void JContext::clear()
 {

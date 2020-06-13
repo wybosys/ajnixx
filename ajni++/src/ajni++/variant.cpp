@@ -11,15 +11,17 @@
 
 AJNI_BEGIN
 
+extern shared_ptr<JVariant> ReadToVariant(jobject _obj);
+
 JObject::JObject(jobject obj)
-    : _obj(obj)
+: JWeakObject(obj)
 {
     if (_obj)
         _obj = Env.NewLocalRef(_obj);
 }
 
 JObject::JObject(JObject const &r)
-    : _obj(r._obj)
+: JWeakObject(r._obj)
 {
     if (_obj)
         _obj = Env.NewLocalRef(_obj);
@@ -34,15 +36,15 @@ JObject::~JObject()
     }
 }
 
-JObject &JObject::operator=(JObject const &r)
+JObject &JObject::operator = (jobject r)
 {
-    if (_obj == r._obj)
+    if (_obj == r)
         return *this;
 
     if (_obj)
         Env.DeleteLocalRef(_obj);
 
-    _obj = r._obj;
+    _obj = r;
     if (_obj)
     {
         _obj = Env.NewLocalRef(_obj);
@@ -56,92 +58,15 @@ jobject JObject::asReturn() const
     return Env.NewGlobalRef(_obj);
 }
 
-shared_ptr<JVariant> ReadToVariant(jobject _obj)
-{
-    if (_obj == nullptr)
-        return make_shared<JVariant>(); // 不能返回null，客户端收到的是引用类型，通过vt判断
-
-    auto& ctx = Env.context();
-    auto obj = make_shared<JObject>(_obj);
-
-    auto STD_NUMBER = ctx.register_class<jre::Number>();
-    if (Env.IsInstanceOf(*obj, *STD_NUMBER)) {
-        auto STD_DOUBLE = ctx.register_class<jre::Double>();
-        if (Env.IsInstanceOf(*obj, *STD_DOUBLE)) {
-            JEntry<jre::Double> ref(obj);
-            return ref->doubleValue(ref);
-        }
-
-        auto STD_FLOAT = ctx.register_class<jre::Float>();
-        if (Env.IsInstanceOf(*obj, *STD_FLOAT)) {
-            JEntry<jre::Float> ref(obj);
-            return ref->floatValue(ref);
-        }
-
-        JEntry<jre::Number> ref(obj);
-        return ref->longValue(ref);
-    }
-
-    auto STD_STRING = ctx.register_class<jre::String>();
-    if (Env.IsInstanceOf(*obj, *STD_STRING)) {
-        JEntry<jre::String> ref(obj);
-        return ref->getBytes(ref);
-    }
-
-    return _V(_obj);
-}
-
 shared_ptr<JVariant> JObject::toVariant() const
 {
     return ReadToVariant(_obj);
 }
 
-JGlobalObject::JGlobalObject(jobject obj)
-    : _obj(obj)
+shared_ptr<JWeakObject> JObject::make_shared(jobject obj)
 {
-    if (_obj)
-        _obj = Env.NewGlobalRef(_obj);
-}
-
-JGlobalObject::JGlobalObject(JGlobalObject const &r)
-    : _obj(r._obj)
-{
-    if (_obj)
-        _obj = Env.NewGlobalRef(_obj);
-}
-
-JGlobalObject::~JGlobalObject()
-{
-    if (_obj)
-    {
-        Env.DeleteGlobalRef(_obj);
-        _obj = nullptr;
-    }
-}
-
-JGlobalObject &JGlobalObject::operator=(JGlobalObject const &r) {
-    if (_obj == r._obj)
-        return *this;
-
-    if (_obj)
-        Env.DeleteGlobalRef(_obj);
-
-    _obj = r._obj;
-    if (_obj) {
-        _obj = Env.NewGlobalRef(_obj);
-    }
-
-    return *this;
-}
-
-jobject JGlobalObject::asReturn() const
-{
-    return Env.NewGlobalRef(_obj);
-}
-
-shared_ptr<JVariant> JGlobalObject::toVariant() const
-{
-    return ReadToVariant(_obj);
+    ::std::shared_ptr<JWeakObject> r((JWeakObject*)(new JObject(obj)));
+    return r;
 }
 
 JString::JString(jstring v)
@@ -259,6 +184,7 @@ JValue::JValue(JVariant const& var)
         case VT::NIL:
             break;
         case VT::FUNCTION: {
+            /*
             auto cls = Env.context().register_class<jre::Callback>();
             JEntry<jre::Callback> cb(*cls->construct());
             // 将当前的函数保存到全局监听，执行结束后进行释放
@@ -267,6 +193,7 @@ JValue::JValue(JVariant const& var)
             _val.l = cb.asReturn();
             _local = false;
             _free = true;
+             */
         } break;
         default:
             Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int)comvar.vt));
@@ -288,6 +215,15 @@ JValue::~JValue()
     if (_fnidx) {
         Env.context().function_drop(_fnidx);
         _fnidx = 0;
+    }
+}
+
+JValues::JValues(::std::initializer_list<args_type::value_type> const& vars)
+{
+    for (auto &e:vars) {
+        auto t = make_shared<JValue>(*e);
+        _vals.emplace_back(t);
+        _jvals.emplace_back(*t);
     }
 }
 

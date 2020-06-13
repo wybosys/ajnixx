@@ -2,16 +2,24 @@
 
 USE_AJNI
 
+AJNI_API(void) AJNI_COMPANION_FUNC(Activity, jni_1bind)(JNIEnv *env, jobject thiz, jobject act, jobject ctx)
+{
+    Env.BindContext(act, ctx);
+}
+
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1grab)(JNIEnv *env, jobject thiz, jlong fnidx) {
+    Env.Check();
     Env.context().function_grab(fnidx);
     return nullptr;
 }
 
 AJNI_API(jboolean) AJNI_FUNC(Callback, jni_1drop)(JNIEnv *env, jobject thiz, jlong fnidx) {
+    Env.Check();
     return Env.context().function_drop(fnidx);
 }
 
 #define _AJNI_CALLBACK_IMPL_BEGIN \
+    Env.Check(); \
     auto &ctx = Env.context(); \
     auto fn = ctx.find_function(fnidx); \
     if (!fn) { \
