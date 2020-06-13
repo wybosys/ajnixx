@@ -3,6 +3,25 @@
 
 AJNI_BEGIN
 
+// 推出后自动释放的控制
+class JEnvThreadAutoGuard
+{
+public:
+
+    ~JEnvThreadAutoGuard();
+
+    void free_env();
+
+    // 推出线程时是否需要释放env
+    bool detach = false;
+
+    static JEnvThreadAutoGuard& tls();
+
+    // 保存于线程上的注册类列表
+    typedef ::std::map<JClassPath, JContext::class_type> classes_type;
+    classes_type classes;
+};
+
 class JGlobalObject : public JWeakObject {
 public:
     // 自动引用计数

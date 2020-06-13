@@ -1,9 +1,20 @@
 package com.nnt.ajnixx
 
 import android.app.Activity
+import android.os.Bundle
 import java.lang.ref.WeakReference
 
-class Activity {
+open class Activity : Activity() {
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        // 之前必须已经将so加载成功
+
+        // 绑定当前上下文至jni层
+        Bind(this)
+    }
+
     companion object {
         private var _current = WeakReference<Activity?>(null)
 
@@ -11,24 +22,20 @@ class Activity {
             _current = WeakReference<Activity?>(act)
         }
 
+        fun Unbind() {
+            Bind(null)
+        }
+
         fun Get(): Activity {
             return _current.get() as Activity
         }
 
-        fun Clear() {
-            Bind(null)
+        fun Current(): Activity? {
+            return _current.get()
         }
 
-        fun Invoke(fn: () -> Unit) {
-            if (_current.get() == null) {
-                // 没有绑定主activity，只能直接运行
-                fn()
-                return
-            }
-
-            // 运行于UI线程
-            val cur = _current.get() as Activity
-            cur.runOnUiThread(fn)
+        fun Clear() {
+            Bind(null)
         }
     }
 }

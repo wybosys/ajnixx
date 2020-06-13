@@ -648,9 +648,6 @@ public:
     : index_functions(0)
     {}
 
-    typedef ::std::map<JClassPath, JContext::class_type> classes_type;
-    classes_type classes;
-
     class FunctionType {
     public:
 
@@ -682,25 +679,24 @@ JContext::~JContext()
     NNT_CLASS_DESTORY();
 }
 
-/*
 bool JContext::add(class_type const& cls)
 {
     if (!cls->exists())
         return false;
-    d_ptr->classes[cls->path()] = cls;
+    JEnvThreadAutoGuard::tls().classes[cls->path()] = cls;
     return true;
 }
 
 JContext::class_type JContext::find_class(JClassPath const& ph) const
 {
-    auto fnd = d_ptr->classes.find(ph);
-    return fnd == d_ptr->classes.end() ? nullptr : fnd->second;
+    auto const& clss = JEnvThreadAutoGuard::tls().classes;
+    auto fnd = clss.find(ph);
+    return fnd == clss.end() ? nullptr : fnd->second;
 }
-*/
 
 void JContext::clear()
 {
-    d_ptr->classes.clear();
+    JEnvThreadAutoGuard::tls().classes.clear();
     d_ptr->functions.clear();
     d_ptr->index_functions = 0;
 }

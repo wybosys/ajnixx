@@ -88,7 +88,7 @@ void Test0(::std::ostringstream& oss)
         oss << "找到 Int 类对象" << endl;
     }
 
-    // cls = Env.context().register_class<Test>();
+    cls = Env.context().register_class<Test>();
     if (!cls) {
         oss << "没找到 Test 类" << endl;
         return;

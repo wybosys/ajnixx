@@ -197,13 +197,12 @@ public:
     typedef shared_ptr<JClass> class_type;
 
     // 添加类
-    // bool add(class_type const&);
+    bool add(class_type const&);
 
     // 查找类
-    // class_type find_class(JClassPath const&) const;
+    class_type find_class(JClassPath const&) const;
 
     // 注册类
-    /*
     template <typename T>
     class_type register_class() {
         auto fnd = find_class(T::CLASSPATH);
@@ -212,7 +211,6 @@ public:
         auto r = ::NNT_NS::make_dynamic_shared<T, JClass>();
         return add(r) ? r : nullptr;
     }
-     */
 
     typedef typename JVariant::function_type function_type;
     typedef size_t function_index_type;
@@ -247,7 +245,7 @@ public:
     : _obj(obj), _clazz(clz)
     {
         if (!_clazz) {
-            _clazz = make_shared<class_type>();
+            _clazz = Env.context().register_class<class_type >();
         }
     }
 

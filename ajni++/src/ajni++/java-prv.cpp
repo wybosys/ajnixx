@@ -5,6 +5,14 @@
 
 AJNI_BEGIN
 
+JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
+{
+    classes.clear();
+
+    // 清理结束后才能释放env
+    free_env();
+}
+
 extern shared_ptr<JVariant> ReadToVariant(jobject _obj);
 
 JGlobalObject::JGlobalObject(jobject obj)
@@ -69,19 +77,16 @@ shared_ptr<JVariant> ReadToVariant(jobject _obj)
     auto& ctx = Env.context();
     auto obj = make_shared<JWeakObject>(_obj);
 
-    //auto STD_NUMBER = ctx.register_class<jre::Number>();
-    jre::Number STD_NUMBER;
-    if (Env.IsInstanceOf(*obj, STD_NUMBER)) {
-        // auto STD_DOUBLE = ctx.register_class<jre::Double>();
-        jre::Double STD_DOUBLE;
-        if (Env.IsInstanceOf(*obj, STD_DOUBLE)) {
+    auto STD_NUMBER = ctx.register_class<jre::Number>();
+    if (Env.IsInstanceOf(*obj, *STD_NUMBER)) {
+        auto STD_DOUBLE = ctx.register_class<jre::Double>();
+        if (Env.IsInstanceOf(*obj, *STD_DOUBLE)) {
             JEntry<jre::Double> ref(obj);
             return ref->doubleValue(ref);
         }
 
-        // auto STD_FLOAT = ctx.register_class<jre::Float>();
-        jre::Float STD_FLOAT;
-        if (Env.IsInstanceOf(*obj, STD_FLOAT)) {
+        auto STD_FLOAT = ctx.register_class<jre::Float>();
+        if (Env.IsInstanceOf(*obj, *STD_FLOAT)) {
             JEntry<jre::Float> ref(obj);
             return ref->floatValue(ref);
         }
@@ -90,9 +95,8 @@ shared_ptr<JVariant> ReadToVariant(jobject _obj)
         return ref->longValue(ref);
     }
 
-    // auto STD_STRING = ctx.register_class<jre::String>();
-    jre::String STD_STRING;
-    if (Env.IsInstanceOf(*obj, STD_STRING)) {
+    auto STD_STRING = ctx.register_class<jre::String>();
+    if (Env.IsInstanceOf(*obj, *STD_STRING)) {
         JEntry<jre::String> ref(obj);
         return ref->getBytes(ref);
     }

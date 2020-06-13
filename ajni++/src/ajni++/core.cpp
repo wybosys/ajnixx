@@ -19,23 +19,21 @@ static jobject gs_context = nullptr;
 static thread_local bool tls_ismain = false;
 static thread_local JNIEnv *tls_env = nullptr;
 
-// 退出时是否释放env
-class JEnvThreadAutoGuard
+void JEnvThreadAutoGuard::free_env()
 {
-public:
-
-    ~JEnvThreadAutoGuard()
-    {
-        if (tls_env && need_detach) {
-            gs_vm->DetachCurrentThread();
-        }
+    if (tls_env && detach) {
+        gs_vm->DetachCurrentThread();
     }
-
-    bool need_detach = false;
-};
+    tls_env = nullptr;
+}
 
 // 随着当前线程和设置回收jni
 static thread_local JEnvThreadAutoGuard tls_guard;
+
+JEnvThreadAutoGuard& JEnvThreadAutoGuard::tls()
+{
+    return tls_guard;
+}
 
 // 全局唯一的Env
 JEnv Env;
@@ -108,7 +106,7 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
         jint jret = vm->GetEnv((void **) &env, JNI_VERSION_1_4);
         if (jret == JNI_EDETACHED) {
             gs_vm->AttachCurrentThread(&tls_env, nullptr);
-            tls_guard.need_detach = true;
+            tls_guard.detach = true;
         }
     }
 
@@ -140,7 +138,7 @@ void JEnv::Check()
     jint ret = gs_vm->GetEnv((void**)&tls_env, JNI_VERSION_1_4);
     if (ret == JNI_EDETACHED) {
         gs_vm->AttachCurrentThread(&tls_env, nullptr);
-        tls_guard.need_detach = true;
+        tls_guard.detach = true;
     }
 }
 

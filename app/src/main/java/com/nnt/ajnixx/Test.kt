@@ -22,7 +22,7 @@ class Test {
         cb.grab()
         Thread({
             // 开个线程回调主线程
-            Activity.Invoke {
+            MainThread.Invoke {
                 cb(123, "abc")
                 cb.drop()
             }
