@@ -22,27 +22,6 @@ public:
     // classes_type classes;
 };
 
-class JGlobalObject : public JObject {
-public:
-    // 自动引用计数
-    JGlobalObject(jobject = nullptr);
-
-    // 复制，动引用计数
-    JGlobalObject(JGlobalObject const &);
-
-    // 释放引用计数
-    virtual ~JGlobalObject();
-
-    // 作为程序返回值输出
-    jobject asReturn() const;
-
-    shared_ptr<JVariant> toVariant() const;
-
-    JGlobalObject &operator = (jobject);
-
-    static shared_ptr<JObject> make_shared(jobject);
-};
-
 namespace TypeSignature {
 
     enum struct TS {

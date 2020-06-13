@@ -13,62 +13,6 @@ JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
     free_env();
 }
 
-extern shared_ptr<JVariant> ReadToVariant(jobject _obj);
-
-JGlobalObject::JGlobalObject(jobject obj)
-        : JObject(obj)
-{
-    if (_obj)
-        _obj = Env.NewGlobalRef(_obj);
-}
-
-JGlobalObject::JGlobalObject(JGlobalObject const &r)
-        : JObject(r._obj)
-{
-    if (_obj)
-        _obj = Env.NewGlobalRef(_obj);
-}
-
-JGlobalObject::~JGlobalObject()
-{
-    if (_obj)
-    {
-        Env.DeleteGlobalRef(_obj);
-        _obj = nullptr;
-    }
-}
-
-JGlobalObject &JGlobalObject::operator = (jobject r) {
-    if (_obj == r)
-        return *this;
-
-    if (_obj)
-        Env.DeleteGlobalRef(_obj);
-
-    _obj = r;
-    if (_obj) {
-        _obj = Env.NewGlobalRef(_obj);
-    }
-
-    return *this;
-}
-
-jobject JGlobalObject::asReturn() const
-{
-    return Env.NewGlobalRef(_obj);
-}
-
-shared_ptr<JVariant> JGlobalObject::toVariant() const
-{
-    return ReadToVariant(_obj);
-}
-
-shared_ptr<JObject> JGlobalObject::make_shared(jobject obj)
-{
-    ::std::shared_ptr<JObject> r((JObject*)(new JGlobalObject(obj)));
-    return r;
-}
-
 shared_ptr<JVariant> ReadToVariant(jobject _obj)
 {
     if (_obj == nullptr)
