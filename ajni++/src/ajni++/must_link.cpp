@@ -8,13 +8,11 @@ AJNI_API(void) AJNI_COMPANION_FUNC(Activity, jni_1bind)(JNIEnv *env, jobject thi
 }
 
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1grab)(JNIEnv *env, jobject thiz, jlong fnidx) {
-    Env.Check();
     Env.context().function_grab(fnidx);
     return nullptr;
 }
 
 AJNI_API(jboolean) AJNI_FUNC(Callback, jni_1drop)(JNIEnv *env, jobject thiz, jlong fnidx) {
-    Env.Check();
     return Env.context().function_drop(fnidx);
 }
 
