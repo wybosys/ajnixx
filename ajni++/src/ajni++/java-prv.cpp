@@ -13,10 +13,9 @@ JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
     free_env();
 }
 
-shared_ptr<JVariant> ReadToVariant(jobject _obj)
-{
+shared_ptr<JVariant> JObject::extract() const {
     if (_obj == nullptr)
-        return make_shared<JVariant>(); // 不能返回null，客户端收到的是引用类型，通过vt判断
+        return ::std::make_shared<JVariant>(); // 不能返回null，客户端收到的是引用类型，通过vt判断
 
     auto& ctx = Env.context();
 

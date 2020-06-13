@@ -1,6 +1,7 @@
 package com.nnt.ajnixx
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import java.lang.ref.WeakReference
 
@@ -20,7 +21,14 @@ open class Activity : Activity() {
 
         fun Bind(act: Activity?) {
             _current = WeakReference<Activity?>(act)
+            if (act == null) {
+                jni_bind(null, null)
+            } else {
+                jni_bind(act, act.applicationContext)
+            }
         }
+
+        private external fun jni_bind(act: Activity?, ctx: Context?)
 
         fun Unbind() {
             Bind(null)

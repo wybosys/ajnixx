@@ -157,7 +157,7 @@ class JClass
 {
 public:
 
-    JClass(JClassPath const&);
+    JClass(JClassPath const& = "");
     virtual ~JClass() {}
 
     // 类名
@@ -169,10 +169,6 @@ public:
     // 是否存在
     bool exists() const;
 
-    jclass clazz() const;
-
-    operator jclass () const;
-
     // 定义构造函数
     JConstructMethod construct;
 
@@ -180,6 +176,9 @@ protected:
 
     JObject _clazz;
     JClassPath _clazzpath;
+
+    friend class JEnv;
+    friend class JEnvPrivate;
 };
 
 NNT_CLASS_PREPARE(JContext);
@@ -245,17 +244,11 @@ public:
     JEntry(JVariant const& var, class_typep const& clz = nullptr)
     : _clazz(clz)
     {
-        _obj = make_shared<object_type >(var.toObject());
+        _obj = var.toObject();
 
         if (!_clazz) {
             _clazz = Env.context().register_class<class_type >();
         }
-    }
-
-    JEntry(self_type const& r)
-    : _obj(r._obj), _clazz(r._clazz)
-    {
-        // pass
     }
 
     inline class_type* operator -> () {
@@ -272,10 +265,6 @@ public:
 
     inline jobject asReturn() const {
         return _obj->asReturn();
-    }
-
-    inline operator jobject() const {
-        return *_obj;
     }
 
 private:

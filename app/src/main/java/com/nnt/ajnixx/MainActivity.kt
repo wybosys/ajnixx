@@ -7,17 +7,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity() : AppCompatActivity() {
 
-    init {
-        // 绑定主UI，使得JNI回调都位于主线程中，避免崩溃
-        Activity.Bind(this)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         // 加载so
         ReLinker.loadLibrary(this, "tester")
+
+        // 绑定主UI，使得JNI回调都位于主线程中，避免崩溃
+        Activity.Bind(this)
 
         // 测试
         sample_text.text = Test.Test()

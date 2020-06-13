@@ -39,37 +39,37 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke)(JNIEnv *env, jobject thiz, jl
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke1)(JNIEnv *env, jobject thiz, jlong fnidx,
                                                  jobject v0) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant());
+    (*fn)(JVariant(v0));
     _AJNI_CALLBACK_IMPL_END
 }
 
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke2)(JNIEnv *env, jobject thiz, jlong fnidx, jobject v0,
                                                  jobject v1) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1));
     _AJNI_CALLBACK_IMPL_END
 }
 
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke3)(JNIEnv *env, jobject thiz, jlong fnidx, jobject v0,
                                                  jobject v1, jobject v2) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant(), *JObject(v2).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1), JVariant(v2));
     _AJNI_CALLBACK_IMPL_END
 }
 
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke4)(JNIEnv *env, jobject thiz, jlong fnidx, jobject v0,
                                                  jobject v1, jobject v2, jobject v3) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant(), *JObject(v2).toVariant(),
-          *JObject(v3).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1), JVariant(v2),
+          JVariant(v3));
     _AJNI_CALLBACK_IMPL_END
 }
 
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke5)(JNIEnv *env, jobject thiz, jlong fnidx, jobject v0,
                                                  jobject v1, jobject v2, jobject v3, jobject v4) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant(), *JObject(v2).toVariant(),
-          *JObject(v3).toVariant(), *JObject(v4).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1), JVariant(v2),
+          JVariant(v3), JVariant(v4));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -77,8 +77,8 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke6)(JNIEnv *env, jobject thiz, j
                                                  jobject v1, jobject v2, jobject v3, jobject v4,
                                                  jobject v5) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant(), *JObject(v2).toVariant(),
-          *JObject(v3).toVariant(), *JObject(v4).toVariant(), *JObject(v5).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1), JVariant(v2),
+          JVariant(v3), JVariant(v4), JVariant(v5));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -86,9 +86,9 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke7)(JNIEnv *env, jobject thiz, j
                                                  jobject v1, jobject v2, jobject v3, jobject v4,
                                                  jobject v5, jobject v6) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant(), *JObject(v2).toVariant(),
-          *JObject(v3).toVariant(), *JObject(v4).toVariant(), *JObject(v5).toVariant(),
-          *JObject(v6).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1), JVariant(v2),
+          JVariant(v3), JVariant(v4), JVariant(v5),
+          JVariant(v6));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -96,9 +96,9 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke8)(JNIEnv *env, jobject thiz, j
                                                  jobject v1, jobject v2, jobject v3, jobject v4,
                                                  jobject v5, jobject v6, jobject v7) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant(), *JObject(v2).toVariant(),
-          *JObject(v3).toVariant(), *JObject(v4).toVariant(), *JObject(v5).toVariant(),
-          *JObject(v6).toVariant(), *JObject(v7).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1), JVariant(v2),
+          JVariant(v3), JVariant(v4), JVariant(v5),
+          JVariant(v6), JVariant(v7));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -106,8 +106,8 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke9)(JNIEnv *env, jobject thiz, j
                                                  jobject v1, jobject v2, jobject v3, jobject v4,
                                                  jobject v5, jobject v6, jobject v7, jobject v8) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject(v0).toVariant(), *JObject(v1).toVariant(), *JObject(v2).toVariant(),
-          *JObject(v3).toVariant(), *JObject(v4).toVariant(), *JObject(v5).toVariant(),
-          *JObject(v6).toVariant(), *JObject(v7).toVariant(), *JObject(v8).toVariant());
+    (*fn)(JVariant(v0), JVariant(v1), JVariant(v2),
+          JVariant(v3), JVariant(v4), JVariant(v5),
+          JVariant(v6), JVariant(v7), JVariant(v8));
     _AJNI_CALLBACK_IMPL_END
 }

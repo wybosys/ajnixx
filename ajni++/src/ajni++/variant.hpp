@@ -9,45 +9,51 @@
 AJNI_BEGIN
 
 class JVariant;
+class JArray;
+
 typedef ::std::vector<JVariant const*> args_type;
 
 class JObject {
 public:
 
-    // 自动引用计数
-    JObject(jobject = nullptr);
+    JObject();
+    JObject(JObject const&);
 
     // 释放引用计数
     virtual ~JObject();
-
-    inline jobject toObject() const {
-        return _obj;
-    }
-
-    inline operator jobject () const {
-        return _obj;
-    }
 
     // 作为程序返回值输出
     virtual jobject asReturn() const;
 
     // 转换成具体的Variant类型，和Variant(JObject)不同，转换会读取具体对象内部信息，返回C++数据构成的Variant对象
-    shared_ptr<JVariant> toVariant() const;
+    shared_ptr<JVariant> extract() const;
 
-    static shared_ptr<JObject> make_shared(jobject);
+    // 是否时空对象
+    bool isnil() const;
+
+    JObject& operator = (JObject const&);
 
 protected:
 
-    jobject _obj;
+    // 自动引用计数
+    JObject(jobject);
+
+    void _reset(jobject);
+
+    jobject _obj = nullptr;
+
+    friend class JEnv;
+    friend class JEnvPrivate;
+    friend class JArray;
+    friend class JVariant;
 };
 
 class JString {
 public:
-    JString(jstring = nullptr);
 
-    JString(JString const &);
-
+    JString();
     JString(string const &);
+    JString(JString const &);
 
     ~JString();
 
@@ -58,15 +64,21 @@ public:
     // 作为程序返回值输出
     jstring asReturn() const;
 
-private:
+protected:
+
+    void _reset(jstring);
+
     string _str;
+
+    friend class JEnv;
+    friend class JVariant;
 };
 
 class JArray
 {
 public:
 
-    JArray(jarray);
+    JArray();
     ~JArray();
 
     inline size_t size() const {
@@ -75,9 +87,16 @@ public:
 
     string toString() const;
 
+protected:
+
+    void _reset(jarray, size_t);
+
 private:
-    jarray _arr = nullptr;
+
+    JObject _arr;
     size_t _sz;
+
+    friend class JEnv;
 };
 
 class JVariant;
@@ -95,11 +114,8 @@ public:
         return _val;
     }
 
-    inline operator jobject() const {
-        return _val.l;
-    }
-
 private:
+
     jvalue _val = {0};
     bool _free = false;
     size_t _fnidx = 0; // 如果是函数对象，保存函数的本地索引
@@ -123,6 +139,7 @@ public:
     }
 
 private:
+
     ::std::vector<value_type> _vals;
     ::std::vector<jvalue> _jvals;
 };
@@ -217,13 +234,12 @@ public:
         return _var;
     }
 
-    inline jobject toObject() const {
-        return _var.toObject();
-    }
-
     inline shared_ptr<function_type> toFunction() const {
         return _fun;
     }
+
+    shared_ptr<JObject> toObject() const;
+    static shared_ptr<JVariant> FromObject(JObject const&);
 
     inline bool isnil() const {
         return vt == VT::NIL;
@@ -281,12 +297,13 @@ COMXX_BEGIN
 
 template <>
 inline jobject grab<jobject>(jobject obj) {
-    return obj;
+    return ::AJNI_NS::Env.NewLocalRef(obj);
 }
 
 template <>
 inline bool drop<jobject>(jobject obj) {
-    return false;
+    ::AJNI_NS::Env.DeleteLocalRef(obj);
+    return true;
 }
 
 COMXX_END

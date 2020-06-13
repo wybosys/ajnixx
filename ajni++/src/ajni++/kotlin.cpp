@@ -15,9 +15,9 @@ JClass::JClass(JClassPath const& cp)
 {
     _classpath$ = cp + "$Companion";
 
-    jclass jclz = Env.SearchClass(_classpath$);
-    if (jclz) {
-        _clazz$ = jclz;
+    auto clz = Env.FindClass(_classpath$);
+    if (clz) {
+        _clazz$ = clz;
 
         // 获取静态对象地址
         ::AJNI_NS::JStaticField sf(*this);
@@ -26,17 +26,17 @@ JClass::JClass(JClassPath const& cp)
         _object$ = sf()->toObject();
     } else {
         // 只有存在 companion object 段的 kotlin类 才存在，不存在也不代表错误
-        Env.ExceptionClear();
     }
 }
 
-jclass JClass::clazz$() const
+JObject const& JClass::object$() const
 {
-    return _clazz$ ? (jclass)(jobject)_clazz$ : (jclass)(jobject)_clazz;
+    return *_object$;
 }
 
-JObject const& JClass::object$() const {
-    return _object$;
+JClass::jvm_class_type const& JClass::clazz$() const
+{
+    return *_clazz$;
 }
 
 return_type JStaticMethod::invoke(args_type const &args) const
@@ -45,7 +45,7 @@ return_type JStaticMethod::invoke(args_type const &args) const
     JValues jvals(args);
 
     auto const& clazz = dynamic_cast<JClass const&>(_clazz);
-    auto clz = clazz.clazz$();
+    auto const& clz = clazz.clazz$();
     auto const& obj$ = clazz.object$();
 
     auto mid = Env.GetMethodID(clz, name, sig);
@@ -74,17 +74,12 @@ return_type JStaticMethod::invoke(args_type const &args) const
         case TypeSignature::TS::DOUBLE:
             return _V(Env.CallDoubleMethod(obj$, mid, jvals));
         case TypeSignature::TS::STRING: {
-            auto v = (jstring) Env.CallObjectMethod(obj$, mid, jvals);
-            if (!v)
-                return nullptr;
-            return _V(v);
+            auto s = Env.CallStringMethod(obj$, mid, jvals);
+            return s ? _V(*s) : nullptr;
         }
         case TypeSignature::TS::BYTEARRAY: {
-            auto v = (jarray) Env.CallObjectMethod(obj$, mid, jvals);
-            if (!v)
-                return nullptr;
-            JArray arr(v);
-            return _V(arr.toString());
+            auto v = Env.CallArrayMethod(obj$, mid, jvals);
+            return v ? _V(v->toString()) : nullptr;
         }
         case TypeSignature::TS::VOID: {
             Env.CallVoidMethod(obj$, mid, jvals);
@@ -96,25 +91,23 @@ return_type JStaticMethod::invoke(args_type const &args) const
             break;
     }
 
-    jobject v = Env.CallObjectMethod(obj$, mid, jvals);
-    if (!v)
-        return nullptr;
-    return _V(v);
+    auto v = Env.CallObjectMethod(obj$, mid, jvals);
+    return v ? JVariant::FromObject(*v) : nullptr;
 }
 
 JGlobalField::JGlobalField(JClassPath const& cp)
 : _clazz(cp + "Kt")
 {
+    // pass
 }
 
 return_type JGlobalField::operator()() const
 {
-    auto clz = _clazz.clazz();
     auto getname = "get" + capitalize(name);
     string sig = JMethod::Signature({}, stype, {});
     JValues jvals;
 
-    auto mid = Env.GetStaticMethodID(clz, getname.c_str(), sig.c_str());
+    auto mid = Env.GetStaticMethodID(_clazz, getname.c_str(), sig.c_str());
     if (!mid)
     {
         Env.ExceptionClear();
@@ -124,29 +117,27 @@ return_type JGlobalField::operator()() const
 
     switch (TypeSignature::GetTypeForSwitch(stype)) {
         case TypeSignature::TS::BOOLEAN:
-            return _V(Env.CallStaticBooleanMethod(clz, mid, jvals));
+            return _V(Env.CallStaticBooleanMethod(_clazz, mid, jvals));
         case TypeSignature::TS::BYTE:
-            return _V(Env.CallStaticByteMethod(clz, mid, jvals));
+            return _V(Env.CallStaticByteMethod(_clazz, mid, jvals));
         case TypeSignature::TS::CHAR:
-            return _V(Env.CallStaticCharMethod(clz, mid, jvals));
+            return _V(Env.CallStaticCharMethod(_clazz, mid, jvals));
         case TypeSignature::TS::SHORT:
-            return _V(Env.CallStaticShortMethod(clz, mid, jvals));
+            return _V(Env.CallStaticShortMethod(_clazz, mid, jvals));
         case TypeSignature::TS::INT:
-            return _V(Env.CallStaticIntMethod(clz, mid, jvals));
+            return _V(Env.CallStaticIntMethod(_clazz, mid, jvals));
         case TypeSignature::TS::LONG:
-            return _V(Env.CallStaticLongMethod(clz, mid, jvals));
+            return _V(Env.CallStaticLongMethod(_clazz, mid, jvals));
         case TypeSignature::TS::FLOAT:
-            return _V(Env.CallStaticFloatMethod(clz, mid, jvals));
+            return _V(Env.CallStaticFloatMethod(_clazz, mid, jvals));
         case TypeSignature::TS::DOUBLE:
-            return _V(Env.CallStaticDoubleMethod(clz, mid, jvals));
+            return _V(Env.CallStaticDoubleMethod(_clazz, mid, jvals));
         case TypeSignature::TS::STRING: {
-            auto v = (jstring) Env.CallStaticObjectMethod(clz, mid, jvals);
-            if (!v)
-                return nullptr;
-            return _V(v);
+            auto v = Env.CallStaticStringMethod(_clazz, mid, jvals);
+            return v ? _V(*v) : nullptr;
         }
         case TypeSignature::TS::VOID: {
-            Env.CallStaticVoidMethod(clz, mid, jvals);
+            Env.CallStaticVoidMethod(_clazz, mid, jvals);
             return nullptr;
         }
         case TypeSignature::TS::CLASS:
@@ -156,20 +147,17 @@ return_type JGlobalField::operator()() const
             break;
     }
 
-    jobject v = Env.CallStaticObjectMethod(clz, mid, jvals);
-    if (!v)
-        return nullptr;
-    return _V(v);
+    auto v = Env.CallStaticObjectMethod(_clazz, mid, jvals);
+    return v ? JVariant::FromObject(*v) : nullptr;
 }
 
 void JGlobalField::operator()(JVariant const& v)
 {
-    auto clz = _clazz.clazz();
     auto setname = "set" + capitalize(name);
     string sig = JMethod::Signature({&v}, TypeSignature::VOID, {});
     JValues jvals({&v});
 
-    auto mid = Env.GetStaticMethodID(clz, setname.c_str(), sig.c_str());
+    auto mid = Env.GetStaticMethodID(_clazz, setname.c_str(), sig.c_str());
     if (!mid)
     {
         Env.ExceptionClear();
@@ -177,7 +165,7 @@ void JGlobalField::operator()(JVariant const& v)
         return;
     }
 
-    Env.CallStaticVoidMethod(clz, mid, jvals);
+    Env.CallStaticVoidMethod(_clazz, mid, jvals);
 }
 
 JGlobalMethod::JGlobalMethod(JClassPath const& cp)
@@ -240,9 +228,7 @@ return_type JGlobalMethod::invoke(args_type const &args) const
     string sig = JMethod::Signature(args, sreturn, sargs);
     JValues jvals(args);
 
-    auto clz = _clazz.clazz();
-
-    auto mid = Env.GetStaticMethodID(clz, name, sig);
+    auto mid = Env.GetStaticMethodID(_clazz, name, sig);
     if (!mid)
     {
         Env.ExceptionClear();
@@ -252,29 +238,27 @@ return_type JGlobalMethod::invoke(args_type const &args) const
 
     switch (TypeSignature::GetTypeForSwitch(sreturn)) {
         case TypeSignature::TS::BOOLEAN:
-            return _V(Env.CallStaticBooleanMethod(clz, mid, jvals));
+            return _V(Env.CallStaticBooleanMethod(_clazz, mid, jvals));
         case TypeSignature::TS::BYTE:
-            return _V(Env.CallStaticByteMethod(clz, mid, jvals));
+            return _V(Env.CallStaticByteMethod(_clazz, mid, jvals));
         case TypeSignature::TS::CHAR:
-            return _V(Env.CallStaticCharMethod(clz, mid, jvals));
+            return _V(Env.CallStaticCharMethod(_clazz, mid, jvals));
         case TypeSignature::TS::SHORT:
-            return _V(Env.CallStaticShortMethod(clz, mid, jvals));
+            return _V(Env.CallStaticShortMethod(_clazz, mid, jvals));
         case TypeSignature::TS::INT:
-            return _V(Env.CallStaticIntMethod(clz, mid, jvals));
+            return _V(Env.CallStaticIntMethod(_clazz, mid, jvals));
         case TypeSignature::TS::LONG:
-            return _V(Env.CallStaticLongMethod(clz, mid, jvals));
+            return _V(Env.CallStaticLongMethod(_clazz, mid, jvals));
         case TypeSignature::TS::FLOAT:
-            return _V(Env.CallStaticFloatMethod(clz, mid, jvals));
+            return _V(Env.CallStaticFloatMethod(_clazz, mid, jvals));
         case TypeSignature::TS::DOUBLE:
-            return _V(Env.CallStaticDoubleMethod(clz, mid, jvals));
+            return _V(Env.CallStaticDoubleMethod(_clazz, mid, jvals));
         case TypeSignature::TS::STRING: {
-            auto v = (jstring) Env.CallStaticObjectMethod(clz, mid, jvals);
-            if (!v)
-                return nullptr;
-            return _V(v);
+            auto v = Env.CallStaticStringMethod(_clazz, mid, jvals);
+            return v ? _V(*v) : nullptr;
         }
         case TypeSignature::TS::VOID: {
-            Env.CallStaticVoidMethod(clz, mid, jvals);
+            Env.CallStaticVoidMethod(_clazz, mid, jvals);
             return nullptr;
         }
         case TypeSignature::TS::BYTEARRAY:
@@ -284,10 +268,8 @@ return_type JGlobalMethod::invoke(args_type const &args) const
             break;
     }
 
-    jobject v = Env.CallStaticObjectMethod(clz, mid, jvals);
-    if (!v)
-        return nullptr;
-    return _V(v);
+    auto v = Env.CallStaticObjectMethod(_clazz, mid, jvals);
+    return v ? JVariant::FromObject(*v) : nullptr;
 }
 
 AJNI_END_NS

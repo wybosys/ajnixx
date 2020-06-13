@@ -100,7 +100,12 @@ public:
     JTypeSignature& operator = (JClassPath const&);
 };
 
+class JObject;
+class JClass;
+class JString;
+class JVariant;
 class JValues;
+class JArray;
 class JContext;
 
 NNT_CLASS_PREPARE(JEnv);
@@ -134,87 +139,99 @@ public:
     // 获得上下文，之后类均从该对象获得
     JContext& context();
 
-    // 跨线程安全获得classid，FindClass只能运行在主线程
-    jclass SearchClass(string const&);
+    typedef shared_ptr<JObject> object_type;
+    typedef shared_ptr<JString> string_type;
+    typedef shared_ptr<JArray> array_type;
+    typedef shared_ptr<JClass> class_type;
 
-    jclass FindClass(string const&);
-    bool IsAssignableFrom(jclass, jclass);
-    bool IsInstanceOf(jobject, jclass);
-    bool IsSameObject(jobject, jobject);
+    class_type FindClass(string const&);
+    bool IsAssignableFrom(JClass const&, JClass const&);
+    bool IsInstanceOf(JObject const&, JClass const&);
+    bool IsSameObject(JObject const&, JObject const&);
 
-    jfieldID GetStaticFieldID(jclass, string const& name, string const& typ);
-    jobject GetStaticObjectField(jclass, jfieldID);
-    jboolean GetStaticBooleanField(jclass, jfieldID);
-    jbyte GetStaticByteField(jclass, jfieldID);
-    jchar GetStaticCharField(jclass, jfieldID);
-    jshort GetStaticShortField(jclass, jfieldID);
-    jint GetStaticIntField(jclass, jfieldID);
-    jlong GetStaticLongField(jclass, jfieldID);
-    jfloat GetStaticFloatField(jclass, jfieldID);
-    jdouble GetStaticDoubleField(jclass, jfieldID);
+    jfieldID GetStaticFieldID(JClass const&, string const& name, string const& typ);
+    jobject GetStaticObjectField(JClass const&, jfieldID);
+    string_type GetStaticStringField(JClass const&, jfieldID);
+    array_type GetStaticArrayField(JClass const&, jfieldID);
+    jboolean GetStaticBooleanField(JClass const&, jfieldID);
+    jbyte GetStaticByteField(JClass const&, jfieldID);
+    jchar GetStaticCharField(JClass const&, jfieldID);
+    jshort GetStaticShortField(JClass const&, jfieldID);
+    jint GetStaticIntField(JClass const&, jfieldID);
+    jlong GetStaticLongField(JClass const&, jfieldID);
+    jfloat GetStaticFloatField(JClass const&, jfieldID);
+    jdouble GetStaticDoubleField(JClass const&, jfieldID);
 
-    void SetStaticObjectField(jclass, jfieldID, jobject);
-    void SetStaticBooleanField(jclass, jfieldID, jboolean);
-    void SetStaticByteField(jclass, jfieldID, jbyte);
-    void SetStaticCharField(jclass, jfieldID, jchar);
-    void SetStaticShortField(jclass, jfieldID, jshort);
-    void SetStaticIntField(jclass, jfieldID, jint);
-    void SetStaticLongField(jclass, jfieldID, jlong);
-    void SetStaticFloatField(jclass, jfieldID, jfloat);
-    void SetStaticDoubleField(jclass, jfieldID, jdouble);
+    void SetStaticObjectField(JClass const&, jfieldID, JVariant const&);
+    void SetStaticObjectField(JClass const&, jfieldID, jobject);
+    void SetStaticBooleanField(JClass const&, jfieldID, jboolean);
+    void SetStaticByteField(JClass const&, jfieldID, jbyte);
+    void SetStaticCharField(JClass const&, jfieldID, jchar);
+    void SetStaticShortField(JClass const&, jfieldID, jshort);
+    void SetStaticIntField(JClass const&, jfieldID, jint);
+    void SetStaticLongField(JClass const&, jfieldID, jlong);
+    void SetStaticFloatField(JClass const&, jfieldID, jfloat);
+    void SetStaticDoubleField(JClass const&, jfieldID, jdouble);
 
-    jfieldID GetFieldID(jclass, string const& name, string const& sig);
-    jobject GetObjectField(jobject, jfieldID);
-    jboolean GetBooleanField(jobject, jfieldID);
-    jbyte GetByteField(jobject, jfieldID);
-    jchar GetCharField(jobject, jfieldID);
-    jshort GetShortField(jobject, jfieldID);
-    jint GetIntField(jobject, jfieldID);
-    jlong GetLongField(jobject, jfieldID);
-    jfloat GetFloatField(jobject, jfieldID);
-    jdouble GetDoubleField(jobject, jfieldID);
+    jfieldID GetFieldID(JClass const&, string const& name, string const& sig);
+    object_type GetObjectField(JObject const&, jfieldID);
+    string_type GetStringField(JObject const&, jfieldID);
+    array_type GetArrayField(JObject const&, jfieldID);
+    jboolean GetBooleanField(JObject const&, jfieldID);
+    jbyte GetByteField(JObject const&, jfieldID);
+    jchar GetCharField(JObject const&, jfieldID);
+    jshort GetShortField(JObject const&, jfieldID);
+    jint GetIntField(JObject const&, jfieldID);
+    jlong GetLongField(JObject const&, jfieldID);
+    jfloat GetFloatField(JObject const&, jfieldID);
+    jdouble GetDoubleField(JObject const&, jfieldID);
 
-    void SetObjectField(jobject, jfieldID, jobject);
-    void SetBooleanField(jobject, jfieldID, jboolean);
-    void SetByteField(jobject, jfieldID, jbyte);
-    void SetCharField(jobject, jfieldID, jchar);
-    void SetShortField(jobject, jfieldID, jshort);
-    void SetIntField(jobject, jfieldID, jint);
-    void SetLongField(jobject, jfieldID, jlong);
-    void SetFloatField(jobject, jfieldID, jfloat);
-    void SetDoubleField(jobject, jfieldID, jdouble);
+    void SetObjectField(JObject const&, jfieldID, object_type const&);
+    void SetStringField(JObject const&, jfieldID, string const&);
+    void SetBooleanField(JObject const&, jfieldID, jboolean);
+    void SetByteField(JObject const&, jfieldID, jbyte);
+    void SetCharField(JObject const&, jfieldID, jchar);
+    void SetShortField(JObject const&, jfieldID, jshort);
+    void SetIntField(JObject const&, jfieldID, jint);
+    void SetLongField(JObject const&, jfieldID, jlong);
+    void SetFloatField(JObject const&, jfieldID, jfloat);
+    void SetDoubleField(JObject const&, jfieldID, jdouble);
 
-    jmethodID GetMethodID(jclass, string const& name, string const& sig);
-    jmethodID GetStaticMethodID(jclass, string const& name, string const& sig);
+    jmethodID GetMethodID(JClass const&, string const& name, string const& sig);
+    jmethodID GetStaticMethodID(JClass const&, string const& name, string const& sig);
 
-    jobject NewObject(jclass, jmethodID, JValues const&);
+    jobject NewObject(JClass const&, jmethodID, JValues const&);
     jclass GetObjectClass(jobject);
 
-    jboolean CallStaticBooleanMethod(jclass, jmethodID, JValues const&);
-    jbyte CallStaticByteMethod(jclass, jmethodID, JValues const&);
-    jchar CallStaticCharMethod(jclass, jmethodID, JValues const&);
-    jshort CallStaticShortMethod(jclass, jmethodID, JValues const&);
-    jint CallStaticIntMethod(jclass, jmethodID, JValues const&);
-    jlong CallStaticLongMethod(jclass, jmethodID, JValues const&);
-    jfloat CallStaticFloatMethod(jclass, jmethodID, JValues const&);
-    jdouble CallStaticDoubleMethod(jclass, jmethodID, JValues const&);
-    jobject CallStaticObjectMethod(jclass, jmethodID, JValues const&);
-    void CallStaticVoidMethod(jclass, jmethodID, JValues const&);
+    jboolean CallStaticBooleanMethod(JClass const&, jmethodID, JValues const&);
+    jbyte CallStaticByteMethod(JClass const&, jmethodID, JValues const&);
+    jchar CallStaticCharMethod(JClass const&, jmethodID, JValues const&);
+    jshort CallStaticShortMethod(JClass const&, jmethodID, JValues const&);
+    jint CallStaticIntMethod(JClass const&, jmethodID, JValues const&);
+    jlong CallStaticLongMethod(JClass const&, jmethodID, JValues const&);
+    jfloat CallStaticFloatMethod(JClass const&, jmethodID, JValues const&);
+    jdouble CallStaticDoubleMethod(JClass const&, jmethodID, JValues const&);
+    object_type CallStaticObjectMethod(JClass const&, jmethodID, JValues const&);
+    string_type CallStaticStringMethod(JClass const&, jmethodID, JValues const&);
+    array_type CallStaticArrayMethod(JClass const&, jmethodID, JValues const&);
+    void CallStaticVoidMethod(JClass const&, jmethodID, JValues const&);
 
-    jboolean CallBooleanMethod(jobject, jmethodID, JValues const&);
-    jbyte CallByteMethod(jobject, jmethodID, JValues const&);
-    jchar CallCharMethod(jobject, jmethodID, JValues const&);
-    jshort CallShortMethod(jobject, jmethodID, JValues const&);
-    jint CallIntMethod(jobject, jmethodID, JValues const&);
-    jlong CallLongMethod(jobject, jmethodID, JValues const&);
-    jfloat CallFloatMethod(jobject, jmethodID, JValues const&);
-    jdouble CallDoubleMethod(jobject, jmethodID, JValues const&);
-    jobject CallObjectMethod(jobject, jmethodID, JValues const&);
-    void CallVoidMethod(jobject, jmethodID, JValues const&);
+    jboolean CallBooleanMethod(JObject const&, jmethodID, JValues const&);
+    jbyte CallByteMethod(JObject const&, jmethodID, JValues const&);
+    jchar CallCharMethod(JObject const&, jmethodID, JValues const&);
+    jshort CallShortMethod(JObject const&, jmethodID, JValues const&);
+    jint CallIntMethod(JObject const&, jmethodID, JValues const&);
+    jlong CallLongMethod(JObject const&, jmethodID, JValues const&);
+    jfloat CallFloatMethod(JObject const&, jmethodID, JValues const&);
+    jdouble CallDoubleMethod(JObject const&, jmethodID, JValues const&);
+    object_type CallObjectMethod(JObject const&, jmethodID, JValues const&);
+    string_type CallStringMethod(JObject const&, jmethodID, JValues const&);
+    array_type CallArrayMethod(JObject const&, jmethodID, JValues const&);
+    void CallVoidMethod(JObject const&, jmethodID, JValues const&);
 
     size_t GetArrayLength(jarray);
-    jbyte const* GetBytes(jbyteArray);
-    jchar const* GetChars(jcharArray);
+    jbyte const* GetBytes(JArray const&);
+    jchar const* GetChars(JArray const&);
 
     jobject NewLocalRef(jobject);
     void DeleteLocalRef(jobject);

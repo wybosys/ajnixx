@@ -13,15 +13,29 @@ AJNI_BEGIN
 
 extern shared_ptr<JVariant> ReadToVariant(jobject _obj);
 
-JObject::JObject(jobject obj)
-    : _obj(obj)
+JObject::JObject()
 {
     // pass
 }
 
+JObject::JObject(jobject obj)
+: _obj(obj)
+{
+    if (_obj)
+        _obj = Env.NewLocalRef(_obj);
+}
+
+JObject::JObject(JObject const& r)
+: _obj(r._obj)
+{
+    if (_obj)
+        _obj = Env.NewLocalRef(_obj);
+}
+
 JObject::~JObject()
 {
-    // pass
+    if (_obj)
+        Env.DeleteLocalRef(_obj);
 }
 
 jobject JObject::asReturn() const
@@ -29,20 +43,39 @@ jobject JObject::asReturn() const
     return Env.NewLocalRef(_obj);
 }
 
-shared_ptr<JVariant> JObject::toVariant() const
+bool JObject::isnil() const
 {
-    return ReadToVariant(_obj);
+    return _obj == nullptr;
 }
 
-shared_ptr<JObject> JObject::make_shared(jobject obj)
+JObject& JObject::operator = (JObject const& r)
 {
-    ::std::shared_ptr<JObject> r((JObject *)(new JObject(obj)));
-    return r;
+    if (_obj == r._obj)
+        return *this;
+
+    auto old = _obj;
+    _obj = r._obj;
+    if (_obj)
+        _obj = Env.NewLocalRef(_obj);
+    if (old)
+        Env.DeleteLocalRef(old);
+
+    return *this;
 }
 
-JString::JString(jstring v)
+void JObject::_reset(jobject obj)
 {
-    _str = Env.GetStringUTFChars(v);
+    if (_obj == obj)
+        return;
+    jobject old = _obj;
+    _obj = Env.NewLocalRef(obj);
+    if (old)
+        Env.DeleteLocalRef(old);
+}
+
+JString::JString()
+{
+    // pass
 }
 
 JString::JString(JString const &r)
@@ -62,29 +95,37 @@ JString::~JString()
     // pass
 }
 
+void JString::_reset(jstring v)
+{
+    _str = Env.GetStringUTFChars(v);
+}
+
 jstring JString::asReturn() const
 {
     return Env.NewStringUTF(_str);
 }
 
-JArray::JArray(jarray arr)
+JArray::JArray()
 {
-    if (arr)
-    {
-        _arr = arr;
-        _sz = Env.GetArrayLength(arr);
-    }
+    // pass
 }
 
 JArray::~JArray()
 {
+    // pass
+}
+
+void JArray::_reset(jarray arr, size_t sz)
+{
+    _sz = sz;
+    _arr._reset(arr);
 }
 
 string JArray::toString() const
 {
-    if (!_arr)
+    if (_arr.isnil())
         return "";
-    jbyte const *cs = Env.GetBytes((jbyteArray)_arr);
+    jbyte const *cs = Env.GetBytes(*this);
     return string((char const *)cs, _sz);
 }
 
@@ -152,7 +193,7 @@ JValue::JValue(JVariant const &var)
         // 将当前的函数保存到全局监听，执行结束后进行释放
         _fnidx = Env.context().add(var.toFunction());
         cb->id(cb, (jlong)_fnidx);
-        _val.l = cb;
+        _val.l = cb.asReturn();
     }
     break;
     default:
@@ -257,7 +298,7 @@ JVariant::JVariant(jobject v)
 }
 
 JVariant::JVariant(jstring v)
-    : vt(VT::STRING), _var(JString(v))
+    : vt(VT::STRING), _var(Env.GetStringUTFChars(v))
 {
 }
 
@@ -422,6 +463,18 @@ JTypeSignature JVariant::signature() const
     }
 
     return TypeSignature::OBJECT;
+}
+
+shared_ptr<JObject> JVariant::toObject() const
+{
+    auto r = make_shared<JObject>();
+    r->_reset(_var.toObject());
+    return r;
+}
+
+shared_ptr<JVariant> JVariant::FromObject(JObject const& obj)
+{
+    return make_shared<JVariant>(obj._obj);
 }
 
 AJNI_END

@@ -13,17 +13,23 @@ class JClass : public ::AJNI_NS::JClass
 {
 public:
 
-    JClass(JClassPath const& cp);
+    typedef ::AJNI_NS::JClass jvm_class_type;
 
-    jclass clazz$() const;
+    JClass(JClassPath const& cp);
 
     JObject const& object$() const;
 
+    jvm_class_type const& clazz$() const;
+
 protected:
 
-    JObject _object$;
-    JObject _clazz$;
+    // kt的comp可以不存在
+    shared_ptr<JObject> _object$;
+    shared_ptr<jvm_class_type> _clazz$;
+
     JClassPath _classpath$;
+
+    friend class JEnv;
 };
 
 class JStaticMethod : public ::AJNI_NS::JStaticMethod
