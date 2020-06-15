@@ -242,7 +242,6 @@ class JEntry
 public:
 
     typedef TClass class_type;
-    typedef JEntry<TClass> self_type;
     typedef shared_ptr<JClass> class_typep;
 
     explicit JEntry(JVariant const& var, class_typep const& clz = nullptr)
@@ -265,29 +264,55 @@ public:
         }
     }
 
-    inline class_type* operator -> () {
+    inline class_type * operator -> () {
         return dynamic_cast<class_type*>(_clazz.get());
     }
 
     inline class_type const* operator -> () const {
-        return dynamic_cast<class_type const*>(_clazz.get());
+        return dynamic_cast<class_type*>(_clazz.get());
     }
 
-    inline operator JObject& () {
-        return *_obj;
+    inline operator JObject& () const {
+        return _gobj ? *_gobj->gobj : *_obj;
     }
 
     inline jobject asReturn() const {
         return _obj->asReturn();
     }
 
+    // 增加计数
+    void grab() const;
+
+    // 减少计数
+    void drop() const;
+
 private:
 
     class_typep _clazz;
-    shared_ptr<JObject> _obj;
+    mutable shared_ptr<JObject> _obj;
+    mutable shared_ptr<JObject::_JGlobalObject> _gobj;
 };
 
 extern string tostr(jstring);
+
+template <typename TClass>
+inline void JEntry<TClass>::grab() const
+{
+    if (_gobj) {
+        _gobj->grab();
+    } else {
+        _gobj = make_shared<JObject::_JGlobalObject>(*_obj);
+        _obj = nullptr; // 通常obj会跨线程使用，所以当grab后，必须释放临时对象，避免drop时挂掉
+    }
+}
+
+template <typename TClass>
+inline void JEntry<TClass>::drop() const
+{
+    if (_gobj->drop()) {
+        _gobj = nullptr;
+    }
+}
 
 AJNI_END
 

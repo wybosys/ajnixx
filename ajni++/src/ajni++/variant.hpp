@@ -5,6 +5,7 @@
 #include "ajni++.hpp"
 #include <vector>
 #include <functional>
+#include <atomic>
 
 AJNI_BEGIN
 
@@ -39,10 +40,25 @@ public:
 
 protected:
 
-    // 自动引用计数
-    explicit JObject(jobject);
+    // 只允许特殊情况使用
+    class _JGlobalObject {
+    public:
 
-    void _reset(jobject);
+        _JGlobalObject(JObject const&);
+
+        void grab();
+        bool drop();
+
+        shared_ptr<JObject> gobj; // 全局对象
+
+    private:
+        ::std::atomic<int> _refs; // 引用计数
+    };
+
+    // 自动引用计数
+    explicit JObject(jobject, bool local = true);
+
+    void _reset(jobject, bool local = true);
 
     jobject _obj = nullptr;
     bool _local = true;
@@ -56,6 +72,7 @@ protected:
     friend class JArray;
     friend class JVariant;
     friend class kotlin::JClass;
+    template <typename T> friend class JEntry;
 };
 
 class JString {

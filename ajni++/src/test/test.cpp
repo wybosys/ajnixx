@@ -2,8 +2,12 @@
 #include <ajni++/kotlin.hpp>
 #include <sstream>
 
-USE_AJNI
-USE_STL
+#include <cross/cross.hpp>
+#include <cross/timer.hpp>
+
+USE_AJNI;
+USE_STL;
+USE_CROSS;
 
 AJNI_IMP_LOADED({})
 AJNI_IMP_UNLOADED({})
@@ -14,7 +18,7 @@ public:
 
     Info() : kotlin::JClass(CLASSPATH),
     fabc(*this), fcde(*this), fnul(*this),
-    mproc(*this)
+    proc(*this)
     {
         fabc.name = "abc";
         fabc.stype = TypeSignature::STRING;
@@ -25,12 +29,12 @@ public:
         fnul.name = "nul";
         fnul.stype = TypeSignature::OBJECT;
 
-        mproc.name = "proc";
-        mproc.sreturn = TypeSignature::VOID;
+        proc.name = "proc";
+        proc.sreturn = TypeSignature::VOID;
     }
 
     kotlin::JMemberField fabc, fcde, fnul;
-    kotlin::JMemberMethod mproc;
+    kotlin::JMemberMethod proc;
 
     static const JClassPath CLASSPATH;
 };
@@ -158,6 +162,16 @@ void Test1()
     // 测试将Java类拿到手上不释放等待回调再释放
     JEntry<Test> t(*Test().construct());
     JEntry<Info> f(*t->finfo(t));
+    // 增加引用计数，防止f被gc掉
+    f.grab();
+    // 放到timer中过一会再执行
+    Timer::SetTimeout(5, [=]() {
+        Env.Check();
+
+        f->proc(f, "C++延迟调用Java对象的方法");
+        // 释放
+        f.drop();
+    });
 }
 
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)

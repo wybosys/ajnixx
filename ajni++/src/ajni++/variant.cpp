@@ -18,18 +18,26 @@ JObject::JObject()
     // pass
 }
 
-JObject::JObject(jobject obj)
-: _obj(obj)
+JObject::JObject(jobject obj, bool local)
+: _obj(obj), _local(local)
 {
-    if (_obj)
-        _obj = Env.NewLocalRef(_obj);
+    if (_obj) {
+        if (_local)
+            _obj = Env.NewLocalRef(_obj);
+        else
+            _obj = Env.NewGlobalRef(_obj);
+    }
 }
 
 JObject::JObject(JObject const& r)
-: _obj(r._obj)
+: _obj(r._obj), _local(r._local)
 {
-    if (_obj)
-        _obj = Env.NewLocalRef(_obj);
+    if (_obj) {
+        if (_local)
+            _obj = Env.NewLocalRef(_obj);
+        else
+            _obj = Env.NewGlobalRef(_obj);
+    }
 }
 
 JObject::~JObject()
@@ -44,7 +52,7 @@ JObject::~JObject()
 
 jobject JObject::asReturn() const
 {
-    return Env.NewLocalRef(_obj);
+    return _local ? Env.NewLocalRef(_obj) : _obj;
 }
 
 bool JObject::isnil() const
@@ -58,11 +66,19 @@ JObject& JObject::operator = (JObject const& r)
         return *this;
 
     auto old = _obj;
+    auto oldlocal = _local;
+
     _obj = r._obj;
-    if (_obj)
-        _obj = Env.NewLocalRef(_obj);
-    if (old) {
+    _local = r._local;
+    if (_obj) {
         if (_local)
+            _obj = Env.NewLocalRef(_obj);
+        else
+            _obj = Env.NewGlobalRef(_obj);
+    }
+
+    if (old) {
+        if (oldlocal)
             Env.DeleteLocalRef(old);
         else
             Env.DeleteGlobalRef(old);
@@ -71,14 +87,25 @@ JObject& JObject::operator = (JObject const& r)
     return *this;
 }
 
-void JObject::_reset(jobject obj)
+void JObject::_reset(jobject obj, bool local)
 {
     if (_obj == obj)
         return;
-    jobject old = _obj;
-    _obj = Env.NewLocalRef(obj);
-    if (old) {
+
+    auto old = _obj;
+    auto oldlocal = _local;
+
+    _obj = obj;
+    _local = local;
+    if (_obj) {
         if (_local)
+            _obj = Env.NewLocalRef(_obj);
+        else
+            _obj = Env.NewGlobalRef(_obj);
+    }
+
+    if (old) {
+        if (oldlocal)
             Env.DeleteLocalRef(old);
         else
             Env.DeleteGlobalRef(old);
@@ -94,6 +121,30 @@ void JObject::_asglobal()
     if (old)
         Env.DeleteLocalRef(old);
     _local = false;
+}
+
+JObject::_JGlobalObject::_JGlobalObject(JObject const& r)
+: _refs(1)
+{
+    auto t = make_shared<JObject>();
+    t->_reset(r._obj, false); // 转换成global对象
+    gobj = t;
+}
+
+void JObject::_JGlobalObject::grab()
+{
+    ++_refs;
+}
+
+bool JObject::_JGlobalObject::drop()
+{
+    if (--_refs == 0)
+    {
+        // 需要释放
+        gobj = nullptr;
+        return true;
+    }
+    return false;
 }
 
 JString::JString()
