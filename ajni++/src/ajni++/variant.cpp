@@ -1,5 +1,6 @@
-#include "core.hpp"
 #include "ajni++.hpp"
+#include "jnienv.hpp"
+#include "ast.hpp"
 #include "variant.hpp"
 #include "jre.hpp"
 #include "com++.hpp"

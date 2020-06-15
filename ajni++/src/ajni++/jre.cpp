@@ -1,5 +1,6 @@
-#include "core.hpp"
 #include "ajni++.hpp"
+#include "jnienv.hpp"
+#include "ast.hpp"
 #include "jre.hpp"
 
 AJNI_BEGIN_NS(jre)

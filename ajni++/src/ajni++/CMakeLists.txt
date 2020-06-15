@@ -3,9 +3,9 @@ cmake_minimum_required(VERSION 3.1)
 include_directories(..)
 
 add_library(ajni++ STATIC
-ajni++.cpp
+        ast.cpp
 android.cpp
-core.cpp
+        jnienv.cpp
 inspect.cpp
 jre.cpp
 variant.cpp

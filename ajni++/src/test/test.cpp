@@ -1,5 +1,4 @@
 #include <ajni++/ajni++.hpp>
-#include <ajni++/kotlin.hpp>
 #include <sstream>
 
 #include <cross/cross.hpp>

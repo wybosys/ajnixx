@@ -1,7 +1,7 @@
 #ifndef __AJNIXX_KOTLIN_H_INCLUDED
 #define __AJNIXX_KOTLIN_H_INCLUDED
 
-#include "ajni++.hpp"
+#include "ast.hpp"
 
 AJNI_BEGIN_NS(kotlin)
 

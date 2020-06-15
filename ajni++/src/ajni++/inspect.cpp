@@ -1,4 +1,3 @@
-#include "core.hpp"
 #include "ajni++.hpp"
 #include "inspect.hpp"
 

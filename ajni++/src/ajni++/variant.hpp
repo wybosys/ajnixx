@@ -2,7 +2,7 @@
 #define __AJNI_VARIANT_H_INCLUDED
 
 #include "com++.hpp"
-#include "ajni++.hpp"
+#include "ast.hpp"
 #include <vector>
 #include <functional>
 #include <atomic>

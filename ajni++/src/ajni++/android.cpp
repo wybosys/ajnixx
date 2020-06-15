@@ -1,7 +1,5 @@
-#include "core.hpp"
 #include "ajni++.hpp"
 #include "android.hpp"
-#include "jre.hpp"
 
 AJNI_BEGIN_NS(android)
 
