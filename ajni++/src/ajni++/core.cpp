@@ -329,11 +329,6 @@ void JEnv::SetStaticObjectField(JClass const& cls, jfieldID id, JVariant const& 
     tls_env->SetStaticObjectField((jclass)cls._clazz._obj, id, jv.l);
 }
 
-void JEnv::SetStaticObjectField(JClass const& cls, jfieldID id, jobject v)
-{
-    tls_env->SetStaticObjectField((jclass)cls._clazz._obj, id, v);
-}
-
 void JEnv::SetStaticBooleanField(JClass const& cls, jfieldID id, jboolean v)
 {
     tls_env->SetStaticBooleanField((jclass)cls._clazz._obj, id, v);

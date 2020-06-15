@@ -163,7 +163,6 @@ public:
     jdouble GetStaticDoubleField(JClass const&, jfieldID);
 
     void SetStaticObjectField(JClass const&, jfieldID, JVariant const&);
-    void SetStaticObjectField(JClass const&, jfieldID, jobject);
     void SetStaticBooleanField(JClass const&, jfieldID, jboolean);
     void SetStaticByteField(JClass const&, jfieldID, jbyte);
     void SetStaticCharField(JClass const&, jfieldID, jchar);
