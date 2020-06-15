@@ -165,8 +165,6 @@ void Test1()
     f.grab();
     // 放到timer中过一会再执行
     Timer::SetTimeout(5, [=]() {
-        Env.Check();
-
         f->proc(f, "C++延迟调用Java对象的方法");
         // 释放
         f.drop();

@@ -16,10 +16,25 @@ const jobject jnull = nullptr;
 
 static JavaVM *gs_vm = nullptr;
 static JNIEnv *gs_env = nullptr;
+static bool gs_during_init = false; // 标记当前正位于初始化流程中，避免 JEnvThreadAutoGuard 自动绑定
 static jobject gs_activity = nullptr;
 static jobject gs_context = nullptr;
 static thread_local bool tls_ismain = false;
 static thread_local JNIEnv *tls_env = nullptr;
+
+JEnvThreadAutoGuard::JEnvThreadAutoGuard()
+{
+    // 自动绑定Env
+    if (!tls_env) {
+        if (!gs_vm || gs_during_init) {
+            // 整个环境还没有初始化，并且会之后由BindVM操作初始化，此处直接返回
+            return;
+        }
+
+        // 绑定Env环境
+        Env.Check();
+    }
+}
 
 void JEnvThreadAutoGuard::free_env()
 {
@@ -139,9 +154,10 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
         return;
     }
 
-    Logger::Info("启动AJNI++环境");
-
     gs_vm = vm;
+    gs_during_init = true;
+
+    Logger::Info("启动AJNI++环境");
 
     if (!env) {
         jint jret = vm->GetEnv((void **) &env, JNI_VERSION_1_4);
@@ -153,6 +169,7 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
 
     gs_env = tls_env = env;
     tls_ismain = true;
+    gs_during_init = false;
 }
 
 void JEnv::UnbindVM()

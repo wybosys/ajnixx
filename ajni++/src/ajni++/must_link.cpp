@@ -16,8 +16,8 @@ AJNI_API(jboolean) AJNI_FUNC(Callback, jni_1drop)(JNIEnv *env, jobject thiz, jlo
     return Env.context().function_drop(fnidx);
 }
 
+// Env.Check(); 不需要增加保护，线程初始化时会自动调用 (JEnvThreadAutoGuard)
 #define _AJNI_CALLBACK_IMPL_BEGIN \
-    Env.Check(); \
     auto &ctx = Env.context(); \
     auto fn = ctx.find_function(fnidx); \
     if (!fn) { \

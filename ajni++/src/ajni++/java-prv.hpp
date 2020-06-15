@@ -8,6 +8,7 @@ class JEnvThreadAutoGuard
 {
 public:
 
+    JEnvThreadAutoGuard();
     ~JEnvThreadAutoGuard();
 
     void free_env();
