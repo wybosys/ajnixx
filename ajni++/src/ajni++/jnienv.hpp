@@ -110,6 +110,10 @@ public:
     // 获得上下文，之后类均从该对象获得
     JContext& context();
 
+    // 全局锁
+    void lock();
+    void unlock();
+
     typedef shared_ptr<JObject> object_type;
     typedef shared_ptr<JString> string_type;
     typedef shared_ptr<JArray> array_type;

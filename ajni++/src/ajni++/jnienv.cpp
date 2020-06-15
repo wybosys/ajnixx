@@ -5,6 +5,7 @@
 #include "variant.hpp"
 #include "android.hpp"
 #include "java-prv.hpp"
+#include <mutex>
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
@@ -130,6 +131,9 @@ public:
         JENV_IMPL_EXPAND(CallStaticObjectMethod, (jclass)cls._clazz._obj NNT_COMMA id);
         return nullptr;
     }
+
+    // 全局锁
+    ::std::mutex mtx_global;
 };
 
 JEnv::JEnv()
@@ -226,6 +230,16 @@ void JEnv::BindContext(jobject jact, jobject jctx)
         d_ptr->obj_classloader = tls_env->NewGlobalRef(obj_classloader);
         d_ptr->mid_loadclass = mid_loadclass;
     }
+}
+
+void JEnv::lock()
+{
+    d_ptr->mtx_global.lock();
+}
+
+void JEnv::unlock()
+{
+    d_ptr->mtx_global.unlock();
 }
 
 JEnv::class_type JEnv::FindClass(string const& str)
