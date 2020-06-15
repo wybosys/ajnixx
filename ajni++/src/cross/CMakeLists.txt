@@ -4,6 +4,8 @@ add_library(cross STATIC
 cross.cpp
 str.cpp
 sys.cpp
+timer.cpp
+datetime.cpp
 )
 
 set_target_properties(cross

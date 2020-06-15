@@ -4,6 +4,11 @@ class Info {
     var abc: String? = "abc"
     var cde: Int = 123
     var nul: Any? = null
+
+    fun proc(msg: String)
+    {
+        println("Info::Proc " + msg)
+    }
 }
 
 class Test {
@@ -20,13 +25,13 @@ class Test {
 
     fun value_async(cb: Callback) {
         cb.grab()
-        Thread({
+        Thread {
             // 不需要于主线程中回调
             //MainThread.Invoke {
             cb(123, "abc")
             cb.drop()
             //}
-        }).start()
+        }.start()
     }
 
     fun null_async(cb: Callback) {

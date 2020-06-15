@@ -13,7 +13,8 @@ class Info : public kotlin::JClass
 public:
 
     Info() : kotlin::JClass(CLASSPATH),
-    fabc(*this), fcde(*this), fnul(*this)
+    fabc(*this), fcde(*this), fnul(*this),
+    mproc(*this)
     {
         fabc.name = "abc";
         fabc.stype = TypeSignature::STRING;
@@ -23,9 +24,13 @@ public:
 
         fnul.name = "nul";
         fnul.stype = TypeSignature::OBJECT;
+
+        mproc.name = "proc";
+        mproc.sreturn = TypeSignature::VOID;
     }
 
-    JMemberField fabc, fcde, fnul;
+    kotlin::JMemberField fabc, fcde, fnul;
+    kotlin::JMemberMethod mproc;
 
     static const JClassPath CLASSPATH;
 };
@@ -66,12 +71,12 @@ public:
         fnullasync.sreturn = TypeSignature::VOID;
     }
 
-    JMemberMethod test0;
-    JMemberField ftest0;
+    kotlin::JMemberMethod test0;
+    kotlin::JMemberField ftest0;
     kotlin::JStaticMethod Test0;
-    JStaticField fTest0;
-    JMemberMethod finfo;
-    JMemberMethod fvalueasync, finfoasync, fnullasync;
+    kotlin::JStaticField fTest0;
+    kotlin::JMemberMethod finfo;
+    kotlin::JMemberMethod fvalueasync, finfoasync, fnullasync;
 
     static const JClassPath CLASSPATH;
 };
@@ -148,9 +153,17 @@ void Test0(::std::ostringstream& oss)
     oss << mtf() << endl;
 }
 
+void Test1()
+{
+    // 测试将Java类拿到手上不释放等待回调再释放
+    JEntry<Test> t(*Test().construct());
+    JEntry<Info> f(*t->finfo(t));
+}
+
 AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)
 {
     ostringstream oss;
     Test0(oss);
+    Test1();
     return JString(oss.str()).asReturn();
 }

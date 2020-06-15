@@ -13,6 +13,7 @@ AJNI_BEGIN
 JField::JField(JClass& clz)
 : _clazz(clz)
 {
+    // pass
 }
 
 return_type JStaticField::operator()() const
