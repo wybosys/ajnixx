@@ -4,8 +4,10 @@
 // #define AJNI_CHECKEXCEPTION ::AJNI_NS::ExceptionGuard _NNT_COMBINE(__exception_guard_, __LINE__)
 
 #define AJNI_API(ret) extern "C" JNIEXPORT ret JNICALL
-#define AJNI_FUNC(cls, name) Java_com_nnt_ajnixx_##cls##_##name
-#define AJNI_COMPANION_FUNC(cls, name) AJNI_FUNC(cls, 00024Companion_##name)
+#define AJNI_FUNCNAME(mod, cls, name) Java_##mod##_##cls##_##name
+#define AJNI_COMPANION_FUNCNAME(mod, cls, name) Java_##mod##_##cls##_00024Companion_##name
+#define AJNI_FUNC(cls, name) AJNI_FUNCNAME(com_nnt_ajnixx, cls, name)
+#define AJNI_COMPANION_FUNC(cls, name) AJNI_COMPANION_FUNCNAME(com_nnt_ajnixx, cls, name)
 
 // 如果没有实现，需要再so里实现JNI的初始化函数
 #define AJNI_IMP_LOADED(exp) \
