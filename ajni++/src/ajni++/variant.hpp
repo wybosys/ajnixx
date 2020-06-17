@@ -161,14 +161,17 @@ public:
         return _vals.size();
     }
 
-    inline jvalue operator[](size_t idx) const {
-        return _jvals[idx];
-    }
-
 private:
 
     ::std::vector<value_type> _vals;
     ::std::vector<jvalue> _jvals;
+
+    // 返回jni函数需要的参数列表
+    inline jvalue const* _args() const {
+        return &_jvals[0];
+    }
+
+    friend class JEnv;
 };
 
 typedef ptrdiff_t integer;

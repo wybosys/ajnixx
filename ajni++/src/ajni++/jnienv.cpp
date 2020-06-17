@@ -56,33 +56,6 @@ JEnvThreadAutoGuard& JEnvThreadAutoGuard::tls()
 // 全局唯一的Env
 JEnv Env;
 
-#define JENV_IMPL_EXPAND(func, pre)                                                                                 \
-    switch (vals.size())                                                                                            \
-    {                                                                                                               \
-    case 0:                                                                                                         \
-        return tls_env->func(pre);                                                                                  \
-    case 1:                                                                                                         \
-        return tls_env->func(pre, vals[0]);                                                                         \
-    case 2:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1]);                                                                \
-    case 3:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1], vals[2]);                                                       \
-    case 4:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1], vals[2], vals[3]);                                              \
-    case 5:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1], vals[2], vals[3], vals[4]);                                     \
-    case 6:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5]);                            \
-    case 7:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6]);                   \
-    case 8:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7]);          \
-    case 9:                                                                                                         \
-        return tls_env->func(pre, vals[0], vals[1], vals[2], vals[3], vals[4], vals[5], vals[6], vals[7], vals[8]); \
-    default:                                                                                                        \
-        break;                                                                                                      \
-    }
-
 class JEnvPrivate
 {
 public:
@@ -118,18 +91,6 @@ public:
         auto clz = (jclass)tls_env->CallObjectMethod(obj_classloader, mid_loadclass, str);
         tls_env->DeleteLocalRef(str);
         return clz;
-    }
-
-    jobject CallObjectMethod(JObject const& obj, jmethodID id, JValues const& vals)
-    {
-        JENV_IMPL_EXPAND(CallObjectMethod, obj._obj NNT_COMMA id);
-        return nullptr;
-    }
-
-    jobject CallStaticObjectMethod(JClass const& cls, jmethodID id, JValues const& vals)
-    {
-        JENV_IMPL_EXPAND(CallStaticObjectMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-        return nullptr;
     }
 
     // 全局锁
@@ -549,8 +510,7 @@ jmethodID JEnv::GetStaticMethodID(JClass const& cls, string const& name, string 
 
 jobject JEnv::NewObject(JClass const& cls, jmethodID id, JValues const &vals)
 {
-    JENV_IMPL_EXPAND(NewObject, (jclass)cls._clazz._obj NNT_COMMA id);
-    return nullptr;
+    return tls_env->NewObjectA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jclass JEnv::GetObjectClass(jobject obj)
@@ -560,55 +520,47 @@ jclass JEnv::GetObjectClass(jobject obj)
 
 jboolean JEnv::CallStaticBooleanMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticBooleanMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return false;
+    return tls_env->CallStaticBooleanMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jbyte JEnv::CallStaticByteMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticByteMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallStaticByteMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jchar JEnv::CallStaticCharMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticCharMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallStaticCharMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jshort JEnv::CallStaticShortMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticShortMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallStaticShortMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jint JEnv::CallStaticIntMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticIntMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallStaticIntMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jlong JEnv::CallStaticLongMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticLongMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallStaticLongMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jfloat JEnv::CallStaticFloatMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticFloatMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallStaticFloatMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jdouble JEnv::CallStaticDoubleMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticDoubleMethod, (jclass)cls._clazz._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallStaticDoubleMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 JEnv::object_type JEnv::CallStaticObjectMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    auto o = d_ptr->CallStaticObjectMethod(cls, id, vals);
+    auto o = tls_env->CallStaticObjectMethodA((jclass)cls._clazz._obj, id, vals._args());
     if (!o)
         return nullptr;
 
@@ -619,7 +571,7 @@ JEnv::object_type JEnv::CallStaticObjectMethod(JClass const& cls, jmethodID id, 
 
 JEnv::string_type JEnv::CallStaticStringMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    auto o = (jstring)d_ptr->CallStaticObjectMethod(cls, id, vals);
+    auto o = (jstring)tls_env->CallStaticObjectMethodA((jclass)cls._clazz._obj, id, vals._args());
     if (!o)
         return nullptr;
 
@@ -630,7 +582,7 @@ JEnv::string_type JEnv::CallStaticStringMethod(JClass const& cls, jmethodID id, 
 
 JEnv::array_type JEnv::CallStaticArrayMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    auto o = (jarray)d_ptr->CallStaticObjectMethod(cls, id, vals);
+    auto o = (jarray)tls_env->CallStaticObjectMethodA((jclass)cls._clazz._obj, id, vals._args());
     if (!o)
         return nullptr;
     size_t sz = tls_env->GetArrayLength(o);
@@ -642,60 +594,52 @@ JEnv::array_type JEnv::CallStaticArrayMethod(JClass const& cls, jmethodID id, JV
 
 void JEnv::CallStaticVoidMethod(JClass const& cls, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallStaticVoidMethod, (jclass)cls._clazz._obj NNT_COMMA id);
+    tls_env->CallStaticVoidMethodA((jclass)cls._clazz._obj, id, vals._args());
 }
 
 jboolean JEnv::CallBooleanMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallBooleanMethod, obj._obj NNT_COMMA id);
-    return false;
+    return tls_env->CallBooleanMethodA(obj._obj, id, vals._args());
 }
 
 jbyte JEnv::CallByteMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallByteMethod, obj._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallByteMethodA(obj._obj, id, vals._args());
 }
 
 jchar JEnv::CallCharMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallCharMethod, obj._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallCharMethodA(obj._obj, id, vals._args());
 }
 
 jshort JEnv::CallShortMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallShortMethod, obj._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallShortMethodA(obj._obj, id, vals._args());
 }
 
 jint JEnv::CallIntMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallIntMethod, obj._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallIntMethodA(obj._obj, id, vals._args());
 }
 
 jlong JEnv::CallLongMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallLongMethod, obj._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallLongMethodA(obj._obj, id, vals._args());
 }
 
 jfloat JEnv::CallFloatMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallFloatMethod, obj._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallFloatMethodA(obj._obj, id, vals._args());
 }
 
 jdouble JEnv::CallDoubleMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallDoubleMethod, obj._obj NNT_COMMA id);
-    return 0;
+    return tls_env->CallDoubleMethodA(obj._obj, id, vals._args());
 }
 
 JEnv::object_type JEnv::CallObjectMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    auto o = d_ptr->CallObjectMethod(obj, id, vals);
+    auto o = tls_env->CallObjectMethodA(obj._obj, id, vals._args());
     if (!o)
         return nullptr;
 
@@ -706,7 +650,7 @@ JEnv::object_type JEnv::CallObjectMethod(JObject const& obj, jmethodID id, JValu
 
 JEnv::string_type JEnv::CallStringMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    auto o = (jstring)d_ptr->CallObjectMethod(obj, id, vals);
+    auto o = (jstring)tls_env->CallObjectMethodA(obj._obj, id, vals._args());
     if (!o)
         return nullptr;
 
@@ -717,7 +661,7 @@ JEnv::string_type JEnv::CallStringMethod(JObject const& obj, jmethodID id, JValu
 
 JEnv::array_type JEnv::CallArrayMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    auto o = (jarray)d_ptr->CallObjectMethod(obj, id, vals);
+    auto o = (jarray)tls_env->CallObjectMethodA(obj._obj, id, vals._args());
     if (!o)
         return nullptr;
     size_t sz = tls_env->GetArrayLength(o);
@@ -729,7 +673,7 @@ JEnv::array_type JEnv::CallArrayMethod(JObject const& obj, jmethodID id, JValues
 
 void JEnv::CallVoidMethod(JObject const& obj, jmethodID id, JValues const& vals)
 {
-    JENV_IMPL_EXPAND(CallVoidMethod, obj._obj NNT_COMMA id);
+    tls_env->CallVoidMethodA(obj._obj, id, vals._args());
 }
 
 size_t JEnv::GetArrayLength(jarray arr)

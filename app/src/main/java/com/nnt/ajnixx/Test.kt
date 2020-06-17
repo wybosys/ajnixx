@@ -40,7 +40,7 @@ class Test {
         cb.drop()
     }
 
-    fun info_async(cb: Callback) {
+    fun info_async(cb: Callback, str: String, cb2: Callback) {
         val info = Info()
         info.abc = "cde"
         info.cde = 456
