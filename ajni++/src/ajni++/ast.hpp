@@ -14,8 +14,10 @@ class JField
 {
 public:
 
-    JField(JClass& clz);
-    virtual ~JField() {}
+    JField(JClass &clz);
+
+    virtual ~JField()
+    {}
 
     // 变量名
     string name;
@@ -25,7 +27,7 @@ public:
 
 protected:
 
-    JClass& _clazz;
+    JClass &_clazz;
 };
 
 typedef shared_ptr<JVariant> return_type;
@@ -35,26 +37,28 @@ class JMemberField : public JField
 {
 public:
 
-    JMemberField(JClass& clz) : JField(clz) {}
+    JMemberField(JClass &clz) : JField(clz)
+    {}
 
     // get
-    return_type operator()(JObject&) const;
+    return_type operator()(JObject &) const;
 
     // set
-    void operator()(JObject&, arg_type const&);
+    void operator()(JObject &, arg_type const &);
 };
 
 class JStaticField : public JField
 {
 public:
 
-    JStaticField(JClass& clz) : JField(clz) {}
+    JStaticField(JClass &clz) : JField(clz)
+    {}
 
     // get
     return_type operator()() const;
 
     // set
-    void operator()(JObject&, arg_type const&);
+    void operator()(JObject &, arg_type const &);
 };
 
 // 方法定义
@@ -62,8 +66,10 @@ class JMethod
 {
 public:
 
-    JMethod(JClass& clz);
-    virtual ~JMethod() {}
+    JMethod(JClass &clz);
+
+    virtual ~JMethod()
+    {}
 
     // 函数名
     string name;
@@ -79,34 +85,52 @@ public:
     // 生成函数标记
     string signature(args_type const &, args_signatures_typep const & = {}) const;
 
-    static string Signature(args_type const &, JTypeSignature const& sreturn, args_signatures_typep const & = {});
+    static string
+    Signature(args_type const &, JTypeSignature const &sreturn, args_signatures_typep const & = {});
 
 protected:
 
-    JClass& _clazz;
+    JClass &_clazz;
 };
 
 class JConstructMethod : public JMethod
 {
 public:
 
-    JConstructMethod(JClass& clz) : JMethod(clz)
+    JConstructMethod(JClass &clz) : JMethod(clz)
     {
         sreturn = TypeSignature::VOID;
     }
 
     return_type operator()() const;
-    return_type operator()(arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
 
-    virtual return_type invoke(args_type const&) const;
+    return_type operator()(arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type
+    operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    virtual return_type invoke(args_type const &) const;
 
 };
 
@@ -114,20 +138,42 @@ class JMemberMethod : public JMethod
 {
 public:
 
-    JMemberMethod(JClass& clz) : JMethod(clz) {}
+    JMemberMethod(JClass &clz) : JMethod(clz)
+    {}
 
-    return_type operator()(JObject&) const;
-    return_type operator()(JObject&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(JObject&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+    return_type operator()(JObject &) const;
 
-    virtual return_type invoke(JObject&, args_type const &) const;
+    return_type operator()(JObject &, arg_type const &) const;
+
+    return_type operator()(JObject &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(JObject &, arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(JObject &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    return_type
+    operator()(JObject &, arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+               arg_type const &) const;
+
+    return_type
+    operator()(JObject &, arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+               arg_type const &, arg_type const &) const;
+
+    return_type
+    operator()(JObject &, arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+               arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type
+    operator()(JObject &, arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+               arg_type const &, arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type
+    operator()(JObject &, arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+               arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+               arg_type const &) const;
+
+    virtual return_type invoke(JObject &, args_type const &) const;
 
 };
 
@@ -135,18 +181,36 @@ class JStaticMethod : public JMethod
 {
 public:
 
-    JStaticMethod(JClass& clz) : JMethod(clz) {}
+    JStaticMethod(JClass &clz) : JMethod(clz)
+    {}
 
     return_type operator()() const;
-    return_type operator()(arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
-    return_type operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
+
+    return_type operator()(arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type
+    operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
 
     virtual return_type invoke(args_type const &) const;
 
@@ -157,14 +221,16 @@ class JClass
 {
 public:
 
-    JClass(JClassPath const& = "");
-    virtual ~JClass() {}
+    JClass(JClassPath const & = "");
+
+    virtual ~JClass()
+    {}
 
     // 类名
     JClassName name() const;
 
     // 类路径
-    JClassPath const& path() const;
+    JClassPath const &path() const;
 
     // 是否存在
     bool exists() const;
@@ -181,8 +247,11 @@ protected:
     virtual void _asglobal();
 
     friend class JEnv;
+
     friend class JEnvPrivate;
+
     friend class JContext;
+
     friend class kotlin::JClass;
 };
 
@@ -191,24 +260,26 @@ NNT_CLASS_PREPARE(JContext);
 // 上下文环境
 class JContext
 {
-    NNT_CLASS_DECL(JContext);
+NNT_CLASS_DECL(JContext);
 
 public:
 
     JContext();
+
     ~JContext();
 
     typedef shared_ptr<JClass> class_typep;
 
     // 添加类
-    bool add(class_typep const&);
+    bool add(class_typep const &);
 
     // 查找类
-    class_typep find_class(JClassPath const&) const;
+    class_typep find_class(JClassPath const &) const;
 
     // 注册类
-    template <typename T>
-    class_typep register_class() {
+    template<typename T>
+    class_typep register_class()
+    {
         auto fnd = find_class(T::CLASSPATH);
         if (fnd)
             return fnd;
@@ -220,7 +291,7 @@ public:
     typedef size_t function_index_type;
 
     // 保存函数返回索引
-    function_index_type add(shared_ptr<function_type> const&);
+    function_index_type add(shared_ptr<function_type> const &);
 
     // 增加函数计数
     void function_grab(function_index_type);
@@ -236,47 +307,63 @@ public:
 };
 
 // 实例定义
-template <typename TClass>
+template<typename TClass>
 class JEntry
 {
 public:
 
     typedef TClass class_type;
     typedef shared_ptr<JClass> class_typep;
+    typedef JEntry<TClass> self_type;
+    typedef shared_ptr<self_type> return_type;
 
-    explicit JEntry(JVariant const& var, class_typep const& clz = nullptr)
-    : _clazz(clz)
+    explicit JEntry(JVariant const &var, class_typep const &clz = nullptr)
+            : _clazz(clz)
     {
         _obj = var.toObject();
 
         if (!_clazz) {
-            _clazz = Env.context().register_class<class_type >();
+            _clazz = Env.context().register_class<class_type>();
         }
     }
 
-    explicit JEntry(shared_ptr<JObject> const& var, class_typep const& clz = nullptr)
+    explicit JEntry(shared_ptr<JVariant> const &pvar, class_typep const &clz = nullptr)
+            : _clazz(clz)
+    {
+        _obj = pvar->toObject();
+
+        if (!_clazz) {
+            _clazz = Env.context().register_class<class_type>();
+        }
+    }
+
+    explicit JEntry(shared_ptr<JObject> const &var, class_typep const &clz = nullptr)
             : _clazz(clz)
     {
         _obj = var;
 
         if (!_clazz) {
-            _clazz = Env.context().register_class<class_type >();
+            _clazz = Env.context().register_class<class_type>();
         }
     }
 
-    inline class_type * operator -> () {
-        return dynamic_cast<class_type*>(_clazz.get());
+    inline class_type *operator->()
+    {
+        return dynamic_cast<class_type *>(_clazz.get());
     }
 
-    inline class_type const* operator -> () const {
-        return dynamic_cast<class_type*>(_clazz.get());
+    inline class_type const *operator->() const
+    {
+        return dynamic_cast<class_type *>(_clazz.get());
     }
 
-    inline operator JObject& () const {
+    inline operator JObject &() const
+    {
         return _gobj ? *_gobj->gobj : *_obj;
     }
 
-    inline jobject asReturn() const {
+    inline jobject asReturn() const
+    {
         return _obj->asReturn();
     }
 
@@ -295,7 +382,7 @@ private:
 
 extern string tostr(jstring);
 
-template <typename TClass>
+template<typename TClass>
 inline void JEntry<TClass>::grab() const
 {
     if (_gobj) {
@@ -306,7 +393,7 @@ inline void JEntry<TClass>::grab() const
     }
 }
 
-template <typename TClass>
+template<typename TClass>
 inline void JEntry<TClass>::drop() const
 {
     if (_gobj->drop()) {
