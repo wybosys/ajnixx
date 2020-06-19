@@ -249,6 +249,7 @@ namespace TypeSignature
     extern const JTypeSignature BYTEARRAY;
 } // namespace TypeSignature
 
+// 自动处理JNI内部异常
 class ExceptionGuard
 {
 public:
@@ -256,10 +257,18 @@ public:
     ExceptionGuard(bool print = true) : _print(print) {}
     ~ExceptionGuard();
 
+    // 检查是否有异常发生，异常信息通过修改refin的string带出
+    // @return true代表发生了异常
+    static bool Check();
+
+    // 获得最后捕获的错误信息
+    static string GetLastErrorMessage();
+
 private:
     bool _print;
 };
 
+// AJNI日志接口
 class Logger
 {
 public:

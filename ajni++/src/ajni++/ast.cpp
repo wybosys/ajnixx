@@ -458,11 +458,23 @@ return_type JStaticMethod::invoke(args_type const &args) const
             return _V(Env.CallStaticDoubleMethod(_clazz, mid, jvals));
         case TypeSignature::TS::STRING: {
             auto v = Env.CallStaticStringMethod(_clazz, mid, jvals);
-            return v ? _V(*v) : nullptr;
+            if (v == nullptr) {
+                if (!nullable && ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                }
+                return nullptr;
+            }
+            return _V(*v);
         }
         case TypeSignature::TS::BYTEARRAY: {
             auto v = Env.CallStaticArrayMethod(_clazz, mid, jvals);
-            return v ? _V(v->toString()) : nullptr;
+            if (v == nullptr) {
+                if (!nullable && ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                }
+                return nullptr;
+            }
+            return _V(v->toString());
         }
         case TypeSignature::TS::VOID: {
             Env.CallStaticVoidMethod(_clazz, mid, jvals);
@@ -475,7 +487,13 @@ return_type JStaticMethod::invoke(args_type const &args) const
     }
 
     auto v = Env.CallStaticObjectMethod(_clazz, mid, jvals);
-    return v ? JVariant::FromObject(*v) : nullptr;
+    if (v == nullptr) {
+        if (!nullable && ExceptionGuard::Check()) {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name()  + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+        }
+        return nullptr;
+    }
+    return JVariant::FromObject(*v);
 }
 
 return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
@@ -509,11 +527,23 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
             return _V(Env.CallDoubleMethod(obj, mid, jvals));
         case TypeSignature::TS::STRING: {
             auto s = Env.CallStringMethod(obj, mid, jvals);
-            return s ? _V(*s) : nullptr;
+            if (s == nullptr) {
+                if (!nullable && ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                }
+                return nullptr;
+            }
+            return _V(*s);
         }
         case TypeSignature::TS::BYTEARRAY: {
             auto v = Env.CallArrayMethod(obj, mid, jvals);
-            return v ? _V(v->toString()) : nullptr;
+            if (v == nullptr) {
+                if (!nullable && ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                }
+                return nullptr;
+            }
+            return _V(v->toString());
         }
         case TypeSignature::TS::VOID: {
             Env.CallVoidMethod(obj, mid, jvals);
@@ -526,7 +556,13 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
     }
 
     auto v = Env.CallObjectMethod(obj, mid, jvals);
-    return v ? JVariant::FromObject(*v) : nullptr;
+    if (v == nullptr) {
+        if (!nullable && ExceptionGuard::Check()) {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+        }
+        return nullptr;
+    }
+    return JVariant::FromObject(*v);
 }
 
 JClass::JClass(JClassPath const& cp)

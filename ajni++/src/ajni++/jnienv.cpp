@@ -13,15 +13,16 @@
 
 AJNI_BEGIN
 
-const jobject jnull = nullptr;
+const jobject jnull = nullptr; // 定义jni的空
 
-static JavaVM *gs_vm = nullptr;
-static JNIEnv *gs_env = nullptr;
+static JavaVM *gs_vm = nullptr; // jni绑定主jvm对象
+static JNIEnv *gs_env = nullptr; // jni绑定主env对象
 static bool gs_during_init = false; // 标记当前正位于初始化流程中，避免 JEnvThreadAutoGuard 自动绑定
-static jobject gs_activity = nullptr;
-static jobject gs_context = nullptr;
-static thread_local bool tls_ismain = false;
-static thread_local JNIEnv *tls_env = nullptr;
+static jobject gs_activity = nullptr; // 业务层主activity对象
+static jobject gs_context = nullptr; // 业务层android上下文
+static thread_local bool tls_ismain = false; // 是否时主线程
+static thread_local JNIEnv *tls_env = nullptr; // 当前线程的env数据
+static thread_local string tls_errmsg; // 当前线程遇到的最后错误信息
 
 JEnvThreadAutoGuard::JEnvThreadAutoGuard()
 {
@@ -767,16 +768,30 @@ ExceptionGuard::~ExceptionGuard()
         return;
     }
 
-    if (!gs_env->ExceptionCheck())
-        return;
+    if (Check() && _print) {
+        Logger::Error("捕获JNI异常 " + tls_errmsg);
+    }
+}
+
+bool ExceptionGuard::Check()
+{
+    if (!gs_env->ExceptionCheck()) {
+        tls_errmsg.clear();
+        return false;
+    }
 
     jthrowable err = gs_env->ExceptionOccurred();
     gs_env->ExceptionClear();
-    if (_print) {
-        JEntry<jre::Throwable> obj(JVariant((jobject)err));
-        string msg = *obj->toString(obj);
-        Logger::Error("捕获JNI异常 " + msg);
-    }
+
+    JEntry<jre::Throwable> obj(JVariant((jobject)err));
+    tls_errmsg = *obj->toString(obj);
+
+    return true;
+}
+
+string ExceptionGuard::GetLastErrorMessage()
+{
+    return tls_errmsg;
 }
 
 void Logger::Debug(string const& msg)

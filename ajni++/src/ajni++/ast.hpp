@@ -75,7 +75,11 @@ public:
     string name;
 
     // 返回类型
-    JTypeSignature sreturn;
+    JTypeSignature sreturn = TypeSignature::VOID;
+
+    // 如果返回的是object，框架会根据该开关判断是否遇到了Java层业务异常
+    // 返回的不是object则该开关不起作用
+    bool nullable = false;
 
     // 参数类型, 设置则代表不使用自动推导，手动指定入参表
     typedef ::std::vector<JTypeSignature> args_signatures_type;
@@ -320,6 +324,7 @@ public:
     explicit JEntry(JVariant const &var, class_typep const &clz = nullptr)
             : _clazz(clz)
     {
+        assert((void*)&var != nullptr);
         _obj = var.toObject();
 
         if (!_clazz) {
@@ -330,6 +335,7 @@ public:
     explicit JEntry(shared_ptr<JVariant> const &pvar, class_typep const &clz = nullptr)
             : _clazz(clz)
     {
+        assert(pvar);
         _obj = pvar->toObject();
 
         if (!_clazz) {
@@ -340,6 +346,7 @@ public:
     explicit JEntry(shared_ptr<JObject> const &var, class_typep const &clz = nullptr)
             : _clazz(clz)
     {
+        assert(var);
         _obj = var;
 
         if (!_clazz) {

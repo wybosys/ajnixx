@@ -20,6 +20,8 @@ class Test {
     val test0 = "Test0 Member Variable String"
 
     fun info(): Info {
+        var info = null as Info
+        info.abc = "123"
         return Info()
     }
 
