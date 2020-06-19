@@ -20,8 +20,8 @@ class Test {
     val test0 = "Test0 Member Variable String"
 
     fun info(): Info {
-        var info = null as Info
-        info.abc = "123"
+        // var info = null as Info // 放开注释测试jni对java层异常的捕获
+        // info.abc = "123"
         return Info()
     }
 
