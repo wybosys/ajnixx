@@ -708,6 +708,9 @@ jobject JEnv::NewGlobalRef(jobject obj)
 
 void JEnv::DeleteGlobalRef(jobject obj)
 {
+    // global在业务层通常会持久拿在手里，所以当jvm全局清理时，vm会变空，此时不应再释放
+    if (!gs_vm)
+        return;
     return tls_env->DeleteGlobalRef(obj);
 }
 
