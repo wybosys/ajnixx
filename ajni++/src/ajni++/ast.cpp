@@ -11,8 +11,8 @@
 
 AJNI_BEGIN
 
-JField::JField(JClass& clz)
-: _clazz(clz)
+JField::JField(JClass &clz)
+        : _clazz(clz)
 {
     // pass
 }
@@ -20,8 +20,7 @@ JField::JField(JClass& clz)
 return_type JStaticField::operator()() const
 {
     auto fid = Env.GetStaticFieldID(_clazz, name.c_str(), stype.c_str());
-    if (!fid)
-    {
+    if (!fid) {
         Env.ExceptionClear();
         Logger::Error("没有找到静态变量 " + name + stype);
         return nullptr;
@@ -69,11 +68,10 @@ return_type JStaticField::operator()() const
     return _V(v);
 }
 
-void JStaticField::operator()(JObject& obj, arg_type const& v)
+void JStaticField::operator()(JObject &obj, arg_type const &v)
 {
     auto fid = Env.GetStaticFieldID(_clazz, name.c_str(), stype.c_str());
-    if (!fid)
-    {
+    if (!fid) {
         Env.ExceptionClear();
         Logger::Error("没有找到静态变量 " + name + stype);
         return;
@@ -127,11 +125,10 @@ void JStaticField::operator()(JObject& obj, arg_type const& v)
     }
 }
 
-return_type JMemberField::operator()(JObject& obj) const
+return_type JMemberField::operator()(JObject &obj) const
 {
     auto fid = Env.GetFieldID(_clazz, name.c_str(), stype.c_str());
-    if (!fid)
-    {
+    if (!fid) {
         Env.ExceptionClear();
         Logger::Error("没有找到成员变量 " + name + stype);
         return nullptr;
@@ -173,11 +170,10 @@ return_type JMemberField::operator()(JObject& obj) const
     return v ? JVariant::FromObject(*v) : nullptr;
 }
 
-void JMemberField::operator()(JObject& obj, arg_type const& v)
+void JMemberField::operator()(JObject &obj, arg_type const &v)
 {
     auto fid = Env.GetFieldID(_clazz, name.c_str(), stype.c_str());
-    if (!fid)
-    {
+    if (!fid) {
         Env.ExceptionClear();
         Logger::Error("没有找到成员变量 " + name + stype);
         return;
@@ -236,47 +232,59 @@ return_type JConstructMethod::operator()() const
     return invoke({});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v) const
+return_type JConstructMethod::operator()(arg_type const &v) const
 {
     return invoke({&v});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1) const
+return_type JConstructMethod::operator()(arg_type const &v, arg_type const &v1) const
 {
     return invoke({&v, &v1});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2) const
+return_type
+JConstructMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2) const
 {
     return invoke({&v, &v1, &v2});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3) const
+return_type JConstructMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                         arg_type const &v3) const
 {
     return invoke({&v, &v1, &v2, &v3});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4) const
+return_type JConstructMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                         arg_type const &v3, arg_type const &v4) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5) const
+return_type JConstructMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                         arg_type const &v3, arg_type const &v4,
+                                         arg_type const &v5) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6) const
+return_type JConstructMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                         arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                         arg_type const &v6) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7) const
+return_type JConstructMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                         arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                         arg_type const &v6, arg_type const &v7) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
-return_type JConstructMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7, arg_type const& v8) const
+return_type JConstructMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                         arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                         arg_type const &v6, arg_type const &v7,
+                                         arg_type const &v8) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
@@ -286,53 +294,65 @@ return_type JStaticMethod::operator()() const
     return invoke({});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v) const
+return_type JStaticMethod::operator()(arg_type const &v) const
 {
     return invoke({&v});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1) const
+return_type JStaticMethod::operator()(arg_type const &v, arg_type const &v1) const
 {
     return invoke({&v, &v1});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2) const
+return_type
+JStaticMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2) const
 {
     return invoke({&v, &v1, &v2});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3) const
+return_type JStaticMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3) const
 {
     return invoke({&v, &v1, &v2, &v3});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4) const
+return_type JStaticMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5) const
+return_type JStaticMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4,
+                                      arg_type const &v5) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6) const
+return_type JStaticMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                      arg_type const &v6) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7) const
+return_type JStaticMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                      arg_type const &v6, arg_type const &v7) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
-return_type JStaticMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7, arg_type const& v8) const
+return_type JStaticMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                      arg_type const &v6, arg_type const &v7,
+                                      arg_type const &v8) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
 
-JMethod::JMethod(JClass& clz)
-: _clazz(clz)
+JMethod::JMethod(JClass &clz)
+        : _clazz(clz)
 {
 }
 
@@ -341,18 +361,17 @@ string JMethod::signature(args_type const &args, args_signatures_typep const &pr
     return Signature(args, sreturn, predefs);
 }
 
-string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, args_signatures_typep const &predefs)
+string JMethod::Signature(args_type const &args, JTypeSignature const &sreturn,
+                          args_signatures_typep const &predefs)
 {
-    if (predefs)
-    {
+    if (predefs) {
         ::std::vector<string> tss(predefs->begin(), predefs->end());
         string sig = "(" + ::CROSS_NS::implode(tss, "") + ")" + sreturn;
         return sig;
     }
 
     ::std::vector<string> ps;
-    for (auto &e : args)
-    {
+    for (auto &e : args) {
         ps.emplace_back(e->signature());
     }
 
@@ -360,52 +379,68 @@ string JMethod::Signature(args_type const &args, JTypeSignature const& sreturn, 
     return sig;
 }
 
-return_type JMemberMethod::operator()(JObject& obj) const
+return_type JMemberMethod::operator()(JObject &obj) const
 {
     return invoke(obj, {});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v) const
+return_type JMemberMethod::operator()(JObject &obj, arg_type const &v) const
 {
     return invoke(obj, {&v});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1) const
+return_type JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1) const
 {
     return invoke(obj, {&v, &v1});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2) const
+return_type JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1,
+                                      arg_type const &v2) const
 {
     return invoke(obj, {&v, &v1, &v2});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3) const
+return_type
+JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1, arg_type const &v2,
+                          arg_type const &v3) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4) const
+return_type
+JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1, arg_type const &v2,
+                          arg_type const &v3, arg_type const &v4) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5) const
+return_type
+JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1, arg_type const &v2,
+                          arg_type const &v3, arg_type const &v4, arg_type const &v5) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6) const
+return_type
+JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1, arg_type const &v2,
+                          arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                          arg_type const &v6) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7) const
+return_type
+JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1, arg_type const &v2,
+                          arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                          arg_type const &v6, arg_type const &v7) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
-return_type JMemberMethod::operator()(JObject& obj, arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7, arg_type const& v8) const
+return_type
+JMemberMethod::operator()(JObject &obj, arg_type const &v, arg_type const &v1, arg_type const &v2,
+                          arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                          arg_type const &v6, arg_type const &v7, arg_type const &v8) const
 {
     return invoke(obj, {&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
@@ -416,8 +451,7 @@ return_type JConstructMethod::invoke(args_type const &args) const
     JValues jvals(args);
 
     auto mid = Env.GetMethodID(_clazz, "<init>", sig);
-    if (!mid)
-    {
+    if (!mid) {
         Env.ExceptionClear();
         Logger::Error("没有找到构造函数 " + name + " " + sig);
         return nullptr;
@@ -432,8 +466,7 @@ return_type JStaticMethod::invoke(args_type const &args) const
     JValues jvals(args);
 
     auto mid = Env.GetStaticMethodID(_clazz, name, sig);
-    if (!mid)
-    {
+    if (!mid) {
         Env.ExceptionClear();
         Logger::Error("没有找到函数 " + name + sig);
         return nullptr;
@@ -459,8 +492,13 @@ return_type JStaticMethod::invoke(args_type const &args) const
         case TypeSignature::TS::STRING: {
             auto v = Env.CallStaticStringMethod(_clazz, mid, jvals);
             if (v == nullptr) {
-                if (!nullable && ExceptionGuard::Check()) {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                if (!nullable) {
+                    if (ExceptionGuard::Check()) {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                      ExceptionGuard::GetLastErrorMessage());
+                    } else {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    }
                 }
                 return nullptr;
             }
@@ -469,8 +507,13 @@ return_type JStaticMethod::invoke(args_type const &args) const
         case TypeSignature::TS::BYTEARRAY: {
             auto v = Env.CallStaticArrayMethod(_clazz, mid, jvals);
             if (v == nullptr) {
-                if (!nullable && ExceptionGuard::Check()) {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                if (!nullable) {
+                    if (ExceptionGuard::Check()) {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                      ExceptionGuard::GetLastErrorMessage());
+                    } else {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    }
                 }
                 return nullptr;
             }
@@ -488,15 +531,20 @@ return_type JStaticMethod::invoke(args_type const &args) const
 
     auto v = Env.CallStaticObjectMethod(_clazz, mid, jvals);
     if (v == nullptr) {
-        if (!nullable && ExceptionGuard::Check()) {
-            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name()  + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+        if (!nullable) {
+            if (ExceptionGuard::Check()) {
+                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                              ExceptionGuard::GetLastErrorMessage());
+            } else {
+                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+            }
         }
         return nullptr;
     }
     return JVariant::FromObject(*v);
 }
 
-return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
+return_type JMemberMethod::invoke(JObject &obj, args_type const &args) const
 {
     string sig = signature(args, sargs);
     JValues jvals(args);
@@ -528,8 +576,13 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
         case TypeSignature::TS::STRING: {
             auto s = Env.CallStringMethod(obj, mid, jvals);
             if (s == nullptr) {
-                if (!nullable && ExceptionGuard::Check()) {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                if (!nullable) {
+                    if (ExceptionGuard::Check()) {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                      ExceptionGuard::GetLastErrorMessage());
+                    } else {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    }
                 }
                 return nullptr;
             }
@@ -538,8 +591,13 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
         case TypeSignature::TS::BYTEARRAY: {
             auto v = Env.CallArrayMethod(obj, mid, jvals);
             if (v == nullptr) {
-                if (!nullable && ExceptionGuard::Check()) {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+                if (!nullable) {
+                    if (ExceptionGuard::Check()) {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                      ExceptionGuard::GetLastErrorMessage());
+                    } else {
+                        Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    }
                 }
                 return nullptr;
             }
@@ -557,16 +615,21 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const &args) const
 
     auto v = Env.CallObjectMethod(obj, mid, jvals);
     if (v == nullptr) {
-        if (!nullable && ExceptionGuard::Check()) {
-            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " + ExceptionGuard::GetLastErrorMessage());
+        if (!nullable) {
+            if (ExceptionGuard::Check()) {
+                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                              ExceptionGuard::GetLastErrorMessage());
+            } else {
+                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+            }
         }
         return nullptr;
     }
     return JVariant::FromObject(*v);
 }
 
-JClass::JClass(JClassPath const& cp)
-: _clazzpath(cp), construct(*this)
+JClass::JClass(JClassPath const &cp)
+        : _clazzpath(cp), construct(*this)
 {
     if (!cp.empty()) {
         auto clz = Env.FindClass(cp);
@@ -583,7 +646,7 @@ JClassName JClass::name() const
     return _clazzpath;
 }
 
-JClassPath const& JClass::path() const
+JClassPath const &JClass::path() const
 {
     return _clazzpath;
 }
@@ -603,16 +666,17 @@ class JContextPrivate
 public:
 
     JContextPrivate()
-    : index_functions(0)
+            : index_functions(0)
     {}
 
-    class FunctionType {
+    class FunctionType
+    {
     public:
 
         typedef shared_ptr<JVariant::function_type> function_type;
 
         FunctionType(function_type _fn)
-        : fn(_fn), referencedCount(1)
+                : fn(_fn), referencedCount(1)
         {}
 
         function_type fn;
@@ -641,7 +705,7 @@ JContext::~JContext()
     NNT_CLASS_DESTORY();
 }
 
-bool JContext::add(class_typep const& cls)
+bool JContext::add(class_typep const &cls)
 {
     if (!cls->exists())
         return false;
@@ -654,9 +718,9 @@ bool JContext::add(class_typep const& cls)
     return true;
 }
 
-JContext::class_typep JContext::find_class(JClassPath const& ph) const
+JContext::class_typep JContext::find_class(JClassPath const &ph) const
 {
-    auto const& clss = d_ptr->classes;
+    auto const &clss = d_ptr->classes;
     auto fnd = clss.find(ph);
     return fnd == clss.end() ? nullptr : fnd->second;
 }
@@ -668,7 +732,7 @@ void JContext::clear()
     d_ptr->index_functions = 0;
 }
 
-size_t JContext::add(shared_ptr<function_type> const& fn)
+size_t JContext::add(shared_ptr<function_type> const &fn)
 {
     size_t idx = ++d_ptr->index_functions;
     NNT_AUTOGUARD(d_ptr->mtx_functions);
@@ -683,7 +747,7 @@ void JContext::function_grab(function_index_type fnid)
     if (fnd != d_ptr->functions.end()) {
         ++fnd->second->referencedCount;
     } else {
-        Logger::Error("没有找到函数索引 " + ::CROSS_NS::tostr((int)fnid));
+        Logger::Error("没有找到函数索引 " + ::CROSS_NS::tostr((int) fnid));
     }
 }
 
@@ -697,7 +761,7 @@ bool JContext::function_drop(function_index_type fnid)
             return true;
         }
     } else {
-        Logger::Error("没有找到函数索引 " + ::CROSS_NS::tostr((int)fnid));
+        Logger::Error("没有找到函数索引 " + ::CROSS_NS::tostr((int) fnid));
     }
     return false;
 }

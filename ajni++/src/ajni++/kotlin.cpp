@@ -6,13 +6,13 @@
 
 AJNI_BEGIN_NS(kotlin)
 
-string capitalize(string const& str)
+string capitalize(string const &str)
 {
-    return (char)toupper(str[0]) + str.substr(1);
+    return (char) toupper(str[0]) + str.substr(1);
 }
 
-JClass::JClass(JClassPath const& cp)
-: ::AJNI_NS::JClass(cp)
+JClass::JClass(JClassPath const &cp)
+        : ::AJNI_NS::JClass(cp)
 {
     _classpath$ = cp + "$Companion";
 
@@ -30,12 +30,12 @@ JClass::JClass(JClassPath const& cp)
     }
 }
 
-JObject const& JClass::object$() const
+JObject const &JClass::object$() const
 {
     return *_object$;
 }
 
-JClass::jvm_class_type const& JClass::clazz$() const
+JClass::jvm_class_type const &JClass::clazz$() const
 {
     return *_clazz$;
 }
@@ -54,13 +54,12 @@ return_type JStaticMethod::invoke(args_type const &args) const
     string sig = signature(args, sargs);
     JValues jvals(args);
 
-    auto const& clazz = dynamic_cast<JClass const&>(_clazz);
-    auto const& clz = clazz.clazz$();
-    auto const& obj$ = clazz.object$();
+    auto const &clazz = dynamic_cast<JClass const &>(_clazz);
+    auto const &clz = clazz.clazz$();
+    auto const &obj$ = clazz.object$();
 
     auto mid = Env.GetMethodID(clz, name, sig);
-    if (!mid)
-    {
+    if (!mid) {
         Env.ExceptionClear();
         Logger::Error("没有找到函数 " + name + sig);
         return nullptr;
@@ -85,11 +84,29 @@ return_type JStaticMethod::invoke(args_type const &args) const
             return _V(Env.CallDoubleMethod(obj$, mid, jvals));
         case TypeSignature::TS::STRING: {
             auto s = Env.CallStringMethod(obj$, mid, jvals);
-            return s ? _V(*s) : nullptr;
+            if (!s) {
+                if (ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                  ExceptionGuard::GetLastErrorMessage());
+                } else {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                }
+                return nullptr;
+            }
+            return _V(*s);
         }
         case TypeSignature::TS::BYTEARRAY: {
             auto v = Env.CallArrayMethod(obj$, mid, jvals);
-            return v ? _V(v->toString()) : nullptr;
+            if (!v) {
+                if (ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                  ExceptionGuard::GetLastErrorMessage());
+                } else {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                }
+                return nullptr;
+            }
+            return _V(v->toString());
         }
         case TypeSignature::TS::VOID: {
             Env.CallVoidMethod(obj$, mid, jvals);
@@ -102,11 +119,20 @@ return_type JStaticMethod::invoke(args_type const &args) const
     }
 
     auto v = Env.CallObjectMethod(obj$, mid, jvals);
-    return v ? JVariant::FromObject(*v) : nullptr;
+    if (!v) {
+        if (ExceptionGuard::Check()) {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                          ExceptionGuard::GetLastErrorMessage());
+        } else {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+        }
+        return nullptr;
+    }
+    return JVariant::FromObject(*v);
 }
 
-JGlobalField::JGlobalField(JClassPath const& cp)
-: _clazz(cp + "Kt")
+JGlobalField::JGlobalField(JClassPath const &cp)
+        : _clazz(cp + "Kt")
 {
     // pass
 }
@@ -118,8 +144,7 @@ return_type JGlobalField::operator()() const
     JValues jvals;
 
     auto mid = Env.GetStaticMethodID(_clazz, getname.c_str(), sig.c_str());
-    if (!mid)
-    {
+    if (!mid) {
         Env.ExceptionClear();
         Logger::Error("没有找到全局变量 " + name + stype);
         return nullptr;
@@ -144,7 +169,16 @@ return_type JGlobalField::operator()() const
             return _V(Env.CallStaticDoubleMethod(_clazz, mid, jvals));
         case TypeSignature::TS::STRING: {
             auto v = Env.CallStaticStringMethod(_clazz, mid, jvals);
-            return v ? _V(*v) : nullptr;
+            if (!v) {
+                if (ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                  ExceptionGuard::GetLastErrorMessage());
+                } else {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                }
+                return nullptr;
+            }
+            return _V(*v);
         }
         case TypeSignature::TS::VOID: {
             Env.CallStaticVoidMethod(_clazz, mid, jvals);
@@ -158,18 +192,26 @@ return_type JGlobalField::operator()() const
     }
 
     auto v = Env.CallStaticObjectMethod(_clazz, mid, jvals);
-    return v ? JVariant::FromObject(*v) : nullptr;
+    if (!v) {
+        if (ExceptionGuard::Check()) {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                          ExceptionGuard::GetLastErrorMessage());
+        } else {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+        }
+        return nullptr;
+    }
+    return JVariant::FromObject(*v);
 }
 
-void JGlobalField::operator()(JVariant const& v)
+void JGlobalField::operator()(JVariant const &v)
 {
     auto setname = "set" + capitalize(name);
     string sig = JMethod::Signature({&v}, TypeSignature::VOID, {});
     JValues jvals({&v});
 
     auto mid = Env.GetStaticMethodID(_clazz, setname.c_str(), sig.c_str());
-    if (!mid)
-    {
+    if (!mid) {
         Env.ExceptionClear();
         Logger::Error("没有找到全局变量 " + name + stype);
         return;
@@ -178,8 +220,8 @@ void JGlobalField::operator()(JVariant const& v)
     Env.CallStaticVoidMethod(_clazz, mid, jvals);
 }
 
-JGlobalMethod::JGlobalMethod(JClassPath const& cp)
-: _clazz(cp + "Kt")
+JGlobalMethod::JGlobalMethod(JClassPath const &cp)
+        : _clazz(cp + "Kt")
 {
 }
 
@@ -188,47 +230,59 @@ return_type JGlobalMethod::operator()() const
     return invoke({});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v) const
+return_type JGlobalMethod::operator()(arg_type const &v) const
 {
     return invoke({&v});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1) const
+return_type JGlobalMethod::operator()(arg_type const &v, arg_type const &v1) const
 {
     return invoke({&v, &v1});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2) const
+return_type
+JGlobalMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2) const
 {
     return invoke({&v, &v1, &v2});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3) const
+return_type JGlobalMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3) const
 {
     return invoke({&v, &v1, &v2, &v3});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4) const
+return_type JGlobalMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5) const
+return_type JGlobalMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4,
+                                      arg_type const &v5) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6) const
+return_type JGlobalMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                      arg_type const &v6) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7) const
+return_type JGlobalMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                      arg_type const &v6, arg_type const &v7) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7});
 }
 
-return_type JGlobalMethod::operator()(arg_type const& v, arg_type const& v1, arg_type const& v2, arg_type const& v3, arg_type const& v4, arg_type const& v5, arg_type const& v6, arg_type const& v7, arg_type const& v8) const
+return_type JGlobalMethod::operator()(arg_type const &v, arg_type const &v1, arg_type const &v2,
+                                      arg_type const &v3, arg_type const &v4, arg_type const &v5,
+                                      arg_type const &v6, arg_type const &v7,
+                                      arg_type const &v8) const
 {
     return invoke({&v, &v1, &v2, &v3, &v4, &v5, &v6, &v7, &v8});
 }
@@ -239,8 +293,7 @@ return_type JGlobalMethod::invoke(args_type const &args) const
     JValues jvals(args);
 
     auto mid = Env.GetStaticMethodID(_clazz, name, sig);
-    if (!mid)
-    {
+    if (!mid) {
         Env.ExceptionClear();
         Logger::Error("没有找到函数 " + name + sig);
         return nullptr;
@@ -265,7 +318,16 @@ return_type JGlobalMethod::invoke(args_type const &args) const
             return _V(Env.CallStaticDoubleMethod(_clazz, mid, jvals));
         case TypeSignature::TS::STRING: {
             auto v = Env.CallStaticStringMethod(_clazz, mid, jvals);
-            return v ? _V(*v) : nullptr;
+            if (!v) {
+                if (ExceptionGuard::Check()) {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                                  ExceptionGuard::GetLastErrorMessage());
+                } else {
+                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                }
+                return nullptr;
+            }
+            return _V(*v);
         }
         case TypeSignature::TS::VOID: {
             Env.CallStaticVoidMethod(_clazz, mid, jvals);
@@ -279,7 +341,16 @@ return_type JGlobalMethod::invoke(args_type const &args) const
     }
 
     auto v = Env.CallStaticObjectMethod(_clazz, mid, jvals);
-    return v ? JVariant::FromObject(*v) : nullptr;
+    if (!v) {
+        if (ExceptionGuard::Check()) {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                          ExceptionGuard::GetLastErrorMessage());
+        } else {
+            Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+        }
+        return nullptr;
+    }
+    return JVariant::FromObject(*v);
 }
 
 AJNI_END_NS
