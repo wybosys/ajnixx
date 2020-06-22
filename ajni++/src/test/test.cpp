@@ -119,24 +119,24 @@ void Test0(::std::ostringstream& oss)
     obj_info->fabc(obj_info, "modified abc");
     oss << obj_info->fabc(obj_info) << endl;
 
-    obj->finfoasync(obj, (JVariant)[&](arg_type const& v0)->return_type {
+    obj->finfoasync(obj, (JCallback)[&](arg_type const& v0)->return_type {
         JEntry<Info> info(v0);
         auto v = info->fnul(info);
         oss << "收到异步回调数据 " << info->fabc(info) << " " << info->fcde(info) << info->fnul(info) << endl;
         return nullptr;
-    }, "xxxxxxxxxxxxxxx", (JVariant)[&]()->return_type {
+    }, "xxxxxxxxxxxxxxx", (JCallback)[&]()->return_type {
         return nullptr;
     });
 
     // 测试异步
-    obj->fvalueasync(obj, (JVariant)[&](arg_type const& v0, arg_type const& v1)->return_type {
+    obj->fvalueasync(obj, (JCallback)[&](arg_type const& v0, arg_type const& v1)->return_type {
         ostringstream oss;
         oss << "收到异步回调数据 " << v0 << " " << v1 << endl;
         Logger::Info(oss.str());
         return nullptr;
     });
 
-    obj->fnullasync(obj, (JVariant)[&](arg_type const& v0)->return_type {
+    obj->fnullasync(obj, (JCallback)[&](arg_type const& v0)->return_type {
         if (!v0.isnil())
             oss << "应该为nil但是收到不为nil" << endl;
         return nullptr;

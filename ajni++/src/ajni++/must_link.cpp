@@ -8,18 +8,18 @@ AJNI_API(void) AJNI_COMPANION_FUNC(Activity, jni_1bind)(JNIEnv *env, jobject thi
 }
 
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1grab)(JNIEnv *env, jobject thiz, jlong fnidx) {
-    Env.context().function_grab(fnidx);
+    Env.context().callback_grab(fnidx);
     return nullptr;
 }
 
 AJNI_API(jboolean) AJNI_FUNC(Callback, jni_1drop)(JNIEnv *env, jobject thiz, jlong fnidx) {
-    return Env.context().function_drop(fnidx);
+    return Env.context().callback_drop(fnidx);
 }
 
 // Env.Check(); 不需要增加保护，线程初始化时会自动调用 (JEnvThreadAutoGuard)
 #define _AJNI_CALLBACK_IMPL_BEGIN \
     auto &ctx = Env.context(); \
-    auto fn = ctx.find_function(fnidx); \
+    auto fn = ctx.find_callback(fnidx); \
     if (!fn) { \
         Logger::Error("没有找到回调函数"); \
         return 0; \

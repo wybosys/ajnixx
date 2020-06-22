@@ -667,29 +667,29 @@ class JContextPrivate
 public:
 
     JContextPrivate()
-            : index_functions(0)
+            : index_callbacks(0)
     {}
 
-    class FunctionType
+    class CallbackType
     {
     public:
 
-        typedef shared_ptr<JVariant::function_type> function_type;
+        typedef shared_ptr<JCallback> callback_type;
 
-        FunctionType(function_type _fn)
-                : fn(_fn), referencedCount(1)
+        CallbackType(callback_type _cb)
+                : cb(_cb), referencedCount(1)
         {}
 
-        function_type fn;
+        callback_type cb;
         ::std::atomic<size_t> referencedCount;
     };
 
-    typedef shared_ptr<FunctionType> function_type;
+    typedef shared_ptr<CallbackType> function_type;
     typedef ::std::map<size_t, function_type> functions_type;
-    functions_type functions;
+    functions_type callbacks;
 
-    ::std::atomic<size_t> index_functions;
-    ::std::mutex mtx_functions;
+    ::std::atomic<size_t> index_callbacks;
+    ::std::mutex mtx_callbacks;
 
     // 全局注册类列表
     typedef ::std::map<JClassPath, JContext::class_typep> classes_type;
@@ -729,36 +729,36 @@ JContext::class_typep JContext::find_class(JClassPath const &ph) const
 void JContext::clear()
 {
     d_ptr->classes.clear();
-    d_ptr->functions.clear();
-    d_ptr->index_functions = 0;
+    d_ptr->callbacks.clear();
+    d_ptr->index_callbacks = 0;
 }
 
-size_t JContext::add(shared_ptr<function_type> const &fn)
+size_t JContext::add_callback(shared_ptr<JCallback> const &cb)
 {
-    size_t idx = ++d_ptr->index_functions;
-    NNT_AUTOGUARD(d_ptr->mtx_functions);
-    d_ptr->functions[idx] = make_shared<private_class_type::FunctionType>(fn);
+    size_t idx = ++d_ptr->index_callbacks;
+    NNT_AUTOGUARD(d_ptr->mtx_callbacks);
+    d_ptr->callbacks[idx] = make_shared<private_class_type::CallbackType>(cb);
     return idx;
 }
 
-void JContext::function_grab(function_index_type fnid)
+void JContext::callback_grab(size_t fnid)
 {
-    NNT_AUTOGUARD(d_ptr->mtx_functions);
-    auto fnd = d_ptr->functions.find(fnid);
-    if (fnd != d_ptr->functions.end()) {
+    NNT_AUTOGUARD(d_ptr->mtx_callbacks);
+    auto fnd = d_ptr->callbacks.find(fnid);
+    if (fnd != d_ptr->callbacks.end()) {
         ++fnd->second->referencedCount;
     } else {
         Logger::Error("没有找到函数索引 " + ::CROSS_NS::tostr((int) fnid));
     }
 }
 
-bool JContext::function_drop(function_index_type fnid)
+bool JContext::callback_drop(size_t fnid)
 {
-    NNT_AUTOGUARD(d_ptr->mtx_functions);
-    auto fnd = d_ptr->functions.find(fnid);
-    if (fnd != d_ptr->functions.end()) {
+    NNT_AUTOGUARD(d_ptr->mtx_callbacks);
+    auto fnd = d_ptr->callbacks.find(fnid);
+    if (fnd != d_ptr->callbacks.end()) {
         if (--fnd->second->referencedCount == 0) {
-            d_ptr->functions.erase(fnd);
+            d_ptr->callbacks.erase(fnd);
             return true;
         }
     } else {
@@ -767,11 +767,11 @@ bool JContext::function_drop(function_index_type fnid)
     return false;
 }
 
-shared_ptr<JContext::function_type> JContext::find_function(function_index_type fnid) const
+shared_ptr<JCallback> JContext::find_callback(size_t fnid) const
 {
-    NNT_AUTOGUARD(d_ptr->mtx_functions);
-    auto fnd = d_ptr->functions.find(fnid);
-    return fnd == d_ptr->functions.end() ? nullptr : fnd->second->fn;
+    NNT_AUTOGUARD(d_ptr->mtx_callbacks);
+    auto fnd = d_ptr->callbacks.find(fnid);
+    return fnd == d_ptr->callbacks.end() ? nullptr : fnd->second->cb;
 }
 
 string tostr(jstring str)

@@ -291,20 +291,17 @@ public:
         return add(r) ? r : nullptr;
     }
 
-    typedef typename JVariant::function_type function_type;
-    typedef size_t function_index_type;
-
     // 保存函数返回索引
-    function_index_type add(shared_ptr<function_type> const &);
+    size_t add_callback(shared_ptr<JCallback> const &);
 
     // 增加函数计数
-    void function_grab(function_index_type);
+    void callback_grab(size_t);
 
     // 减少函数技术，释放返回true，否则返回false
-    bool function_drop(function_index_type);
+    bool callback_drop(size_t);
 
     // 获得函数
-    shared_ptr<function_type> find_function(function_index_type) const;
+    shared_ptr<JCallback> find_callback(size_t) const;
 
     // 清空
     void clear();

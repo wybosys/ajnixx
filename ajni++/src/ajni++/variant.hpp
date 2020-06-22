@@ -177,6 +177,8 @@ private:
 typedef ptrdiff_t integer;
 typedef double number;
 
+class JCallback;
+
 class JVariant {
 private:
 
@@ -186,16 +188,9 @@ private:
         typedef JString string_type;
     };
 
-    class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
-            JVariant,
-            shared_ptr<JVariant>,
-            JVariant const&
-            > {};
-
 public:
 
     typedef ::COMXX_NS::Variant<JComVariantTypes> variant_type;
-    typedef ::COMXX_NS::Function<JComFunctionTypes> function_type;
 
     enum struct VT {
         NIL,
@@ -204,7 +199,7 @@ public:
         INTEGER,
         NUMBER,
         STRING,
-        FUNCTION
+        CALLBACK
     };
 
     const VT vt;
@@ -237,16 +232,7 @@ public:
 
     JVariant(jobject);
 
-    JVariant(function_type::fun0_type);
-    JVariant(function_type::fun1_type);
-    JVariant(function_type::fun2_type);
-    JVariant(function_type::fun3_type);
-    JVariant(function_type::fun4_type);
-    JVariant(function_type::fun5_type);
-    JVariant(function_type::fun6_type);
-    JVariant(function_type::fun7_type);
-    JVariant(function_type::fun8_type);
-    JVariant(function_type::fun9_type);
+    JVariant(JCallback const&);
 
     string const &toString() const;
 
@@ -264,8 +250,8 @@ public:
         return _var;
     }
 
-    inline shared_ptr<function_type> toFunction() const {
-        return _fun;
+    inline shared_ptr<JCallback> toCallback() const {
+        return _callback;
     }
 
     shared_ptr<JObject> toObject() const;
@@ -281,8 +267,66 @@ public:
 private:
 
     variant_type _var;
-    shared_ptr<function_type> _fun;
+    shared_ptr<JCallback> _callback;
 
+};
+
+class JCallback
+{
+    class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
+            JVariant,
+            shared_ptr<JVariant>,
+                              JVariant
+    > {};
+
+public:
+
+    typedef ::COMXX_NS::Function<JComFunctionTypes> function_type;
+    typedef function_type::return_type return_type;
+    typedef function_type::arg_type arg_type;
+
+    JCallback(function_type::fun0_type);
+    JCallback(function_type::fun1_type);
+    JCallback(function_type::fun2_type);
+    JCallback(function_type::fun3_type);
+    JCallback(function_type::fun4_type);
+    JCallback(function_type::fun5_type);
+    JCallback(function_type::fun6_type);
+    JCallback(function_type::fun7_type);
+    JCallback(function_type::fun8_type);
+    JCallback(function_type::fun9_type);
+
+    return_type operator()() const;
+
+    return_type operator()(arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type
+    operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                           arg_type const &) const;
+
+protected:
+
+    shared_ptr<function_type> _fn;
 };
 
 template <typename T>
