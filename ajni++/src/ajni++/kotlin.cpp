@@ -68,7 +68,7 @@ return_type JStaticMethod::invoke(args_type const &args) const
 
     switch (TypeSignature::GetTypeForSwitch(sreturn)) {
         case TypeSignature::TS::BOOLEAN:
-            return _V(Env.CallBooleanMethod(obj$, mid, jvals));
+            return _V((bool)Env.CallBooleanMethod(obj$, mid, jvals));
         case TypeSignature::TS::BYTE:
             return _V(Env.CallByteMethod(obj$, mid, jvals));
         case TypeSignature::TS::CHAR:
@@ -153,7 +153,7 @@ return_type JGlobalField::operator()() const
 
     switch (TypeSignature::GetTypeForSwitch(stype)) {
         case TypeSignature::TS::BOOLEAN:
-            return _V(Env.CallStaticBooleanMethod(_clazz, mid, jvals));
+            return _V((bool)Env.CallStaticBooleanMethod(_clazz, mid, jvals));
         case TypeSignature::TS::BYTE:
             return _V(Env.CallStaticByteMethod(_clazz, mid, jvals));
         case TypeSignature::TS::CHAR:
@@ -302,7 +302,7 @@ return_type JGlobalMethod::invoke(args_type const &args) const
 
     switch (TypeSignature::GetTypeForSwitch(sreturn)) {
         case TypeSignature::TS::BOOLEAN:
-            return _V(Env.CallStaticBooleanMethod(_clazz, mid, jvals));
+            return _V((bool)Env.CallStaticBooleanMethod(_clazz, mid, jvals));
         case TypeSignature::TS::BYTE:
             return _V(Env.CallStaticByteMethod(_clazz, mid, jvals));
         case TypeSignature::TS::CHAR:

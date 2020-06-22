@@ -30,7 +30,7 @@ class Test {
         Thread {
             // 不需要于主线程中回调
             //MainThread.Invoke {
-            cb(123, "abc")
+            cb(true, "abc")
             cb.drop()
             //}
         }.start()

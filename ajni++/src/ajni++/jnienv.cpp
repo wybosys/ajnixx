@@ -96,9 +96,10 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
             gs_vm->AttachCurrentThread(&tls_guard.env, nullptr);
             tls_guard.detach = false;
         }
+    } else {
+        tls_guard.env = env;
     }
 
-    tls_guard.env = env;
     tls_guard.ismain = true;
     gs_during_init = false;
 }

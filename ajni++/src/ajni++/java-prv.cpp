@@ -141,6 +141,12 @@ shared_ptr<JVariant> JObject::Extract(jobject _obj) {
         return ref->longValue(ref);
     }
 
+    auto STD_BOOLEAN = ctx.register_class<jre::Boolean>();
+    if (Env.IsInstanceOf(*obj, *STD_BOOLEAN)) {
+        JEntry<jre::Boolean> ref(obj);
+        return ref->booleanValue(ref);
+    }
+
     auto STD_STRING = ctx.register_class<jre::String>();
     if (Env.IsInstanceOf(*obj, *STD_STRING)) {
         JEntry<jre::String> ref(obj);

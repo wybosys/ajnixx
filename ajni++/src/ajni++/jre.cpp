@@ -32,6 +32,16 @@ Throwable::Throwable(JClassPath const& cp)
 {
 }
 
+JClassPath const Boolean::CLASSPATH = "java/lang/Boolean";
+
+Boolean::Boolean(JClassPath const& cp)
+        : JClass(cp),
+          booleanValue(*this)
+{
+    booleanValue.name = "booleanValue";
+    booleanValue.sreturn = ::AJNI_NS::TypeSignature::BOOLEAN;
+}
+
 JClassPath const Number::CLASSPATH = "java/lang/Number";
 
 Number::Number(JClassPath const& cp)
