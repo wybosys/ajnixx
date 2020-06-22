@@ -319,7 +319,7 @@ public:
 
     typedef ::COMXX_NS::Function<JComFunctionTypes> function_type;
     typedef function_type::return_type return_type;
-    typedef function_type::arg_type arg_type;
+    typedef shared_ptr<function_type::arg_type> arg_type;
 
     JCallback(function_type::fun0_type);
 

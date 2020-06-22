@@ -41,7 +41,7 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke)(JNIEnv *env, jobject thiz, jl
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke1)(JNIEnv *env, jobject thiz, jlong fnidx,
                                                     jobject v0) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0));
+    (*fn)(JObject::Extract(v0));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -49,7 +49,7 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke2)(JNIEnv *env, jobject thiz, j
                                                     jobject v0,
                                                     jobject v1) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -57,7 +57,7 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke3)(JNIEnv *env, jobject thiz, j
                                                     jobject v0,
                                                     jobject v1, jobject v2) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1), *JObject::Extract(v2));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1), JObject::Extract(v2));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -65,8 +65,8 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke4)(JNIEnv *env, jobject thiz, j
                                                     jobject v0,
                                                     jobject v1, jobject v2, jobject v3) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1), *JObject::Extract(v2),
-          *JObject::Extract(v3));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1), JObject::Extract(v2),
+          JObject::Extract(v3));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -75,8 +75,8 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke5)(JNIEnv *env, jobject thiz, j
                                                     jobject v1, jobject v2, jobject v3,
                                                     jobject v4) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1), *JObject::Extract(v2),
-          *JObject::Extract(v3), *JObject::Extract(v4));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1), JObject::Extract(v2),
+          JObject::Extract(v3), JObject::Extract(v4));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -85,8 +85,8 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke6)(JNIEnv *env, jobject thiz, j
                                                     jobject v1, jobject v2, jobject v3, jobject v4,
                                                     jobject v5) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1), *JObject::Extract(v2),
-          *JObject::Extract(v3), *JObject::Extract(v4), *JObject::Extract(v5));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1), JObject::Extract(v2),
+          JObject::Extract(v3), JObject::Extract(v4), JObject::Extract(v5));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -95,9 +95,9 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke7)(JNIEnv *env, jobject thiz, j
                                                     jobject v1, jobject v2, jobject v3, jobject v4,
                                                     jobject v5, jobject v6) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1), *JObject::Extract(v2),
-          *JObject::Extract(v3), *JObject::Extract(v4), *JObject::Extract(v5),
-          *JObject::Extract(v6));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1), JObject::Extract(v2),
+          JObject::Extract(v3), JObject::Extract(v4), JObject::Extract(v5),
+          JObject::Extract(v6));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -106,9 +106,9 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke8)(JNIEnv *env, jobject thiz, j
                                                     jobject v1, jobject v2, jobject v3, jobject v4,
                                                     jobject v5, jobject v6, jobject v7) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1), *JObject::Extract(v2),
-          *JObject::Extract(v3), *JObject::Extract(v4), *JObject::Extract(v5),
-          *JObject::Extract(v6), *JObject::Extract(v7));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1), JObject::Extract(v2),
+          JObject::Extract(v3), JObject::Extract(v4), JObject::Extract(v5),
+          JObject::Extract(v6), JObject::Extract(v7));
     _AJNI_CALLBACK_IMPL_END
 }
 
@@ -118,8 +118,8 @@ AJNI_API(jobject) AJNI_FUNC(Callback, jni_1invoke9)(JNIEnv *env, jobject thiz, j
                                                     jobject v5, jobject v6, jobject v7,
                                                     jobject v8) {
     _AJNI_CALLBACK_IMPL_BEGIN
-    (*fn)(*JObject::Extract(v0), *JObject::Extract(v1), *JObject::Extract(v2),
-          *JObject::Extract(v3), *JObject::Extract(v4), *JObject::Extract(v5),
-          *JObject::Extract(v6), *JObject::Extract(v7), *JObject::Extract(v8));
+    (*fn)(JObject::Extract(v0), JObject::Extract(v1), JObject::Extract(v2),
+          JObject::Extract(v3), JObject::Extract(v4), JObject::Extract(v5),
+          JObject::Extract(v6), JObject::Extract(v7), JObject::Extract(v8));
     _AJNI_CALLBACK_IMPL_END
 }

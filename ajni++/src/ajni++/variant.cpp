@@ -570,56 +570,56 @@ void JCallback::operator()() const
 
 void JCallback::operator()(arg_type const &v0) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0));
+    JCALLBACK_INVOKE((*_fn)(*v0));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1, v2));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1, v2, v3));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1, v2, v3, v4));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1, v2, v3, v4, v5));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5,
                            arg_type const &v6) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1, v2, v3, v4, v5, v6));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5,
                            arg_type const &v6, arg_type const &v7) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1, v2, v3, v4, v5, v6, v7));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7));
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5,
                            arg_type const &v6, arg_type const &v7, arg_type const &v8) const
 {
-    JCALLBACK_INVOKE((*_fn)(v0, v1, v2, v3, v4, v5, v6, v7, v8));
+    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7, *v8));
 }
 
 AJNI_END
