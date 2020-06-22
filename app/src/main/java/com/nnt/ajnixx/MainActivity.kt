@@ -19,5 +19,8 @@ class MainActivity() : AppCompatActivity() {
 
         // 测试
         sample_text.text = Test.Test()
+
+        // 启动独立tick，如果位于cocos中，则不需要这一步（采用cocos大循环中调用JNI的tick替代）
+        MainThread.StandaloneTick()
     }
 }

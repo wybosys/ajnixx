@@ -105,6 +105,9 @@ public:
     // 绑定当前上下文，用于在JNI环境中获得资源访问
     void BindContext(jobject act, jobject ctx);
 
+    // 直接调用cross的tick
+    void Tick();
+
     // 外部业务层提供的创建线程中JNIEnv的实现
     typedef ::std::function<JNIEnv*()> jnienv_retrieve_impl;
     jnienv_retrieve_impl GetCurrentJniEnv;

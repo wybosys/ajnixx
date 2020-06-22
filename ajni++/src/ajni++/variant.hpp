@@ -9,20 +9,24 @@
 
 AJNI_BEGIN
 
-namespace kotlin {
-    class JClass;
+namespace kotlin
+{
+class JClass;
 }
 
 class JVariant;
+
 class JArray;
 
-typedef ::std::vector<JVariant const*> args_type;
+typedef ::std::vector<JVariant const *> args_type;
 
-class JObject {
+class JObject
+{
 public:
 
     JObject();
-    JObject(JObject const&);
+
+    JObject(JObject const &);
 
     // 释放引用计数
     virtual ~JObject();
@@ -31,25 +35,27 @@ public:
     virtual jobject asReturn() const;
 
     // 转换成具体的Variant类型，和Variant(JObject)不同，转换会读取具体对象内部信息，返回C++数据构成的Variant对象
-    static shared_ptr<JVariant> Extract(jobject);
+    static shared_ptr <JVariant> Extract(jobject);
 
     // 是否时空对象
     bool isnil() const;
 
-    JObject& operator = (JObject const&);
+    JObject &operator=(JObject const &);
 
 protected:
 
     // 只允许特殊情况使用
-    class _JGlobalObject {
+    class _JGlobalObject
+    {
     public:
 
-        _JGlobalObject(JObject const&);
+        _JGlobalObject(JObject const &);
 
         void grab();
+
         bool drop();
 
-        shared_ptr<JObject> gobj; // 全局对象
+        shared_ptr <JObject> gobj; // 全局对象
 
     private:
         ::std::atomic<int> _refs; // 引用计数
@@ -67,24 +73,35 @@ protected:
     virtual void _asglobal();
 
     friend class JEnv;
+
     friend class JEnvPrivate;
+
     friend class JClass;
+
     friend class JArray;
+
     friend class JVariant;
+
     friend class kotlin::JClass;
-    template <typename T> friend class JEntry;
+
+    template<typename T> friend
+    class JEntry;
 };
 
-class JString {
+class JString
+{
 public:
 
     JString();
+
     JString(string const &);
+
     JString(JString const &);
 
     ~JString();
 
-    inline operator const string &() const {
+    inline operator const string &() const
+    {
         return _str;
     }
 
@@ -98,6 +115,7 @@ protected:
     string _str;
 
     friend class JEnv;
+
     friend class JVariant;
 };
 
@@ -106,9 +124,11 @@ class JArray
 public:
 
     JArray();
+
     ~JArray();
 
-    inline size_t size() const {
+    inline size_t size() const
+    {
         return _sz;
     }
 
@@ -128,7 +148,8 @@ private:
 
 class JVariant;
 
-class JValue {
+class JValue
+{
 public:
 
     JValue(JVariant const &);
@@ -137,7 +158,8 @@ public:
 
     ~JValue();
 
-    inline operator jvalue() const {
+    inline operator jvalue() const
+    {
         return _val;
     }
 
@@ -148,16 +170,20 @@ private:
     size_t _fnidx = 0; // 如果是函数对象，保存函数的本地索引
 };
 
-class JValues {
+class JValues
+{
 public:
 
     JValues() = default;
-    JValues(::std::initializer_list<args_type::value_type> const&);
+
+    JValues(::std::initializer_list<args_type::value_type> const &);
+
     JValues(args_type const &);
 
     typedef shared_ptr <JValue> value_type;
 
-    inline size_t size() const {
+    inline size_t size() const
+    {
         return _vals.size();
     }
 
@@ -167,7 +193,8 @@ private:
     ::std::vector<jvalue> _jvals;
 
     // 返回jni函数需要的参数列表
-    inline jvalue const* _args() const {
+    inline jvalue const *_args() const
+    {
         return &_jvals[0];
     }
 
@@ -179,10 +206,12 @@ typedef double number;
 
 class JCallback;
 
-class JVariant {
+class JVariant
+{
 private:
 
-    class JComVariantTypes : public ::com::VariantTypes<> {
+    class JComVariantTypes : public ::com::VariantTypes<>
+    {
     public:
         typedef _jobject object_type;
         typedef JString string_type;
@@ -192,7 +221,8 @@ public:
 
     typedef ::COMXX_NS::Variant<JComVariantTypes> variant_type;
 
-    enum struct VT {
+    enum struct VT
+    {
         NIL,
         OBJECT,
         BOOLEAN,
@@ -232,7 +262,7 @@ public:
 
     JVariant(jobject);
 
-    JVariant(JCallback const&);
+    JVariant(JCallback const &);
 
     string const &toString() const;
 
@@ -242,22 +272,27 @@ public:
 
     bool toBool() const;
 
-    inline operator string const &() const {
+    inline operator string const &() const
+    {
         return toString();
     }
 
-    inline operator variant_type const &() const {
+    inline operator variant_type const &() const
+    {
         return _var;
     }
 
-    inline shared_ptr<JCallback> toCallback() const {
+    inline shared_ptr <JCallback> toCallback() const
+    {
         return _callback;
     }
 
-    shared_ptr<JObject> toObject() const;
-    static shared_ptr<JVariant> FromObject(JObject const&);
+    shared_ptr <JObject> toObject() const;
 
-    inline bool isnil() const {
+    static shared_ptr <JVariant> FromObject(JObject const &);
+
+    inline bool isnil() const
+    {
         return vt == VT::NIL;
     }
 
@@ -267,7 +302,7 @@ public:
 private:
 
     variant_type _var;
-    shared_ptr<JCallback> _callback;
+    shared_ptr <JCallback> _callback;
 
 };
 
@@ -275,8 +310,9 @@ class JCallback
 {
     class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
             JVariant,
-            shared_ptr<JVariant>,
+            shared_ptr < JVariant>,
                               JVariant
+
     > {};
 
 public:
@@ -286,43 +322,52 @@ public:
     typedef function_type::arg_type arg_type;
 
     JCallback(function_type::fun0_type);
+
     JCallback(function_type::fun1_type);
+
     JCallback(function_type::fun2_type);
+
     JCallback(function_type::fun3_type);
+
     JCallback(function_type::fun4_type);
+
     JCallback(function_type::fun5_type);
+
     JCallback(function_type::fun6_type);
+
     JCallback(function_type::fun7_type);
+
     JCallback(function_type::fun8_type);
+
     JCallback(function_type::fun9_type);
 
-    return_type operator()() const;
+    void operator()() const;
 
-    return_type operator()(arg_type const &) const;
+    void operator()(arg_type const &) const;
 
-    return_type operator()(arg_type const &, arg_type const &) const;
+    void operator()(arg_type const &, arg_type const &) const;
 
-    return_type operator()(arg_type const &, arg_type const &, arg_type const &) const;
+    void operator()(arg_type const &, arg_type const &, arg_type const &) const;
 
-    return_type
+    void
     operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &) const;
 
-    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                           arg_type const &) const;
+    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                    arg_type const &) const;
 
-    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                           arg_type const &, arg_type const &) const;
+    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                    arg_type const &, arg_type const &) const;
 
-    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                           arg_type const &, arg_type const &, arg_type const &) const;
+    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                    arg_type const &, arg_type const &, arg_type const &) const;
 
-    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                           arg_type const &, arg_type const &, arg_type const &,
-                           arg_type const &) const;
+    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                    arg_type const &, arg_type const &, arg_type const &,
+                    arg_type const &) const;
 
-    return_type operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                           arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                           arg_type const &) const;
+    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                    arg_type const &, arg_type const &, arg_type const &, arg_type const &,
+                    arg_type const &) const;
 
     // 通过在业务中修改此处，可以达到让所有callback统一以固定模式被调用，默认为false
     static bool ASYNC;
@@ -332,16 +377,19 @@ public:
 
 protected:
 
-    shared_ptr<function_type> _fn;
+    shared_ptr <function_type> _fn;
 };
 
-template <typename T>
-inline shared_ptr<JVariant> _V(T const& v) {
+template<typename T>
+inline shared_ptr <JVariant> _V(T const &v)
+{
     return make_shared<JVariant>(v);
 }
 
 template<typename _CharT, typename _Traits>
-static ::std::basic_ostream <_CharT, _Traits> &operator<<(::std::basic_ostream <_CharT, _Traits> &stm, JVariant const &v) {
+static ::std::basic_ostream<_CharT, _Traits> &
+operator<<(::std::basic_ostream<_CharT, _Traits> &stm, JVariant const &v)
+{
     switch (v.vt) {
         default:
             break;
@@ -365,7 +413,9 @@ static ::std::basic_ostream <_CharT, _Traits> &operator<<(::std::basic_ostream <
 }
 
 template<typename _CharT, typename _Traits>
-static ::std::basic_ostream <_CharT, _Traits> &operator<<(::std::basic_ostream <_CharT, _Traits> &stm, shared_ptr <JVariant> const &v) {
+static ::std::basic_ostream<_CharT, _Traits> &
+operator<<(::std::basic_ostream<_CharT, _Traits> &stm, shared_ptr <JVariant> const &v)
+{
     if (!v)
         return stm;
     return stm << *v;
@@ -375,13 +425,15 @@ AJNI_END
 
 COMXX_BEGIN
 
-template <>
-inline jobject grab<jobject>(jobject obj) {
+template<>
+inline jobject grab<jobject>(jobject obj)
+{
     return ::AJNI_NS::Env.NewLocalRef(obj);
 }
 
-template <>
-inline bool drop<jobject>(jobject obj) {
+template<>
+inline bool drop<jobject>(jobject obj)
+{
     ::AJNI_NS::Env.DeleteLocalRef(obj);
     return true;
 }

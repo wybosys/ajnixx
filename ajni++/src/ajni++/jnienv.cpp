@@ -10,6 +10,7 @@
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
+#include <cross/threads.hpp>
 
 AJNI_BEGIN
 
@@ -146,6 +147,12 @@ void JEnv::BindContext(jobject jact, jobject jctx)
         d_ptr->obj_classloader = tls_env->NewGlobalRef(obj_classloader);
         d_ptr->mid_loadclass = mid_loadclass;
     }
+}
+
+void JEnv::Tick()
+{
+    // 激活主线程tick操作，不能增加其他功能。避免位于引擎中时引擎直接tick mainthread
+    ::CROSS_NS::MainThread::shared().tick();
 }
 
 void JEnv::lock()

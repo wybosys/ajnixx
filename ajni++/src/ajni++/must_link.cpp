@@ -7,6 +7,10 @@ AJNI_API(void) AJNI_COMPANION_FUNC(Activity, jni_1bind)(JNIEnv *env, jobject thi
     Env.BindContext(act, ctx);
 }
 
+AJNI_API(void) AJNI_COMPANION_FUNC(MainThread, jni_1tick)(JNIEnv *env, jobject thiz) {
+    Env.Tick();
+}
+
 AJNI_API(jobject) AJNI_FUNC(Callback, jni_1grab)(JNIEnv *env, jobject thiz, jlong fnidx) {
     Env.context().callback_grab(fnidx);
     return nullptr;
