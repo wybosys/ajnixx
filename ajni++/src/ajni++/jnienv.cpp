@@ -1,4 +1,5 @@
 #include "ajni++.hpp"
+#define __AJNI_PRIVATE__
 #include "jnienv.hpp"
 #include "ast.hpp"
 #include "jre.hpp"
@@ -9,53 +10,17 @@
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
-#include <cross/sys.hpp>
 
 AJNI_BEGIN
 
-const jobject jnull = nullptr; // 定义jni的空
-
-static JavaVM *gs_vm = nullptr; // jni绑定主jvm对象
-static JNIEnv *gs_env = nullptr; // jni绑定主env对象
-static bool gs_during_init = false; // 标记当前正位于初始化流程中，避免 JEnvThreadAutoGuard 自动绑定
-static jobject gs_activity = nullptr; // 业务层主activity对象
-static jobject gs_context = nullptr; // 业务层android上下文
-static thread_local bool tls_ismain = false; // 是否时主线程
-static thread_local JNIEnv *tls_env = nullptr; // 当前线程的env数据
-static thread_local string tls_errmsg; // 当前线程遇到的最后错误信息
-
-JEnvThreadAutoGuard::JEnvThreadAutoGuard()
-{
-    // 自动绑定Env
-    if (!tls_env) {
-        if (!gs_vm || gs_during_init) {
-            // 整个环境还没有初始化，并且会之后由BindVM操作初始化，此处直接返回
-            return;
-        }
-
-        // 绑定Env环境
-        Env.Check();
-    }
-}
-
-void JEnvThreadAutoGuard::free_env()
-{
-    if (tls_env && detach) {
-        gs_vm->DetachCurrentThread();
-    }
-    tls_env = nullptr;
-}
+// 全局唯一的Env
+JEnv Env;
 
 // 随着当前线程和设置回收jni
 static thread_local JEnvThreadAutoGuard tls_guard;
 
-JEnvThreadAutoGuard &JEnvThreadAutoGuard::tls()
-{
-    return tls_guard;
-}
-
-// 全局唯一的Env
-JEnv Env;
+// 当前线程的env
+#define tls_env tls_guard.env
 
 class JEnvPrivate
 {
@@ -126,22 +91,28 @@ void JEnv::BindVM(JavaVM *vm, JNIEnv *env)
     Logger::Info("启动AJNI++环境");
 
     if (!env) {
-        jint jret = vm->GetEnv((void **) &env, JNI_VERSION_1_4);
+        jint jret = vm->GetEnv((void **) &tls_guard.env, JNI_VERSION_1_4);
         if (jret == JNI_EDETACHED) {
-            gs_vm->AttachCurrentThread(&tls_env, nullptr);
+            gs_vm->AttachCurrentThread(&tls_guard.env, nullptr);
             tls_guard.detach = false;
         }
     }
 
-    gs_env = tls_env = env;
-    tls_ismain = true;
+    tls_guard.env = env;
+    tls_guard.ismain = true;
     gs_during_init = false;
 }
 
 void JEnv::UnbindVM()
 {
+    // 清理所有
+    JEnvThreadAutoGuard::Clear();
+
+    // 清理当前资源
     gs_vm = nullptr;
-    tls_env = nullptr;
+    gs_activity = nullptr;
+    gs_context = nullptr;
+
     d_ptr->clear();
 
     Logger::Info("释放AJNI++环境");
@@ -149,27 +120,7 @@ void JEnv::UnbindVM()
 
 void JEnv::Check()
 {
-    if (tls_env)
-        return;
-
-    string pid = ::CROSS_NS::tostr(::CROSS_NS::get_thread_id());
-
-    if (GetCurrentJniEnv) {
-        tls_env = GetCurrentJniEnv();
-        if (tls_env) {
-            Logger::Info("线程" + pid + ": 获得业务定义的线程级JNIEnv");
-            return;
-        }
-    }
-
-    // 使用内置的创建函数创建
-    jint ret = gs_vm->GetEnv((void **) &tls_env, JNI_VERSION_1_4);
-    if (ret == JNI_EDETACHED) {
-        gs_vm->AttachCurrentThread(&tls_env, nullptr);
-        tls_guard.detach = true;
-    }
-
-    Logger::Info("线程" + pid + ": 获得线程级JNIEnv");
+    tls_guard.check();
 }
 
 void JEnv::BindContext(jobject jact, jobject jctx)
@@ -210,10 +161,10 @@ JEnv::class_type JEnv::FindClass(string const &str)
 {
     jclass clz;
     if (d_ptr->clz_classloader) {
-        // 如果从其他逻辑而不是JNI回调调用，则大概率tls_env==null，需要加以保护
+        // 如果从其他逻辑而不是JNI回调调用，则大概率env==null，需要加以保护
         Check();
         clz = d_ptr->safeFindClass(str);
-    } else if (tls_ismain) {
+    } else if (tls_guard.ismain) {
         clz = tls_env->FindClass(str.c_str());
     } else {
         Logger::Fatal("不能在线程中使用FindClass命令，请确认是否调用了 ajnix.Activity.Bind 函数");
@@ -765,35 +716,35 @@ const JTypeSignature BYTEARRAY = "[B";
 ExceptionGuard::~ExceptionGuard()
 {
     // 如果运行在子线程中，则为自动清理，否则JNI会每次都抛出 using JNIEnv* from thread Thread 的异常
-    if (!tls_ismain) {
+    if (!tls_guard.ismain) {
         // 不进行Clear操作，也会报这个问题，采用业务层遇到错误时自己清理
         return;
     }
 
     if (Check() && _print) {
-        Logger::Error("捕获JNI异常 " + tls_errmsg);
+        Logger::Error("捕获JNI异常 " + tls_guard.errmsg);
     }
 }
 
 bool ExceptionGuard::Check()
 {
-    if (JNI_TRUE != gs_env->ExceptionCheck()) {
-        tls_errmsg.clear();
+    if (JNI_TRUE != tls_env->ExceptionCheck()) {
+        tls_guard.errmsg.clear();
         return false;
     }
 
-    jthrowable err = gs_env->ExceptionOccurred();
-    gs_env->ExceptionClear();
+    jthrowable err = tls_env->ExceptionOccurred();
+    tls_env->ExceptionClear();
 
     JEntry<jre::Throwable> obj(JVariant((jobject)err));
-    tls_errmsg = *obj->toString(obj);
+    tls_guard.errmsg = *obj->toString(obj);
 
     return true;
 }
 
 string ExceptionGuard::GetLastErrorMessage()
 {
-    return tls_errmsg;
+    return tls_guard.errmsg;
 }
 
 void Logger::Debug(string const &msg)
@@ -833,7 +784,7 @@ JTypeSignature::JTypeSignature(JClassPath const &cp)
 
 JTypeSignature &JTypeSignature::operator=(JClassPath const &cp)
 {
-    if (!cp.size()) {
+    if (cp.empty()) {
         *this = "V";
         goto LABEL_RETURN;
     }

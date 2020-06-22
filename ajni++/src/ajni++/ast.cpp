@@ -1,4 +1,5 @@
 #include "ajni++.hpp"
+#define __AJNI_PRIVATE__
 #include "jnienv.hpp"
 #include "ast.hpp"
 #include "jre.hpp"

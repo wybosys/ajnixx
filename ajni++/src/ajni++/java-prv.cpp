@@ -1,4 +1,5 @@
 #include "ajni++.hpp"
+#define __AJNI_PRIVATE__
 #include "jnienv.hpp"
 #include "ast.hpp"
 #include "java-prv.hpp"
@@ -10,13 +11,106 @@
 
 AJNI_BEGIN
 
+bool gs_during_init = false; // 标记当前正位于初始化流程中，避免 JEnvThreadAutoGuard 自动绑定
+JavaVM *gs_vm = nullptr; // jni绑定主jvm对象
+jobject gs_activity = nullptr; // 业务层主activity对象
+jobject gs_context = nullptr; // 业务层android上下文
+
+// 所有线程的AutoGuard资源
+static ::std::mutex gsmtx_tlses;
+static ::std::set<JEnvThreadAutoGuard*> gs_tlses;
+
+JEnvThreadAutoGuard::JEnvThreadAutoGuard()
+{
+    gs_tlses.insert(this);
+
+    // 自动绑定Env
+    if (!gs_vm || gs_during_init) {
+        // 整个环境还没有初始化，并且会之后由BindVM操作初始化，此处直接返回
+        return;
+    }
+
+    bind();
+}
+
 JEnvThreadAutoGuard::~JEnvThreadAutoGuard()
 {
-    // 清理结束后才能释放env
-    free_env();
+    NNT_AUTOGUARD(gsmtx_tlses);
+    gs_tlses.erase(this);
 
-    string pid = ::CROSS_NS::tostr(::CROSS_NS::get_thread_id());
-    Logger::Info("线程" + pid + ": 释放线程级JNIEnv资源");
+    // 线程结束时，自动释放
+    free();
+}
+
+void JEnvThreadAutoGuard::bind()
+{
+    auto tids = ::CROSS_NS::tostr(tid);
+
+    // 绑定Env环境
+    if (Env.GetCurrentJniEnv) {
+        env = Env.GetCurrentJniEnv();
+        if (env) {
+            Logger::Info("线程" + tids + ": 获得业务定义的线程级JNIEnv");
+            return;
+        } else {
+            Logger::Fatal("线程" + tids + ": 获得业务定义的线程级JNIEnv 失败");
+            return;
+        }
+    }
+
+    // 使用内置的创建函数创建
+    jint ret = gs_vm->GetEnv((void **) &env, JNI_VERSION_1_4);
+    if (ret == JNI_EDETACHED) {
+        gs_vm->AttachCurrentThread(&env, nullptr);
+        detach = true;
+    }
+
+    Logger::Info("线程" + tids  + ": 获得线程级JNIEnv");
+}
+
+void JEnvThreadAutoGuard::Clear()
+{
+    NNT_AUTOGUARD(gsmtx_tlses);
+    gs_tlses.clear();
+}
+
+void JEnvThreadAutoGuard::free()
+{
+    if (env && detach) {
+        gs_vm->DetachCurrentThread();
+        detach = false;
+    }
+
+    env = nullptr;
+    errmsg.clear();
+
+    auto tids = ::CROSS_NS::tostr(tid);
+    Logger::Info("线程" + tids + ": 释放线程级JNIEnv资源");
+}
+
+void JEnvThreadAutoGuard::check()
+{
+    if (env)
+        return;
+
+    string tids = ::CROSS_NS::tostr(tid);
+
+    if (Env.GetCurrentJniEnv) {
+        env = Env.GetCurrentJniEnv();
+        if (env) {
+            Logger::Info("线程" + tids + ": 获得业务定义的线程级JNIEnv");
+            return;
+        }
+    }
+
+    // 使用内置的创建函数创建
+    jint ret = gs_vm->GetEnv((void **) &env, JNI_VERSION_1_4);
+    if (ret == JNI_EDETACHED) {
+        gs_vm->AttachCurrentThread(&env, nullptr);
+        detach = true;
+    }
+
+    Logger::Info("线程" + tids + ": 获得线程级JNIEnv");
 }
 
 shared_ptr<JVariant> JObject::Extract(jobject _obj) {
