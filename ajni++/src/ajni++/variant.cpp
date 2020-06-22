@@ -9,6 +9,7 @@
 
 #include <cross/cross.hpp>
 #include <cross/str.hpp>
+#include <cross/threads.hpp>
 
 AJNI_BEGIN
 
@@ -492,6 +493,8 @@ shared_ptr<JVariant> JVariant::FromObject(JObject const &obj)
 {
     return make_shared<JVariant>(obj._obj);
 }
+
+bool JCallback::ASYNC = false;
 
 JCallback::JCallback(function_type::fun0_type fn)
         : _fn(make_shared<function_type>(fn))

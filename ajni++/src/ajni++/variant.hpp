@@ -324,6 +324,12 @@ public:
                            arg_type const &, arg_type const &, arg_type const &, arg_type const &,
                            arg_type const &) const;
 
+    // 通过在业务中修改此处，可以达到让所有callback统一以固定模式被调用，默认为false
+    static bool ASYNC;
+
+    // 异步调用
+    bool async = ASYNC;
+
 protected:
 
     shared_ptr<function_type> _fn;
