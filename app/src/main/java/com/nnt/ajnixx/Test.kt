@@ -43,13 +43,13 @@ class Test {
 
     fun info_async(cb: Callback, str: String, cb2: Callback) {
         cb.grab()
-        //Thread {
-        val info = Info()
-        info.abc = "cde"
-        info.cde = 456
-        cb(info)
-        cb.drop()
-        //}.start()
+        Thread {
+            val info = Info()
+            info.abc = "cde"
+            info.cde = 456
+            cb(info)
+            cb.drop()
+        }.start()
     }
 
     companion object {

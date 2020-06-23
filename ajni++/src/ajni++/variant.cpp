@@ -373,9 +373,17 @@ JVariant::JVariant(string const &v)
 {
 }
 
-string const &JVariant::toString() const
+string JVariant::toString() const
 {
-    return _var.toString();
+    if (_var.vt == variant_type::VT::STRING)
+        return _var.toString();
+
+    if (_var.vt == variant_type::VT::FLOAT ||
+        _var.vt == variant_type::VT::DOUBLE) {
+        return ::CROSS_NS::tostr(toNumber());
+    }
+
+    return ::CROSS_NS::tostr((int)toInteger());
 }
 
 integer JVariant::toInteger() const
@@ -418,6 +426,12 @@ bool JVariant::toBool() const
     return toNumber() != 0;
 }
 
+void JVariant::_asglobal()
+{
+    assert(vt == VT::OBJECT);
+    _jobj->_asglobal();
+}
+
 JTypeSignature JVariant::signature() const
 {
     // 函数类型
@@ -446,11 +460,6 @@ JTypeSignature JVariant::signature() const
     }
 
     return TypeSignature::OBJECT;
-}
-
-shared_ptr<JObject> JVariant::toObject() const
-{
-    return _jobj;
 }
 
 shared_ptr<JVariant> JVariant::FromObject(JObject const &obj)
@@ -510,89 +519,193 @@ JCallback::JCallback(function_type::fun9_type fn)
 {
 }
 
-/*
-#define JCALLBACK_INVOKE(exp) \
-if (async) { \
-    exp; \
-    return; \
-} \
-\
-MainThread::Invoke([=]() { \
-    exp; \
-});
- */
-
-#define JCALLBACK_INVOKE(exp) \
-    exp;
-
 void JCallback::operator()() const
 {
-    JCALLBACK_INVOKE((*_fn)());
+    if (!async) {
+        auto snap = _fn; // 避免被释放
+        MainThread::Invoke([=]()
+                           { (*snap)(); });
+        return;
+    }
+
+    (*_fn)();
+}
+
+#define JCALLBACK_SAFE(obj) \
+if (obj->vt == JVariant::VT::OBJECT) { \
+    obj->_asglobal(); \
 }
 
 void JCallback::operator()(arg_type const &v0) const
 {
-    // 此函数用于展开JCALLBACK_INVOKE宏定义的语句，方便调试使用
-
-    /*
     if (!async) {
         // 如果将异步请求转成同步调用，则需要将object从local转换成global对象，存在切换
-        if (v0->vt == JVariant::VT::OBJECT) {
+        JCALLBACK_SAFE(v0);
 
-        }
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0); });
+        return;
     }
-     */
 
     (*_fn)(*v0);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+        JCALLBACK_SAFE(v2);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1, *v2); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1, *v2);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+        JCALLBACK_SAFE(v2);
+        JCALLBACK_SAFE(v3);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1, *v2, *v3); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1, *v2, *v3);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+        JCALLBACK_SAFE(v2);
+        JCALLBACK_SAFE(v3);
+        JCALLBACK_SAFE(v4);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1, *v2, *v3, *v4); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1, *v2, *v3, *v4);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+        JCALLBACK_SAFE(v2);
+        JCALLBACK_SAFE(v3);
+        JCALLBACK_SAFE(v4);
+        JCALLBACK_SAFE(v5);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1, *v2, *v3, *v4, *v5);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5,
                            arg_type const &v6) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+        JCALLBACK_SAFE(v2);
+        JCALLBACK_SAFE(v3);
+        JCALLBACK_SAFE(v4);
+        JCALLBACK_SAFE(v5);
+        JCALLBACK_SAFE(v6);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5,
                            arg_type const &v6, arg_type const &v7) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+        JCALLBACK_SAFE(v2);
+        JCALLBACK_SAFE(v3);
+        JCALLBACK_SAFE(v4);
+        JCALLBACK_SAFE(v5);
+        JCALLBACK_SAFE(v6);
+        JCALLBACK_SAFE(v7);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
                            arg_type const &v3, arg_type const &v4, arg_type const &v5,
                            arg_type const &v6, arg_type const &v7, arg_type const &v8) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7, *v8));
+    if (!async) {
+        JCALLBACK_SAFE(v0);
+        JCALLBACK_SAFE(v1);
+        JCALLBACK_SAFE(v2);
+        JCALLBACK_SAFE(v3);
+        JCALLBACK_SAFE(v4);
+        JCALLBACK_SAFE(v5);
+        JCALLBACK_SAFE(v6);
+        JCALLBACK_SAFE(v7);
+        JCALLBACK_SAFE(v8);
+
+        auto snap = _fn;
+        MainThread::Invoke([=]()
+                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7, *v8); });
+        return;
+    }
+
+    (*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7, *v8);
 }
 
 AJNI_END

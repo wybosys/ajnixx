@@ -28,6 +28,10 @@ class MainThread {
                 return
             _tmr_satick = true
 
+            // 主线程执行一次，初始化 cross::MainThread 执行环境
+            jni_tick()
+
+            // 启动定时器模拟帧循环
             Timer().schedule(object : TimerTask() {
                 override fun run() {
                     Invoke {

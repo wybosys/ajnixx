@@ -266,33 +266,48 @@ public:
 
     JVariant(JCallback const &);
 
-    string const &toString() const;
+    // 转换为字符串，如果类型不同则自动数据转换
+    string toString() const;
 
+    // 转换为整数，如果类型不同则自动数据转换
     integer toInteger() const;
 
+    // 转换为小数，如果类型不同则自动数据转换
     number toNumber() const;
 
+    // 转换为bool，如果类型不同则自动数据转换
     bool toBool() const;
 
-    inline operator string const &() const
+    // 转换为字符串
+    inline operator string() const
     {
         return toString();
     }
 
+    // 获取存储基本泛数据类型的对象
     inline operator variant_type const &() const
     {
         return _var;
     }
 
+    // 获取承载用于Java回调C++的函数对象
     inline shared_ptr <JCallback> toCallback() const
     {
+        assert(vt == VT::CALLBACK);
         return _callback;
     }
 
-    shared_ptr <JObject> toObject() const;
+    // 获取内部object对象
+    inline shared_ptr <JObject> toObject() const
+    {
+        assert(vt == VT::OBJECT);
+        return _jobj;
+    }
 
+    // 将obj对象包裹成jvariant对象，不进行数据转换
     static shared_ptr <JVariant> FromObject(JObject const &);
 
+    // 是否为空
     inline bool isnil() const
     {
         return vt == VT::NIL;
@@ -300,6 +315,11 @@ public:
 
     // 获得签名
     JTypeSignature signature() const;
+
+protected:
+
+    // 如果是Object对象，提权到global
+    void _asglobal();
 
 private:
 
@@ -312,6 +332,7 @@ private:
     // 存储JNI对象
     shared_ptr <JObject> _jobj;
 
+    friend JCallback;
 };
 
 class JCallback
