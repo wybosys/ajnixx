@@ -202,15 +202,17 @@ private:
 };
 
 typedef ptrdiff_t integer;
+
 typedef double number;
 
 class JCallback;
 
+// 用于承载Java通用数据类
 class JVariant
 {
 private:
 
-    class JComVariantTypes : public ::com::VariantTypes<>
+    class JComVariantTypes: public ::com::VariantTypes<>
     {
     public:
         typedef _jobject object_type;
@@ -260,7 +262,7 @@ public:
 
     JVariant(jdouble);
 
-    JVariant(jobject);
+    JVariant(jobject, bool local = true);
 
     JVariant(JCallback const &);
 
@@ -301,17 +303,23 @@ public:
 
 private:
 
+    // 泛类型存储基本数据类型
     variant_type _var;
+
+    // 存储返回给Java层的回调函数
     shared_ptr <JCallback> _callback;
+
+    // 存储JNI对象
+    shared_ptr <JObject> _jobj;
 
 };
 
 class JCallback
 {
-    class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
-            JVariant,
-            shared_ptr < JVariant>,
-                              JVariant
+    class JComFunctionTypes: public ::COMXX_NS::FunctionTypes<
+        JVariant,
+        shared_ptr < JVariant>,
+                             JVariant
 
     > {};
 
@@ -319,7 +327,7 @@ public:
 
     typedef ::COMXX_NS::Function<JComFunctionTypes> function_type;
     typedef function_type::return_type return_type;
-    typedef shared_ptr<function_type::arg_type> arg_type;
+    typedef shared_ptr <function_type::arg_type> arg_type;
 
     JCallback(function_type::fun0_type);
 
@@ -391,23 +399,17 @@ static ::std::basic_ostream<_CharT, _Traits> &
 operator<<(::std::basic_ostream<_CharT, _Traits> &stm, JVariant const &v)
 {
     switch (v.vt) {
-        default:
-            break;
-        case JVariant::VT::STRING:
-            stm << v.toString();
-            break;
-        case JVariant::VT::INTEGER:
-            stm << v.toInteger();
-            break;
-        case JVariant::VT::NUMBER:
-            stm << v.toNumber();
-            break;
-        case JVariant::VT::BOOLEAN:
-            stm << v.toBool();
-            break;
-        case JVariant::VT::OBJECT:
-            stm << v.toObject();
-            break;
+    default:break;
+    case JVariant::VT::STRING:stm << v.toString();
+        break;
+    case JVariant::VT::INTEGER:stm << v.toInteger();
+        break;
+    case JVariant::VT::NUMBER:stm << v.toNumber();
+        break;
+    case JVariant::VT::BOOLEAN:stm << v.toBool();
+        break;
+    case JVariant::VT::OBJECT:stm << v.toObject();
+        break;
     }
     return stm;
 }
@@ -428,14 +430,17 @@ COMXX_BEGIN
 template<>
 inline jobject grab<jobject>(jobject obj)
 {
-    return ::AJNI_NS::Env.NewLocalRef(obj);
+    // return ::AJNI_NS::Env.NewLocalRef(obj);
+    // jobject 通过 shared_ptr<JObject> _jobj 保存，所以不需要在
+    return obj;
 }
 
 template<>
 inline bool drop<jobject>(jobject obj)
 {
-    ::AJNI_NS::Env.DeleteLocalRef(obj);
-    return true;
+    //::AJNI_NS::Env.DeleteLocalRef(obj);
+    //return true;
+    return false;
 }
 
 COMXX_END

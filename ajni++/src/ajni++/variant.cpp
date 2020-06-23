@@ -23,7 +23,7 @@ JObject::JObject()
 }
 
 JObject::JObject(jobject obj, bool local)
-        : _obj(obj), _local(local)
+    : _obj(obj), _local(local)
 {
     if (_obj) {
         if (_local)
@@ -34,7 +34,7 @@ JObject::JObject(jobject obj, bool local)
 }
 
 JObject::JObject(JObject const &r)
-        : _obj(r._obj), _local(r._local)
+    : _obj(r._obj), _local(r._local)
 {
     if (_obj) {
         if (_local)
@@ -128,7 +128,7 @@ void JObject::_asglobal()
 }
 
 JObject::_JGlobalObject::_JGlobalObject(JObject const &r)
-        : _refs(1)
+    : _refs(1)
 {
     auto t = make_shared<JObject>();
     t->_reset(r._obj, false); // 转换成global对象
@@ -156,13 +156,13 @@ JString::JString()
 }
 
 JString::JString(JString const &r)
-        : _str(r._str)
+    : _str(r._str)
 {
     // pass
 }
 
 JString::JString(string const &str)
-        : _str(str)
+    : _str(str)
 {
     // pass
 }
@@ -203,11 +203,11 @@ string JArray::toString() const
     if (_arr.isnil())
         return "";
     jbyte const *cs = Env.GetBytes(*this);
-    return string((char const *) cs, _sz);
+    return string((char const *)cs, _sz);
 }
 
 JValue::JValue(JValue const &r)
-        : _val(r._val), _fnidx(r._fnidx)
+    : _val(r._val), _fnidx(r._fnidx)
 {
     if (_fnidx) {
         Env.context().callback_grab(_fnidx);
@@ -219,58 +219,48 @@ JValue::JValue(JVariant const &var)
     JVariant::variant_type const &comvar = var;
     typedef JVariant::variant_type::VT VT;
     switch (comvar.vt) {
-        case VT::INT:
-        case VT::UINT:
-            _val.i = comvar.toInt();
-            break;
-        case VT::FLOAT:
-            _val.f = comvar.toFloat();
-            break;
-        case VT::DOUBLE:
-            _val.d = comvar.toDouble();
-            break;
-        case VT::SHORT:
-        case VT::USHORT:
-            _val.s = comvar.toShort();
-            break;
-        case VT::LONG:
-        case VT::ULONG:
-            _val.j = comvar.toLong();
-            break;
-        case VT::LONGLONG:
-        case VT::ULONGLONG:
-            _val.j = (jlong) comvar.toLonglong();
-            break;
-        case VT::CHAR:
-        case VT::UCHAR:
-            _val.c = comvar.toChar();
-            break;
-        case VT::BOOLEAN:
-            _val.z = comvar.toBool();
-            break;
-        case VT::OBJECT: {
-            _val.l = comvar.toObject();
-        }
-            break;
-        case VT::STRING: {
-            _val.l = Env.NewStringUTF(comvar.toString());
-            _free = true;
-        }
-            break;
-        case VT::NIL:
-            break;
-        case VT::FUNCTION: {
-            auto cls = Env.context().register_class<jre::Callback>();
-            JEntry<jre::Callback> cb(*cls->construct());
-            // 将当前的函数保存到全局监听，执行结束后进行释放
-            _fnidx = Env.context().add_callback(var.toCallback());
-            cb->id(cb, (jlong) _fnidx);
-            _val.l = cb.asReturn();
-        }
-            break;
-        default:
-            Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int) comvar.vt));
-            break;
+    case VT::INT:
+    case VT::UINT:_val.i = comvar.toInt();
+        break;
+    case VT::FLOAT:_val.f = comvar.toFloat();
+        break;
+    case VT::DOUBLE:_val.d = comvar.toDouble();
+        break;
+    case VT::SHORT:
+    case VT::USHORT:_val.s = comvar.toShort();
+        break;
+    case VT::LONG:
+    case VT::ULONG:_val.j = comvar.toLong();
+        break;
+    case VT::LONGLONG:
+    case VT::ULONGLONG:_val.j = (jlong)comvar.toLonglong();
+        break;
+    case VT::CHAR:
+    case VT::UCHAR:_val.c = comvar.toChar();
+        break;
+    case VT::BOOLEAN:_val.z = comvar.toBool();
+        break;
+    case VT::OBJECT: {
+        _val.l = comvar.toObject();
+    }
+        break;
+    case VT::STRING: {
+        _val.l = Env.NewStringUTF(comvar.toString());
+        _free = true;
+    }
+        break;
+    case VT::NIL:break;
+    case VT::FUNCTION: {
+        auto cls = Env.context().register_class<jre::Callback>();
+        JEntry<jre::Callback> cb(*cls->construct());
+        // 将当前的函数保存到全局监听，执行结束后进行释放
+        _fnidx = Env.context().add_callback(var.toCallback());
+        cb->id(cb, (jlong)_fnidx);
+        _val.l = cb.asReturn();
+    }
+        break;
+    default:Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int)comvar.vt));
+        break;
     }
 }
 
@@ -306,77 +296,80 @@ JValues::JValues(args_type const &vars)
 }
 
 JVariant::JVariant()
-        : vt(VT::NIL)
+    : vt(VT::NIL)
 {
 }
 
 JVariant::JVariant(nullptr_t)
-        : vt(VT::NIL)
+    : vt(VT::NIL)
 {
 }
 
 JVariant::JVariant(const char s[])
-        : vt(VT::STRING), _var(s)
+    : vt(VT::STRING), _var(s)
 {
 }
 
 JVariant::JVariant(bool v)
-        : vt(VT::BOOLEAN), _var(v)
+    : vt(VT::BOOLEAN), _var(v)
 {
 }
 
 JVariant::JVariant(jchar v)
-        : vt(VT::INTEGER), _var(v)
+    : vt(VT::INTEGER), _var(v)
 {
 }
 
 JVariant::JVariant(jbyte v)
-        : vt(VT::INTEGER), _var(v)
+    : vt(VT::INTEGER), _var(v)
 {
 }
 
 JVariant::JVariant(jshort v)
-        : vt(VT::INTEGER), _var(v)
+    : vt(VT::INTEGER), _var(v)
 {
 }
 
 JVariant::JVariant(jint v)
-        : vt(VT::INTEGER), _var(v)
+    : vt(VT::INTEGER), _var(v)
 {
 }
 
 JVariant::JVariant(jlong v)
-        : vt(VT::INTEGER), _var(v)
+    : vt(VT::INTEGER), _var(v)
 {
 }
 
 JVariant::JVariant(jfloat v)
-        : vt(VT::NUMBER), _var(v)
+    : vt(VT::NUMBER), _var(v)
 {
 }
 
 JVariant::JVariant(jdouble v)
-        : vt(VT::NUMBER), _var(v)
+    : vt(VT::NUMBER), _var(v)
 {
 }
 
-JVariant::JVariant(jobject v)
-        : vt(VT::OBJECT), _var(v)
+JVariant::JVariant(jobject v, bool local)
+    : vt(VT::OBJECT), _var(v)
 {
+    _jobj = make_shared<JObject>();
+    _jobj->_reset(v, local);
 }
 
 JVariant::JVariant(JCallback const &cb)
-        : vt(VT::CALLBACK), _callback(make_shared<JCallback>(cb)), _var((variant_type::func_type) 0)
+    : vt(VT::CALLBACK), _callback(make_shared<JCallback>(cb)),
+      _var((variant_type::func_type)0) // 传0强制让_var设置成空函数
 {
 }
 
 JVariant::JVariant(jstring v)
-        : vt(VT::STRING), _var(Env.GetStringUTFChars(v))
+    : vt(VT::STRING), _var(Env.GetStringUTFChars(v))
 {
 }
 
 JVariant::JVariant(string const &v)
-        : vt(VT::STRING), _var(JString(v))
+    : vt(VT::STRING), _var(JString(v))
 {
 }
 
@@ -388,36 +381,21 @@ string const &JVariant::toString() const
 integer JVariant::toInteger() const
 {
     switch (_var.vt) {
-        case variant_type::VT::INT:
-            return _var.toInt();
-        case variant_type::VT::UINT:
-            return _var.toUInt();
-        case variant_type::VT::LONG:
-            return _var.toLong();
-        case variant_type::VT::ULONG:
-            return _var.toULong();
-        case variant_type::VT::SHORT:
-            return _var.toShort();
-        case variant_type::VT::USHORT:
-            return _var.toUShort();
-        case variant_type::VT::LONGLONG:
-            return (integer) _var.toLonglong();
-        case variant_type::VT::ULONGLONG:
-            return (integer) _var.toULonglong();
-        case variant_type::VT::CHAR:
-            return _var.toChar();
-        case variant_type::VT::UCHAR:
-            return _var.toUChar();
-        case variant_type::VT::BOOLEAN:
-            return _var.toBool();
-        case variant_type::VT::FLOAT:
-            return (integer) round(_var.toFloat());
-        case variant_type::VT::DOUBLE:
-            return (integer) round(_var.toDouble());
-        case variant_type::VT::STRING:
-            return ::CROSS_NS::toint(_var.toString());
-        default:
-            break;
+    case variant_type::VT::INT:return _var.toInt();
+    case variant_type::VT::UINT:return _var.toUInt();
+    case variant_type::VT::LONG:return _var.toLong();
+    case variant_type::VT::ULONG:return _var.toULong();
+    case variant_type::VT::SHORT:return _var.toShort();
+    case variant_type::VT::USHORT:return _var.toUShort();
+    case variant_type::VT::LONGLONG:return (integer)_var.toLonglong();
+    case variant_type::VT::ULONGLONG:return (integer)_var.toULonglong();
+    case variant_type::VT::CHAR:return _var.toChar();
+    case variant_type::VT::UCHAR:return _var.toUChar();
+    case variant_type::VT::BOOLEAN:return _var.toBool();
+    case variant_type::VT::FLOAT:return (integer)round(_var.toFloat());
+    case variant_type::VT::DOUBLE:return (integer)round(_var.toDouble());
+    case variant_type::VT::STRING:return toint(_var.toString());
+    default:break;
     }
     return 0;
 }
@@ -425,14 +403,10 @@ integer JVariant::toInteger() const
 number JVariant::toNumber() const
 {
     switch (_var.vt) {
-        case variant_type::VT::FLOAT:
-            return _var.toFloat();
-        case variant_type::VT::DOUBLE:
-            return _var.toDouble();
-        case variant_type::VT::STRING:
-            return ::CROSS_NS::todouble(_var.toString());
-        default:
-            break;
+    case variant_type::VT::FLOAT:return _var.toFloat();
+    case variant_type::VT::DOUBLE:return _var.toDouble();
+    case variant_type::VT::STRING:return todouble(_var.toString());
+    default:break;
     }
     return toInteger();
 }
@@ -453,32 +427,22 @@ JTypeSignature JVariant::signature() const
 
     // 普通pod数据类型
     switch (_var.vt) {
-        case variant_type::VT::BOOLEAN:
-            return TypeSignature::BOOLEAN;
-        case variant_type::VT::INT:
-        case variant_type::VT::UINT:
-            return TypeSignature::INT;
-        case variant_type::VT::SHORT:
-        case variant_type::VT::USHORT:
-            return TypeSignature::SHORT;
-        case variant_type::VT::LONG:
-        case variant_type::VT::ULONG:
-        case variant_type::VT::LONGLONG:
-        case variant_type::VT::ULONGLONG:
-            return TypeSignature::LONG;
-        case variant_type::VT::FLOAT:
-            return TypeSignature::FLOAT;
-        case variant_type::VT::DOUBLE:
-            return TypeSignature::DOUBLE;
-        case variant_type::VT::CHAR:
-        case variant_type::VT::UCHAR:
-            return TypeSignature::CHAR;
-        case variant_type::VT::STRING:
-            return TypeSignature::STRING;
-        case variant_type::VT::NIL:
-            return TypeSignature::VOID;
-        default:
-            break;
+    case variant_type::VT::BOOLEAN:return TypeSignature::BOOLEAN;
+    case variant_type::VT::INT:
+    case variant_type::VT::UINT:return TypeSignature::INT;
+    case variant_type::VT::SHORT:
+    case variant_type::VT::USHORT:return TypeSignature::SHORT;
+    case variant_type::VT::LONG:
+    case variant_type::VT::ULONG:
+    case variant_type::VT::LONGLONG:
+    case variant_type::VT::ULONGLONG:return TypeSignature::LONG;
+    case variant_type::VT::FLOAT:return TypeSignature::FLOAT;
+    case variant_type::VT::DOUBLE:return TypeSignature::DOUBLE;
+    case variant_type::VT::CHAR:
+    case variant_type::VT::UCHAR:return TypeSignature::CHAR;
+    case variant_type::VT::STRING:return TypeSignature::STRING;
+    case variant_type::VT::NIL:return TypeSignature::VOID;
+    default:break;
     }
 
     return TypeSignature::OBJECT;
@@ -486,65 +450,63 @@ JTypeSignature JVariant::signature() const
 
 shared_ptr<JObject> JVariant::toObject() const
 {
-    auto r = make_shared<JObject>();
-    r->_reset(_var.toObject());
-    return r;
+    return _jobj;
 }
 
 shared_ptr<JVariant> JVariant::FromObject(JObject const &obj)
 {
-    return make_shared<JVariant>(obj._obj);
+    return make_shared<JVariant>(obj._obj, obj._local);
 }
 
 bool JCallback::ASYNC = false;
 
 JCallback::JCallback(function_type::fun0_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun1_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun2_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun3_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun4_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun5_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun6_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun7_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun8_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
 JCallback::JCallback(function_type::fun9_type fn)
-        : _fn(make_shared<function_type>(fn))
+    : _fn(make_shared<function_type>(fn))
 {
 }
 
@@ -570,7 +532,18 @@ void JCallback::operator()() const
 
 void JCallback::operator()(arg_type const &v0) const
 {
-    JCALLBACK_INVOKE((*_fn)(*v0));
+    // 此函数用于展开JCALLBACK_INVOKE宏定义的语句，方便调试使用
+
+    /*
+    if (!async) {
+        // 如果将异步请求转成同步调用，则需要将object从local转换成global对象，存在切换
+        if (v0->vt == JVariant::VT::OBJECT) {
+
+        }
+    }
+     */
+
+    (*_fn)(*v0);
 }
 
 void JCallback::operator()(arg_type const &v0, arg_type const &v1) const
