@@ -37,8 +37,10 @@ class Test {
 
     fun null_async(cb: Callback) {
         cb.grab()
-        cb(null)
-        cb.drop()
+        Thread {
+            cb(null)
+            cb.drop()
+        }.start()
     }
 
     fun info_async(cb: Callback, str: String, cb2: Callback) {
