@@ -31,13 +31,15 @@ protected:
 };
 
 typedef shared_ptr<JVariant> return_type;
+
 typedef JVariant arg_type;
 
-class JMemberField : public JField
+class JMemberField: public JField
 {
 public:
 
-    JMemberField(JClass &clz) : JField(clz)
+    JMemberField(JClass &clz)
+        : JField(clz)
     {}
 
     // get
@@ -47,11 +49,12 @@ public:
     void operator()(JObject &, arg_type const &);
 };
 
-class JStaticField : public JField
+class JStaticField: public JField
 {
 public:
 
-    JStaticField(JClass &clz) : JField(clz)
+    JStaticField(JClass &clz)
+        : JField(clz)
     {}
 
     // get
@@ -97,11 +100,12 @@ protected:
     JClass &_clazz;
 };
 
-class JConstructMethod : public JMethod
+class JConstructMethod: public JMethod
 {
 public:
 
-    JConstructMethod(JClass &clz) : JMethod(clz)
+    JConstructMethod(JClass &clz)
+        : JMethod(clz)
     {
         sreturn = TypeSignature::VOID;
     }
@@ -138,11 +142,12 @@ public:
 
 };
 
-class JMemberMethod : public JMethod
+class JMemberMethod: public JMethod
 {
 public:
 
-    JMemberMethod(JClass &clz) : JMethod(clz)
+    JMemberMethod(JClass &clz)
+        : JMethod(clz)
     {}
 
     return_type operator()(JObject &) const;
@@ -181,11 +186,12 @@ public:
 
 };
 
-class JStaticMethod : public JMethod
+class JStaticMethod: public JMethod
 {
 public:
 
-    JStaticMethod(JClass &clz) : JMethod(clz)
+    JStaticMethod(JClass &clz)
+        : JMethod(clz)
     {}
 
     return_type operator()() const;
@@ -322,9 +328,11 @@ public:
     typedef shared_ptr<self_type> return_type;
 
     explicit JEntry(JVariant const &var, class_typep const &clz = nullptr)
-            : _clazz(clz)
+        : _clazz(clz)
     {
-        assert((void*)&var != nullptr);
+        assert((void *)&var != nullptr);
+        assert(var.vt == JVariant::VT::OBJECT); // 只有object对象才可以转换为Entry对象
+
         _obj = var.toObject();
 
         if (!_clazz) {
@@ -333,9 +341,11 @@ public:
     }
 
     explicit JEntry(shared_ptr<JVariant> const &pvar, class_typep const &clz = nullptr)
-            : _clazz(clz)
+        : _clazz(clz)
     {
         assert(pvar);
+        assert(pvar->vt == JVariant::VT::OBJECT);
+
         _obj = pvar->toObject();
 
         if (!_clazz) {
@@ -344,7 +354,7 @@ public:
     }
 
     explicit JEntry(shared_ptr<JObject> const &var, class_typep const &clz = nullptr)
-            : _clazz(clz)
+        : _clazz(clz)
     {
         assert(var);
         _obj = var;
@@ -394,7 +404,8 @@ inline void JEntry<TClass>::grab() const
 {
     if (_gobj) {
         _gobj->grab();
-    } else {
+    }
+    else {
         _gobj = make_shared<JObject::_JGlobalObject>(*_obj);
         _obj = nullptr; // 通常obj会跨线程使用，所以当grab后，必须释放临时对象，避免drop时挂掉
     }
