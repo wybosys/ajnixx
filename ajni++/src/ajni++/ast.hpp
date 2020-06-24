@@ -297,17 +297,20 @@ public:
         return add(r) ? r : nullptr;
     }
 
+    typedef typename JVariant::function_type function_type;
+    typedef size_t function_index_type;
+
     // 保存函数返回索引
-    size_t add_callback(shared_ptr<JCallback> const &);
+    function_index_type add(shared_ptr<function_type> const &);
 
     // 增加函数计数
-    void callback_grab(size_t);
+    void function_grab(function_index_type);
 
     // 减少函数技术，释放返回true，否则返回false
-    bool callback_drop(size_t);
+    bool function_drop(function_index_type);
 
     // 获得函数
-    shared_ptr<JCallback> find_callback(size_t) const;
+    shared_ptr<function_type> find_function(function_index_type) const;
 
     // 清空
     void clear();
@@ -328,7 +331,7 @@ public:
         : _clazz(clz)
     {
         assert((void *)&var != nullptr);
-        assert(var.vt == JVariant::VT::OBJECT); // 只有object才能转换成Entry对象
+        assert(var.vt == JVariant::VT::OBJECT); // 只有object对象才可以转换为Entry对象
 
         _obj = var.toObject();
 
@@ -354,7 +357,6 @@ public:
         : _clazz(clz)
     {
         assert(var);
-
         _obj = var;
 
         if (!_clazz) {
