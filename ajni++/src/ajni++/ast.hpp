@@ -280,13 +280,13 @@ public:
 
     typedef shared_ptr<JClass> class_typep;
 
-    // 添加类
+    // 添加类对象，避免重复构造，参照 register_class
     bool add(class_typep const &);
 
-    // 查找类
+    // 根据Java的类路径查找类对象
     class_typep find_class(JClassPath const &) const;
 
-    // 注册类
+    // 注册类，避免每次使用C++映射的Java类都重新构造
     template<typename T>
     class_typep register_class()
     {
@@ -297,16 +297,16 @@ public:
         return add(r) ? r : nullptr;
     }
 
-    // 保存函数返回索引
+    // 保存回调函数，返回索引，使得可以穿透到Java层
     size_t add_callback(shared_ptr<JCallback> const &);
 
-    // 增加函数计数
+    // 增加回调计数，如果位于Java异步调用中，则避免同步调用完成后C++层回调自动被释放，从而报找不到回调的错误
     void callback_grab(size_t);
 
-    // 减少函数技术，释放返回true，否则返回false
+    // 减少回调计数，释放返回true，否则返回false
     bool callback_drop(size_t);
 
-    // 获得函数
+    // 根据回调索引获得回调数据
     shared_ptr<JCallback> find_callback(size_t) const;
 
     // 清空
