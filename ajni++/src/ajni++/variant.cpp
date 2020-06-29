@@ -282,7 +282,7 @@ shared_ptr<JArray::bytes_type> JArray::toBytes() const
 {
     if (vt == VT::BYTE) {
         auto r = make_shared<bytes_type>();
-        r->reserve(_sz);
+        r->resize(_sz);
         Env.ProcessBytes(*this, [&](jbyte const *bs)
         {
             ::std::memcpy(&r->at(0), bs, _sz);
@@ -291,6 +291,7 @@ shared_ptr<JArray::bytes_type> JArray::toBytes() const
     }
     else if (vt == VT::CHAR) {
         auto r = make_shared<bytes_type>();
+        r->resize(_sz);
         Env.ProcessChars(*this, [&](jchar const *cs)
         {
             ::std::memcpy(&r->at(0), cs, _sz);
