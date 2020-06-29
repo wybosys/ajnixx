@@ -35,7 +35,16 @@ public:
     virtual jobject asReturn() const;
 
     // 转换成具体的Variant类型，和Variant(JObject)不同，转换会读取具体对象内部信息，返回C++数据构成的Variant对象
-    static shared_ptr <JVariant> Extract(jobject);
+    static shared_ptr<JVariant> Extract(jobject);
+    static shared_ptr<JVariant> Extract(jobjectArray);
+    static shared_ptr<JVariant> Extract(jbooleanArray);
+    static shared_ptr<JVariant> Extract(jbyteArray);
+    static shared_ptr<JVariant> Extract(jcharArray);
+    static shared_ptr<JVariant> Extract(jshortArray);
+    static shared_ptr<JVariant> Extract(jintArray);
+    static shared_ptr<JVariant> Extract(jlongArray);
+    static shared_ptr<JVariant> Extract(jfloatArray);
+    static shared_ptr<JVariant> Extract(jdoubleArray);
 
     // 是否时空对象
     bool isnil() const;
@@ -55,7 +64,7 @@ protected:
 
         bool drop();
 
-        shared_ptr <JObject> gobj; // 全局对象
+        shared_ptr<JObject> gobj; // 全局对象
 
     private:
         ::std::atomic<int> _refs; // 引用计数
@@ -123,20 +132,53 @@ class JArray
 {
 public:
 
+    // 数组中数据类型
+    enum struct VT
+    {
+        UNKNOWN,
+        OBJECT,
+        BOOLEAN,
+        BYTE,
+        CHAR,
+        SHORT,
+        INT,
+        LONG,
+        FLOAT,
+        DOUBLE
+    };
+
     JArray();
 
     ~JArray();
 
+    // 获取数组长度
     inline size_t size() const
     {
         return _sz;
     }
 
+    // array转换成string
     string toString() const;
+
+    typedef ::COMXX_NS::Variant<>::bytes_type bytes_type;
+
+    // 转换为bytes对象
+    shared_ptr<bytes_type> toBytes() const;
+
+    // 数据类型
+    const VT vt = VT::UNKNOWN;
 
 protected:
 
-    void _reset(jarray, size_t);
+    void _reset(jobjectArray, size_t);
+    void _reset(jbooleanArray, size_t);
+    void _reset(jbyteArray, size_t);
+    void _reset(jcharArray, size_t);
+    void _reset(jshortArray, size_t);
+    void _reset(jintArray, size_t);
+    void _reset(jlongArray, size_t);
+    void _reset(jfloatArray, size_t);
+    void _reset(jdoubleArray, size_t);
 
 private:
 
@@ -144,6 +186,7 @@ private:
     size_t _sz;
 
     friend class JEnv;
+    friend class JObject;
 };
 
 class JVariant;
@@ -180,7 +223,7 @@ public:
 
     JValues(args_type const &);
 
-    typedef shared_ptr <JValue> value_type;
+    typedef shared_ptr<JValue> value_type;
 
     inline size_t size() const
     {
@@ -231,7 +274,8 @@ public:
         INTEGER,
         NUMBER,
         STRING,
-        CALLBACK
+        CALLBACK,
+        ARRAY
     };
 
     const VT vt;
@@ -266,6 +310,8 @@ public:
 
     JVariant(JCallback const &);
 
+    JVariant(shared_ptr<JArray> const &);
+
     // 转换为字符串，如果类型不同则自动数据转换
     string toString() const;
 
@@ -291,21 +337,26 @@ public:
     }
 
     // 获取承载用于Java回调C++的函数对象
-    inline shared_ptr <JCallback> toCallback() const
+    inline shared_ptr<JCallback> toCallback() const
     {
         assert(vt == VT::CALLBACK);
         return _callback;
     }
 
     // 获取内部object对象
-    inline shared_ptr <JObject> toObject() const
+    inline shared_ptr<JObject> toObject() const
     {
         assert(vt == VT::OBJECT);
         return _jobj;
     }
 
+    inline shared_ptr<JArray> toArray() const
+    {
+        return _arr;
+    }
+
     // 将obj对象包裹成jvariant对象，不进行数据转换
-    static shared_ptr <JVariant> FromObject(JObject const &);
+    static shared_ptr<JVariant> FromObject(JObject const &);
 
     // 是否为空
     inline bool isnil() const
@@ -325,12 +376,13 @@ private:
 
     // 泛类型存储基本数据类型
     variant_type _var;
+    shared_ptr<JArray> _arr;
 
     // 存储返回给Java层的回调函数
-    shared_ptr <JCallback> _callback;
+    shared_ptr<JCallback> _callback;
 
     // 存储JNI对象
-    shared_ptr <JObject> _jobj;
+    shared_ptr<JObject> _jobj;
 
     friend JCallback;
 };
@@ -348,7 +400,7 @@ public:
 
     typedef ::COMXX_NS::Function<JComFunctionTypes> function_type;
     typedef function_type::return_type return_type;
-    typedef shared_ptr <function_type::arg_type> arg_type;
+    typedef shared_ptr<function_type::arg_type> arg_type;
 
     JCallback(function_type::fun0_type);
 
@@ -406,11 +458,11 @@ public:
 
 protected:
 
-    shared_ptr <function_type> _fn;
+    shared_ptr<function_type> _fn;
 };
 
 template<typename T>
-inline shared_ptr <JVariant> _V(T const &v)
+inline shared_ptr<JVariant> _V(T const &v)
 {
     return make_shared<JVariant>(v);
 }
@@ -420,24 +472,30 @@ static ::std::basic_ostream<_CharT, _Traits> &
 operator<<(::std::basic_ostream<_CharT, _Traits> &stm, JVariant const &v)
 {
     switch (v.vt) {
-    default:break;
-    case JVariant::VT::STRING:stm << v.toString();
-        break;
-    case JVariant::VT::INTEGER:stm << v.toInteger();
-        break;
-    case JVariant::VT::NUMBER:stm << v.toNumber();
-        break;
-    case JVariant::VT::BOOLEAN:stm << v.toBool();
-        break;
-    case JVariant::VT::OBJECT:stm << v.toObject();
-        break;
+        default:
+            break;
+        case JVariant::VT::STRING:
+            stm << v.toString();
+            break;
+        case JVariant::VT::INTEGER:
+            stm << v.toInteger();
+            break;
+        case JVariant::VT::NUMBER:
+            stm << v.toNumber();
+            break;
+        case JVariant::VT::BOOLEAN:
+            stm << v.toBool();
+            break;
+        case JVariant::VT::OBJECT:
+            stm << v.toObject();
+            break;
     }
     return stm;
 }
 
 template<typename _CharT, typename _Traits>
 static ::std::basic_ostream<_CharT, _Traits> &
-operator<<(::std::basic_ostream<_CharT, _Traits> &stm, shared_ptr <JVariant> const &v)
+operator<<(::std::basic_ostream<_CharT, _Traits> &stm, shared_ptr<JVariant> const &v)
 {
     if (!v)
         return stm;
