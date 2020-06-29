@@ -310,7 +310,7 @@ public:
     JVariant(function_type::fun8_type);
     JVariant(function_type::fun9_type);
 
-    string const &toString() const;
+    string toString() const;
 
     integer toInteger() const;
 
@@ -318,7 +318,7 @@ public:
 
     bool toBool() const;
 
-    inline operator string const &() const
+    inline operator string() const
     {
         return toString();
     }

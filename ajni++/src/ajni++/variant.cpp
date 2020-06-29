@@ -522,9 +522,17 @@ JVariant::JVariant(function_type::fun9_type fn)
 {
 }
 
-string const &JVariant::toString() const
+string JVariant::toString() const
 {
-    return _var.toString();
+    if (_var.vt == variant_type::VT::STRING)
+        return _var.toString();
+
+    if (_var.vt == variant_type::VT::FLOAT ||
+        _var.vt == variant_type::VT::DOUBLE) {
+        return ::CROSS_NS::tostr(toNumber());
+    }
+
+    return ::CROSS_NS::tostr((int) toInteger());
 }
 
 integer JVariant::toInteger() const
