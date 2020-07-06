@@ -318,14 +318,9 @@ shared_ptr<JArray::bytes_type> JArray::toBytes() const
 JValue::JValue(JValue const& r)
     : _val(r._val), _fnidx(r._fnidx)
 {
-<<<<<<< HEAD
-    if (_fnidx) {
-        Env.context().callback_grab(_fnidx);
-=======
     if (_fnidx)
     {
-        Env.context().function_grab(_fnidx);
->>>>>>> v1.0
+        Env.context().callback_grab(_fnidx);
     }
 }
 
@@ -333,61 +328,6 @@ JValue::JValue(JVariant const& var)
 {
     JVariant::variant_type const& comvar = var;
     typedef JVariant::variant_type::VT VT;
-<<<<<<< HEAD
-    switch (comvar.vt) {
-        case VT::INT:
-        case VT::UINT:
-            _val.i = comvar.toInt();
-            break;
-        case VT::FLOAT:
-            _val.f = comvar.toFloat();
-            break;
-        case VT::DOUBLE:
-            _val.d = comvar.toDouble();
-            break;
-        case VT::SHORT:
-        case VT::USHORT:
-            _val.s = comvar.toShort();
-            break;
-        case VT::LONG:
-        case VT::ULONG:
-            _val.j = comvar.toLong();
-            break;
-        case VT::LONGLONG:
-        case VT::ULONGLONG:
-            _val.j = (jlong) comvar.toLonglong();
-            break;
-        case VT::CHAR:
-        case VT::UCHAR:
-            _val.c = comvar.toChar();
-            break;
-        case VT::BOOLEAN:
-            _val.z = comvar.toBool();
-            break;
-        case VT::OBJECT: {
-            _val.l = comvar.toObject();
-        }
-            break;
-        case VT::STRING: {
-            _val.l = Env.NewStringUTF(comvar.toString());
-            _free = true;
-        }
-            break;
-        case VT::NIL:
-            break;
-        case VT::FUNCTION: {
-            auto cls = Env.context().register_class<jre::Callback>();
-            JEntry<jre::Callback> cb(*cls->construct());
-            // 将当前的函数保存到全局监听，执行结束后进行释放
-            _fnidx = Env.context().add_callback(var.toCallback());
-            cb->id(cb, (jlong) _fnidx);
-            _val.l = cb.asReturn();
-        }
-            break;
-        default:
-            Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int) comvar.vt));
-            break;
-=======
     switch (comvar.vt)
     {
     case VT::INT:
@@ -437,7 +377,7 @@ JValue::JValue(JVariant const& var)
         auto cls = Env.context().register_class<jre::Callback>();
         JEntry<jre::Callback> cb(*cls->construct());
         // 将当前的函数保存到全局监听，执行结束后进行释放
-        _fnidx = Env.context().add(var.toFunction());
+        _fnidx = Env.context().add_callback(var.toCallback());
         cb->id(cb, (jlong)_fnidx);
         _val.l = cb.asReturn();
     }
@@ -445,7 +385,6 @@ JValue::JValue(JVariant const& var)
     default:
         Logger::Error("ajnixx: 不支持类型转换 " + ::CROSS_NS::tostr((int)comvar.vt));
         break;
->>>>>>> v1.0
     }
 }
 
@@ -457,14 +396,9 @@ JValue::~JValue()
         _val.l = nullptr;
     }
 
-<<<<<<< HEAD
-    if (_fnidx) {
-        Env.context().callback_drop(_fnidx);
-=======
     if (_fnidx)
     {
-        Env.context().function_drop(_fnidx);
->>>>>>> v1.0
+        Env.context().callback_drop(_fnidx);
         _fnidx = 0;
     }
 }
@@ -551,9 +485,9 @@ JVariant::JVariant(jobject v, bool local)
     _jobj->_reset(v, local);
 }
 
-JVariant::JVariant(JCallback const &cb)
+JVariant::JVariant(JCallback const& cb)
     : vt(VT::CALLBACK), _callback(make_shared<JCallback>(cb)),
-      _var((variant_type::func_type) 0) // 传0强制让_var设置成空函数
+      _var((variant_type::func_type)0) // 传0强制让_var设置成空函数
 {
 }
 
@@ -572,59 +506,6 @@ JVariant::JVariant(string const& v)
 {
 }
 
-<<<<<<< HEAD
-=======
-JVariant::JVariant(function_type::fun0_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun1_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun2_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun3_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun4_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun5_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun6_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun7_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun8_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
-JVariant::JVariant(function_type::fun9_type fn)
-    : vt(VT::FUNCTION), _fun(make_shared<function_type>(fn)), _var((variant_type::func_type)0)
-{
-}
-
->>>>>>> v1.0
 string JVariant::toString() const
 {
     if (_var.vt == variant_type::VT::STRING)
@@ -641,39 +522,6 @@ string JVariant::toString() const
 
 integer JVariant::toInteger() const
 {
-<<<<<<< HEAD
-    switch (_var.vt) {
-        case variant_type::VT::INT:
-            return _var.toInt();
-        case variant_type::VT::UINT:
-            return _var.toUInt();
-        case variant_type::VT::LONG:
-            return _var.toLong();
-        case variant_type::VT::ULONG:
-            return _var.toULong();
-        case variant_type::VT::SHORT:
-            return _var.toShort();
-        case variant_type::VT::USHORT:
-            return _var.toUShort();
-        case variant_type::VT::LONGLONG:
-            return (integer) _var.toLonglong();
-        case variant_type::VT::ULONGLONG:
-            return (integer) _var.toULonglong();
-        case variant_type::VT::CHAR:
-            return _var.toChar();
-        case variant_type::VT::UCHAR:
-            return _var.toUChar();
-        case variant_type::VT::BOOLEAN:
-            return _var.toBool();
-        case variant_type::VT::FLOAT:
-            return (integer) round(_var.toFloat());
-        case variant_type::VT::DOUBLE:
-            return (integer) round(_var.toDouble());
-        case variant_type::VT::STRING:
-            return toint(_var.toString());
-        default:
-            break;
-=======
     switch (_var.vt)
     {
     case variant_type::VT::INT:
@@ -703,27 +551,15 @@ integer JVariant::toInteger() const
     case variant_type::VT::DOUBLE:
         return (integer)round(_var.toDouble());
     case variant_type::VT::STRING:
-        return ::CROSS_NS::toint(_var.toString());
+        return toint(_var.toString());
     default:
         break;
->>>>>>> v1.0
     }
     return 0;
 }
 
 number JVariant::toNumber() const
 {
-<<<<<<< HEAD
-    switch (_var.vt) {
-        case variant_type::VT::FLOAT:
-            return _var.toFloat();
-        case variant_type::VT::DOUBLE:
-            return _var.toDouble();
-        case variant_type::VT::STRING:
-            return todouble(_var.toString());
-        default:
-            break;
-=======
     switch (_var.vt)
     {
     case variant_type::VT::FLOAT:
@@ -731,10 +567,9 @@ number JVariant::toNumber() const
     case variant_type::VT::DOUBLE:
         return _var.toDouble();
     case variant_type::VT::STRING:
-        return ::CROSS_NS::todouble(_var.toString());
+        return todouble(_var.toString());
     default:
         break;
->>>>>>> v1.0
     }
     return toInteger();
 }
@@ -755,12 +590,8 @@ void JVariant::_asglobal()
 JTypeSignature JVariant::signature() const
 {
     // 函数类型
-<<<<<<< HEAD
-    if (vt == VT::CALLBACK) {
-=======
-    if (vt == VT::FUNCTION)
+    if (vt == VT::CALLBACK)
     {
->>>>>>> v1.0
         return jre::TypeSignature::CALLBACK;
     }
 
@@ -798,12 +629,11 @@ JTypeSignature JVariant::signature() const
     return TypeSignature::OBJECT;
 }
 
-shared_ptr<JVariant> JVariant::FromObject(JObject const &obj)
+shared_ptr<JVariant> JVariant::FromObject(JObject const& obj)
 {
     return make_shared<JVariant>(obj._obj, obj._local);
 }
 
-<<<<<<< HEAD
 bool JCallback::ASYNC = false;
 
 JCallback::JCallback(function_type::fun0_type fn)
@@ -858,10 +688,11 @@ JCallback::JCallback(function_type::fun9_type fn)
 
 void JCallback::operator()() const
 {
-    if (!async) {
+    if (!async)
+    {
         auto snap = _fn; // 避免被释放
         MainThread::Invoke([=]()
-                           { (*snap)(); });
+        { (*snap)(); });
         return;
     }
 
@@ -873,59 +704,60 @@ if (obj->vt == JVariant::VT::OBJECT) { \
     obj->_asglobal(); \
 }
 
-void JCallback::operator()(arg_type const &v0) const
-=======
-shared_ptr<JVariant> JVariant::FromObject(JObject const& obj)
->>>>>>> v1.0
+void JCallback::operator()(arg_type const& v0) const
 {
-    if (!async) {
+    if (!async)
+    {
         // 如果将异步请求转成同步调用，则需要将object从local转换成global对象，存在切换
         JCALLBACK_SAFE(v0);
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0); });
+        { (*snap)(*v0); });
         return;
     }
 
     (*_fn)(*v0);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1); });
+        { (*snap)(*v0, *v1); });
         return;
     }
 
     (*_fn)(*v0, *v1);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
         JCALLBACK_SAFE(v2);
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1, *v2); });
+        { (*snap)(*v0, *v1, *v2); });
         return;
     }
 
     (*_fn)(*v0, *v1, *v2);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
-                           arg_type const &v3) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2,
+    arg_type const& v3) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
         JCALLBACK_SAFE(v2);
@@ -933,17 +765,18 @@ void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type cons
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1, *v2, *v3); });
+        { (*snap)(*v0, *v1, *v2, *v3); });
         return;
     }
 
     (*_fn)(*v0, *v1, *v2, *v3);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
-                           arg_type const &v3, arg_type const &v4) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2,
+    arg_type const& v3, arg_type const& v4) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
         JCALLBACK_SAFE(v2);
@@ -952,17 +785,18 @@ void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type cons
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1, *v2, *v3, *v4); });
+        { (*snap)(*v0, *v1, *v2, *v3, *v4); });
         return;
     }
 
     (*_fn)(*v0, *v1, *v2, *v3, *v4);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
-                           arg_type const &v3, arg_type const &v4, arg_type const &v5) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2,
+    arg_type const& v3, arg_type const& v4, arg_type const& v5) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
         JCALLBACK_SAFE(v2);
@@ -972,18 +806,19 @@ void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type cons
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5); });
+        { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5); });
         return;
     }
 
     (*_fn)(*v0, *v1, *v2, *v3, *v4, *v5);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
-                           arg_type const &v3, arg_type const &v4, arg_type const &v5,
-                           arg_type const &v6) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2,
+    arg_type const& v3, arg_type const& v4, arg_type const& v5,
+    arg_type const& v6) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
         JCALLBACK_SAFE(v2);
@@ -994,18 +829,19 @@ void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type cons
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6); });
+        { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6); });
         return;
     }
 
     (*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
-                           arg_type const &v3, arg_type const &v4, arg_type const &v5,
-                           arg_type const &v6, arg_type const &v7) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2,
+    arg_type const& v3, arg_type const& v4, arg_type const& v5,
+    arg_type const& v6, arg_type const& v7) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
         JCALLBACK_SAFE(v2);
@@ -1017,18 +853,19 @@ void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type cons
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7); });
+        { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7); });
         return;
     }
 
     (*_fn)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7);
 }
 
-void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type const &v2,
-                           arg_type const &v3, arg_type const &v4, arg_type const &v5,
-                           arg_type const &v6, arg_type const &v7, arg_type const &v8) const
+void JCallback::operator()(arg_type const& v0, arg_type const& v1, arg_type const& v2,
+    arg_type const& v3, arg_type const& v4, arg_type const& v5,
+    arg_type const& v6, arg_type const& v7, arg_type const& v8) const
 {
-    if (!async) {
+    if (!async)
+    {
         JCALLBACK_SAFE(v0);
         JCALLBACK_SAFE(v1);
         JCALLBACK_SAFE(v2);
@@ -1041,7 +878,7 @@ void JCallback::operator()(arg_type const &v0, arg_type const &v1, arg_type cons
 
         auto snap = _fn;
         MainThread::Invoke([=]()
-                           { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7, *v8); });
+        { (*snap)(*v0, *v1, *v2, *v3, *v4, *v5, *v6, *v7, *v8); });
         return;
     }
 

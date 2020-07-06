@@ -3,6 +3,7 @@
 
 #include <cross/cross.hpp>
 #include <cross/timer.hpp>
+#include <cross/logger.hpp>
 
 USE_AJNI;
 USE_STL;
@@ -11,7 +12,7 @@ USE_CROSS;
 AJNI_IMP_LOADED({})
 AJNI_IMP_UNLOADED({})
 
-class Info: public kotlin::JClass
+class Info : public kotlin::JClass
 {
 public:
 
@@ -41,7 +42,7 @@ public:
 
 const JClassPath Info::CLASSPATH = "com/nnt/ajnixx/Info";
 
-class Test: public kotlin::JClass
+class Test : public kotlin::JClass
 {
 public:
 
@@ -88,23 +89,27 @@ public:
 
 const JClassPath Test::CLASSPATH = "com/nnt/ajnixx/Test";
 
-void Test0(::std::ostringstream &oss)
+void Test0(::std::ostringstream& oss)
 {
     shared_ptr<JClass> cls;
     cls = make_shared<JClass>("java/lang/Integer");
-    if (!cls) {
+    if (!cls)
+    {
         oss << "没有找到 Int 类对象" << endl;
     }
-    else {
+    else
+    {
         oss << "找到 Int 类对象" << endl;
     }
 
     cls = Env.context().register_class<Test>();
-    if (!cls) {
+    if (!cls)
+    {
         oss << "没找到 Test 类" << endl;
         return;
     }
-    else {
+    else
+    {
         oss << "找到 Test 类" << endl;
     }
 
@@ -123,7 +128,7 @@ void Test0(::std::ostringstream &oss)
     obj_info->fabc(obj_info, "modified abc");
     oss << obj_info->fabc(obj_info) << endl;
 
-    obj->finfoasync(obj, (JCallback)[&](arg_type const &v0) -> return_type
+    obj->finfoasync(obj, (JCallback)[&](arg_type const& v0) -> return_type
     {
         ostringstream oss;
         JEntry<Info> info(v0);
@@ -142,7 +147,7 @@ void Test0(::std::ostringstream &oss)
     });
 
     // 测试异步
-    obj->fvalueasync(obj, (JCallback)[&](arg_type const &v0, arg_type const &v1) -> return_type
+    obj->fvalueasync(obj, (JCallback)[&](arg_type const& v0, arg_type const& v1) -> return_type
     {
         ostringstream oss;
         oss << "收到异步回调数据 " << v0 << " " << v1 << endl;
@@ -150,7 +155,7 @@ void Test0(::std::ostringstream &oss)
         return nullptr;
     });
 
-    obj->fnullasync(obj, (JCallback)[&](arg_type const &v0) -> return_type
+    obj->fnullasync(obj, (JCallback)[&](arg_type const& v0) -> return_type
     {
         ostringstream oss;
         if (!v0.isnil())
@@ -191,7 +196,7 @@ void Test1()
     });
 }
 
-AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz)
+AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv* env, jobject thiz)
 {
     ostringstream oss;
     Test0(oss);

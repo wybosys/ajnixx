@@ -25,12 +25,8 @@ class JObject
 public:
 
     JObject();
-<<<<<<< HEAD
 
-    JObject(JObject const &);
-=======
     JObject(JObject const&);
->>>>>>> v1.0
 
     // 释放引用计数
     virtual ~JObject();
@@ -109,15 +105,10 @@ class JString
 public:
 
     JString();
-<<<<<<< HEAD
 
-    JString(string const &);
-
-    JString(JString const &);
-=======
     JString(string const&);
+
     JString(JString const&);
->>>>>>> v1.0
 
     ~JString();
 
@@ -230,15 +221,10 @@ class JValues
 public:
 
     JValues() = default;
-<<<<<<< HEAD
 
-    JValues(::std::initializer_list<args_type::value_type> const &);
-
-    JValues(args_type const &);
-=======
     JValues(::std::initializer_list<args_type::value_type> const&);
+
     JValues(args_type const&);
->>>>>>> v1.0
 
     typedef shared_ptr<JValue> value_type;
 
@@ -279,15 +265,6 @@ private:
         typedef JString string_type;
     };
 
-<<<<<<< HEAD
-=======
-    class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
-        JVariant,
-        shared_ptr < JVariant>,
-                              JVariant const&
-    > {};
-
->>>>>>> v1.0
 public:
 
     typedef ::COMXX_NS::Variant<JComVariantTypes> variant_type;
@@ -334,13 +311,9 @@ public:
 
     JVariant(jobject, bool local = true);
 
-<<<<<<< HEAD
-    JVariant(JCallback const &);
-=======
-    JVariant(shared_ptr<JArray> const&);
->>>>>>> v1.0
+    JVariant(JCallback const&);
 
-    JVariant(shared_ptr<JArray> const &);
+    JVariant(shared_ptr<JArray> const&);
 
     // 转换为字符串，如果类型不同则自动数据转换
     string toString() const;
@@ -360,12 +333,8 @@ public:
         return toString();
     }
 
-<<<<<<< HEAD
     // 获取存储基本泛数据类型的对象
-    inline operator variant_type const &() const
-=======
     inline operator variant_type const&() const
->>>>>>> v1.0
     {
         return _var;
     }
@@ -389,13 +358,8 @@ public:
         return _arr;
     }
 
-<<<<<<< HEAD
     // 将obj对象包裹成jvariant对象，不进行数据转换
-    static shared_ptr<JVariant> FromObject(JObject const &);
-=======
-    shared_ptr<JObject> toObject() const;
     static shared_ptr<JVariant> FromObject(JObject const&);
->>>>>>> v1.0
 
     // 是否为空
     inline bool isnil() const
@@ -428,10 +392,10 @@ private:
 
 class JCallback
 {
-    class JComFunctionTypes: public ::COMXX_NS::FunctionTypes<
+    class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
         JVariant,
         shared_ptr < JVariant>,
-                             JVariant
+                              JVariant
 
     > {};
 
@@ -463,31 +427,31 @@ public:
 
     void operator()() const;
 
-    void operator()(arg_type const &) const;
+    void operator()(arg_type const&) const;
 
-    void operator()(arg_type const &, arg_type const &) const;
+    void operator()(arg_type const&, arg_type const&) const;
 
-    void operator()(arg_type const &, arg_type const &, arg_type const &) const;
+    void operator()(arg_type const&, arg_type const&, arg_type const&) const;
 
     void
-    operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &) const;
+    operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&) const;
 
-    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                    arg_type const &) const;
+    void operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&,
+        arg_type const&) const;
 
-    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                    arg_type const &, arg_type const &) const;
+    void operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&,
+        arg_type const&, arg_type const&) const;
 
-    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                    arg_type const &, arg_type const &, arg_type const &) const;
+    void operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&,
+        arg_type const&, arg_type const&, arg_type const&) const;
 
-    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                    arg_type const &, arg_type const &, arg_type const &,
-                    arg_type const &) const;
+    void operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&,
+        arg_type const&, arg_type const&, arg_type const&,
+        arg_type const&) const;
 
-    void operator()(arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                    arg_type const &, arg_type const &, arg_type const &, arg_type const &,
-                    arg_type const &) const;
+    void operator()(arg_type const&, arg_type const&, arg_type const&, arg_type const&,
+        arg_type const&, arg_type const&, arg_type const&, arg_type const&,
+        arg_type const&) const;
 
     // 通过在业务中修改此处，可以达到让所有callback统一以固定模式被调用，默认为false
     static bool ASYNC;
