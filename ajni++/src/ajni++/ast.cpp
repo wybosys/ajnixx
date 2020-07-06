@@ -537,12 +537,12 @@ return_type JStaticMethod::invoke(args_type const& args) const
             {
                 if (ExceptionGuard::Check())
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
                         ExceptionGuard::GetLastErrorMessage());
                 }
                 else
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
                 }
             }
             return nullptr;
@@ -558,12 +558,12 @@ return_type JStaticMethod::invoke(args_type const& args) const
             {
                 if (ExceptionGuard::Check())
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
                         ExceptionGuard::GetLastErrorMessage());
                 }
                 else
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
                 }
             }
             return nullptr;
@@ -588,12 +588,12 @@ return_type JStaticMethod::invoke(args_type const& args) const
         {
             if (ExceptionGuard::Check())
             {
-                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
                     ExceptionGuard::GetLastErrorMessage());
             }
             else
             {
-                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
             }
         }
         return nullptr;
@@ -641,12 +641,12 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const& args) const
             {
                 if (ExceptionGuard::Check())
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
                         ExceptionGuard::GetLastErrorMessage());
                 }
                 else
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
                 }
             }
             return nullptr;
@@ -662,12 +662,12 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const& args) const
             {
                 if (ExceptionGuard::Check())
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
                         ExceptionGuard::GetLastErrorMessage());
                 }
                 else
                 {
-                    Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                    Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
                 }
             }
             return nullptr;
@@ -692,12 +692,12 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const& args) const
         {
             if (ExceptionGuard::Check())
             {
-                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
+                Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 遇到异常: " +
                     ExceptionGuard::GetLastErrorMessage());
             }
             else
             {
-                Logger::Fatal("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
+                Logger::Critical("调用Java层方法 " + name + "@" + _clazz.name() + " 返回null");
             }
         }
         return nullptr;
@@ -713,7 +713,7 @@ JClass::JClass(JClassPath const& cp)
         auto clz = Env.FindClass(cp);
         if (clz == nullptr)
         {
-            Logger::Fatal("没有找到类 " + cp);
+            Logger::Critical("没有找到类 " + cp);
         }
         else
         {

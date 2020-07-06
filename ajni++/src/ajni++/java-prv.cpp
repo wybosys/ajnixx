@@ -60,7 +60,7 @@ void JEnvThreadAutoGuard::bind()
         }
         else
         {
-            Logger::Fatal("线程" + tids + ": 获得业务定义的线程级JNIEnv 失败");
+            Logger::Critical("线程" + tids + ": 获得业务定义的线程级JNIEnv 失败");
             return;
         }
     }

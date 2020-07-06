@@ -68,6 +68,9 @@ public:
 JEnv::JEnv()
 {
     NNT_CLASS_CONSTRUCT();
+
+    // 使用AJNI的Logger实现
+    Logger::set_shared<AJNI_NS::Logger>();
 }
 
 JEnv::~JEnv()
@@ -84,7 +87,7 @@ void JEnv::BindVM(JavaVM* vm, JNIEnv* env)
 {
     if (gs_vm)
     {
-        Logger::Fatal("AJNI++环境已经初始化");
+        Logger::Critical("AJNI++环境已经初始化");
         return;
     }
 
@@ -181,7 +184,7 @@ JEnv::class_type JEnv::FindClass(string const& str)
     }
     else
     {
-        Logger::Fatal("不能在线程中使用FindClass命令，请确认是否调用了 ajnix.Activity.Bind 函数");
+        Logger::Critical("不能在线程中使用FindClass命令，请确认是否调用了 ajnix.Activity.Bind 函数");
         return nullptr;
     }
 
