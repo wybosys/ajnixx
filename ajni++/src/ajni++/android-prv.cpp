@@ -2,31 +2,60 @@
 #define __AJNI_PRIVATE__
 #include "android-prv.hpp"
 
+#define _AJNI_LOG_IDR "log@ajni++"
+#define AJNI_LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, _AJNI_LOG_IDR, __VA_ARGS__)
+#define AJNI_LOGI(...) __android_log_print(ANDROID_LOG_INFO, _AJNI_LOG_IDR, __VA_ARGS__)
+#define AJNI_LOGW(...) __android_log_print(ANDROID_LOG_WARN, _AJNI_LOG_IDR, __VA_ARGS__)
+#define AJNI_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, _AJNI_LOG_IDR, __VA_ARGS__)
+#define AJNI_LOGF(...) __android_log_print(ANDROID_LOG_FATAL, _AJNI_LOG_IDR, __VA_ARGS__)
+
 AJNI_BEGIN
 
-void Logger::Debug(string const& msg)
+USE_CROSS;
+
+Logger::Logger()
 {
-    AJNI_LOGD("%s", msg.c_str());
+    prefix = "AJNI";
 }
 
-void Logger::Info(string const& msg)
+void Logger::log(::CROSS_NS::LogLevel lv, string const& msg)
 {
-    AJNI_LOGI("%s", msg.c_str());
-}
-
-void Logger::Warn(string const& msg)
-{
-    AJNI_LOGW("%s", msg.c_str());
-}
-
-void Logger::Error(string const& msg)
-{
-    AJNI_LOGE("%s", msg.c_str());
-}
-
-void Logger::Fatal(string const& msg)
-{
-    AJNI_LOGF("%s", msg.c_str());
+    auto str = format(lv, msg);
+    switch (lv)
+    {
+    case LogLevel::DEVELOP:
+    {
+        NNT_DEBUG_EXPRESS(
+            AJNI_LOGD("%s", str.c_str())
+        );
+    }
+        break;
+    case LogLevel::SPECIAL:
+    case LogLevel::CUSTOM:
+    case LogLevel::INFO:
+    {
+        AJNI_LOGI("%s", str.c_str());
+    }
+        break;
+    case LogLevel::NOTICE:
+    {
+        AJNI_LOGE("%s", str.c_str());
+    }
+        break;
+    case LogLevel::WARNING:
+    {
+        AJNI_LOGW("%s", str.c_str());
+    }
+        break;
+    case LogLevel::FATAL:
+    case LogLevel::ALERT:
+    case LogLevel::CRITICAL:
+    case LogLevel::EMERGENCY:
+    {
+        AJNI_LOGF("%s", str.c_str());
+    }
+        break;
+    }
 }
 
 AJNI_END

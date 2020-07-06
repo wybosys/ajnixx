@@ -5,25 +5,20 @@
 #error "禁止在外部引用该文件"
 #endif
 
-#define _AJNI_LOG_IDR "log@ajni++"
-#define AJNI_LOGD(...) __android_log_print(ANDROID_LOG_DEBUG, _AJNI_LOG_IDR, __VA_ARGS__)
-#define AJNI_LOGI(...) __android_log_print(ANDROID_LOG_INFO, _AJNI_LOG_IDR, __VA_ARGS__)
-#define AJNI_LOGW(...) __android_log_print(ANDROID_LOG_WARN, _AJNI_LOG_IDR, __VA_ARGS__)
-#define AJNI_LOGE(...) __android_log_print(ANDROID_LOG_ERROR, _AJNI_LOG_IDR, __VA_ARGS__)
-#define AJNI_LOGF(...) __android_log_print(ANDROID_LOG_FATAL, _AJNI_LOG_IDR, __VA_ARGS__)
+#include <cross/cross.hpp>
+#include <cross/logger.hpp>
 
 AJNI_BEGIN
 
 // AJNI日志接口
-class Logger
+class Logger : public ::CROSS_NS::Logger
 {
 public:
 
-    static void Debug(string const&);
-    static void Info(string const&);
-    static void Warn(string const&);
-    static void Error(string const&);
-    static void Fatal(string const&);
+    Logger();
+
+    virtual void log(::CROSS_NS::LogLevel, string const&) override;
+
 };
 
 AJNI_END
