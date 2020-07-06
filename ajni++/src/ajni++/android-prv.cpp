@@ -26,7 +26,7 @@ void Logger::log(::CROSS_NS::LogLevel lv, string const& msg)
     case LogLevel::DEVELOP:
     {
         NNT_DEBUG_EXPRESS(
-            AJNI_LOGD("%s", str.c_str())
+            AJNI_LOGD("%s", str.c_str());
         );
     }
         break;
