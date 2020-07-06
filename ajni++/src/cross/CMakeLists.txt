@@ -7,6 +7,7 @@ add_library(cross STATIC
     timer.cpp
     datetime.cpp
     threads.cpp
+    logger.cpp
     )
 
 set_target_properties(cross
