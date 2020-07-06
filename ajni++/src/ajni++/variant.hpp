@@ -18,15 +18,19 @@ class JVariant;
 
 class JArray;
 
-typedef ::std::vector<JVariant const *> args_type;
+typedef ::std::vector<JVariant const*> args_type;
 
 class JObject
 {
 public:
 
     JObject();
+<<<<<<< HEAD
 
     JObject(JObject const &);
+=======
+    JObject(JObject const&);
+>>>>>>> v1.0
 
     // 释放引用计数
     virtual ~JObject();
@@ -47,12 +51,12 @@ public:
     static shared_ptr<JVariant> Extract(jdoubleArray);
 
     // 将var转换成obj，如果本身就是obj则直接返回，如果是pod类型，则转换为对应的Java对象
-    static shared_ptr<JObject> Putin(shared_ptr<JVariant> const &);
+    static shared_ptr<JObject> Putin(shared_ptr<JVariant> const&);
 
     // 是否时空对象
     bool isnil() const;
 
-    JObject &operator=(JObject const &);
+    JObject& operator=(JObject const&);
 
 protected:
 
@@ -61,7 +65,7 @@ protected:
     {
     public:
 
-        _JGlobalObject(JObject const &);
+        _JGlobalObject(JObject const&);
 
         void grab();
 
@@ -105,14 +109,19 @@ class JString
 public:
 
     JString();
+<<<<<<< HEAD
 
     JString(string const &);
 
     JString(JString const &);
+=======
+    JString(string const&);
+    JString(JString const&);
+>>>>>>> v1.0
 
     ~JString();
 
-    inline operator const string &() const
+    inline operator const string&() const
     {
         return _str;
     }
@@ -198,9 +207,9 @@ class JValue
 {
 public:
 
-    JValue(JVariant const &);
+    JValue(JVariant const&);
 
-    JValue(JValue const &);
+    JValue(JValue const&);
 
     ~JValue();
 
@@ -211,7 +220,7 @@ public:
 
 private:
 
-    jvalue _val = {0};
+    jvalue _val = { 0 };
     bool _free = false;
     size_t _fnidx = 0; // 如果是函数对象，保存函数的本地索引
 };
@@ -221,10 +230,15 @@ class JValues
 public:
 
     JValues() = default;
+<<<<<<< HEAD
 
     JValues(::std::initializer_list<args_type::value_type> const &);
 
     JValues(args_type const &);
+=======
+    JValues(::std::initializer_list<args_type::value_type> const&);
+    JValues(args_type const&);
+>>>>>>> v1.0
 
     typedef shared_ptr<JValue> value_type;
 
@@ -239,7 +253,7 @@ private:
     ::std::vector<jvalue> _jvals;
 
     // 返回jni函数需要的参数列表
-    inline jvalue const *_args() const
+    inline jvalue const* _args() const
     {
         return &_jvals[0];
     }
@@ -258,13 +272,22 @@ class JVariant
 {
 private:
 
-    class JComVariantTypes: public ::com::VariantTypes<>
+    class JComVariantTypes : public ::com::VariantTypes<>
     {
     public:
         typedef _jobject object_type;
         typedef JString string_type;
     };
 
+<<<<<<< HEAD
+=======
+    class JComFunctionTypes : public ::COMXX_NS::FunctionTypes<
+        JVariant,
+        shared_ptr < JVariant>,
+                              JVariant const&
+    > {};
+
+>>>>>>> v1.0
 public:
 
     typedef ::COMXX_NS::Variant<JComVariantTypes> variant_type;
@@ -291,7 +314,7 @@ public:
 
     JVariant(jstring);
 
-    JVariant(string const &);
+    JVariant(string const&);
 
     JVariant(bool);
 
@@ -311,7 +334,11 @@ public:
 
     JVariant(jobject, bool local = true);
 
+<<<<<<< HEAD
     JVariant(JCallback const &);
+=======
+    JVariant(shared_ptr<JArray> const&);
+>>>>>>> v1.0
 
     JVariant(shared_ptr<JArray> const &);
 
@@ -333,8 +360,12 @@ public:
         return toString();
     }
 
+<<<<<<< HEAD
     // 获取存储基本泛数据类型的对象
     inline operator variant_type const &() const
+=======
+    inline operator variant_type const&() const
+>>>>>>> v1.0
     {
         return _var;
     }
@@ -358,8 +389,13 @@ public:
         return _arr;
     }
 
+<<<<<<< HEAD
     // 将obj对象包裹成jvariant对象，不进行数据转换
     static shared_ptr<JVariant> FromObject(JObject const &);
+=======
+    shared_ptr<JObject> toObject() const;
+    static shared_ptr<JVariant> FromObject(JObject const&);
+>>>>>>> v1.0
 
     // 是否为空
     inline bool isnil() const
@@ -465,40 +501,41 @@ protected:
 };
 
 template<typename T>
-inline shared_ptr<JVariant> _V(T const &v)
+inline shared_ptr<JVariant> _V(T const& v)
 {
     return make_shared<JVariant>(v);
 }
 
 template<typename _CharT, typename _Traits>
-static ::std::basic_ostream<_CharT, _Traits> &
-operator<<(::std::basic_ostream<_CharT, _Traits> &stm, JVariant const &v)
+static ::std::basic_ostream<_CharT, _Traits>&
+operator<<(::std::basic_ostream<_CharT, _Traits>& stm, JVariant const& v)
 {
-    switch (v.vt) {
-        default:
-            break;
-        case JVariant::VT::STRING:
-            stm << v.toString();
-            break;
-        case JVariant::VT::INTEGER:
-            stm << v.toInteger();
-            break;
-        case JVariant::VT::NUMBER:
-            stm << v.toNumber();
-            break;
-        case JVariant::VT::BOOLEAN:
-            stm << v.toBool();
-            break;
-        case JVariant::VT::OBJECT:
-            stm << v.toObject();
-            break;
+    switch (v.vt)
+    {
+    default:
+        break;
+    case JVariant::VT::STRING:
+        stm << v.toString();
+        break;
+    case JVariant::VT::INTEGER:
+        stm << v.toInteger();
+        break;
+    case JVariant::VT::NUMBER:
+        stm << v.toNumber();
+        break;
+    case JVariant::VT::BOOLEAN:
+        stm << v.toBool();
+        break;
+    case JVariant::VT::OBJECT:
+        stm << v.toObject();
+        break;
     }
     return stm;
 }
 
 template<typename _CharT, typename _Traits>
-static ::std::basic_ostream<_CharT, _Traits> &
-operator<<(::std::basic_ostream<_CharT, _Traits> &stm, shared_ptr<JVariant> const &v)
+static ::std::basic_ostream<_CharT, _Traits>&
+operator<<(::std::basic_ostream<_CharT, _Traits>& stm, shared_ptr<JVariant> const& v)
 {
     if (!v)
         return stm;
