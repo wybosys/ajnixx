@@ -113,6 +113,10 @@ void Test0(::std::ostringstream& oss)
         oss << "找到 Test 类" << endl;
     }
 
+    // 直接调用类静态函数
+    JClassEntry<Test> clz;
+    oss << clz->Test0() << endl;
+
     // 实例化对象
     JEntry<Test> obj(*cls->construct());
     oss << obj->test0(obj) << endl;
