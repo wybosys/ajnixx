@@ -18,7 +18,7 @@
 #include <WinUser.h>
 #endif
 
-#ifdef NNT_UNIXLIKE
+#if defined(NNT_UNIXLIKE) && !defined(NNT_DARWIN)
   #include <unistd.h>
   #include <sys/epoll.h>
   #include <sys/timerfd.h>
@@ -52,7 +52,7 @@ TimeCounter::TimeCounter()
 
 TimeCounter::~TimeCounter()
 {
-	NNT_CLASS_DESTORY();
+	NNT_CLASS_DESTROY();
 }
 
 void TimeCounter::start()
@@ -197,7 +197,7 @@ CoTimers::~CoTimers() noexcept
 	// 等待退出
 	stop();
 
-	NNT_CLASS_DESTORY();
+	NNT_CLASS_DESTROY();
 }
 
 CoTimers::timer_t CoTimers::add(double interval, int repeat, tick_t&& cb)
@@ -435,7 +435,7 @@ void Timer::CancelInterval(timer_t tmr)
 
 #endif
 
-#ifdef NNT_UNIXLIKE
+#if defined(NNT_UNIXLIKE) && !defined(NNT_DARWIN)
 
 class TimerThread
 	: public Thread

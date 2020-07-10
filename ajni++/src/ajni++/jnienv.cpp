@@ -76,7 +76,7 @@ JEnv::JEnv()
 
 JEnv::~JEnv()
 {
-    NNT_CLASS_DESTORY();
+    NNT_CLASS_DESTROY();
 }
 
 JContext& JEnv::context()
