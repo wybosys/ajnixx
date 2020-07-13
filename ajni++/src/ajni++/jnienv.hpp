@@ -138,7 +138,7 @@ public:
     jfieldID GetStaticFieldID(JClass const&, string const& name, string const& typ);
     jobject GetStaticObjectField(JClass const&, jfieldID);
     string_type GetStaticStringField(JClass const&, jfieldID);
-    array_type GetStaticArrayField(JClass const&, jfieldID);
+    array_type GetStaticArrayField(JClass const&, jfieldID, int jarraytype);
     jboolean GetStaticBooleanField(JClass const&, jfieldID);
     jbyte GetStaticByteField(JClass const&, jfieldID);
     jchar GetStaticCharField(JClass const&, jfieldID);
@@ -161,7 +161,7 @@ public:
     jfieldID GetFieldID(JClass const&, string const& name, string const& sig);
     object_type GetObjectField(JObject const&, jfieldID);
     string_type GetStringField(JObject const&, jfieldID);
-    array_type GetArrayField(JObject const&, jfieldID);
+    array_type GetArrayField(JObject const&, jfieldID, int jarraytype);
     jboolean GetBooleanField(JObject const&, jfieldID);
     jbyte GetByteField(JObject const&, jfieldID);
     jchar GetCharField(JObject const&, jfieldID);
@@ -198,7 +198,7 @@ public:
     jdouble CallStaticDoubleMethod(JClass const&, jmethodID, JValues const&);
     object_type CallStaticObjectMethod(JClass const&, jmethodID, JValues const&);
     string_type CallStaticStringMethod(JClass const&, jmethodID, JValues const&);
-    array_type CallStaticArrayMethod(JClass const&, jmethodID, JValues const&);
+    array_type CallStaticArrayMethod(JClass const&, jmethodID, JValues const&, int jarraytype);
     void CallStaticVoidMethod(JClass const&, jmethodID, JValues const&);
 
     jboolean CallBooleanMethod(JObject const&, jmethodID, JValues const&);
@@ -211,7 +211,7 @@ public:
     jdouble CallDoubleMethod(JObject const&, jmethodID, JValues const&);
     object_type CallObjectMethod(JObject const&, jmethodID, JValues const&);
     string_type CallStringMethod(JObject const&, jmethodID, JValues const&);
-    array_type CallArrayMethod(JObject const&, jmethodID, JValues const&);
+    array_type CallArrayMethod(JObject const&, jmethodID, JValues const&, int jarraytype);
     void CallVoidMethod(JObject const&, jmethodID, JValues const&);
 
     size_t GetArrayLength(jarray);

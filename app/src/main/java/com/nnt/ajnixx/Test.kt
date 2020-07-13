@@ -54,6 +54,10 @@ class Test {
         }.start()
     }
 
+    fun info_async(cb: Callback) {
+        cb("0")
+    }
+
     companion object {
 
         // 返回测试结果

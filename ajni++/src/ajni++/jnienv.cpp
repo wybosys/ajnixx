@@ -256,7 +256,7 @@ JEnv::string_type JEnv::GetStaticStringField(JClass const& cls, jfieldID id)
     return r;
 }
 
-JEnv::array_type JEnv::GetStaticArrayField(JClass const& cls, jfieldID id)
+JEnv::array_type JEnv::GetStaticArrayField(JClass const& cls, jfieldID id, int jarraytype)
 {
     auto o = (jobjectArray)tls_env->GetStaticObjectField((jclass)cls._clazz._obj, id);
     if (!o)
@@ -265,6 +265,7 @@ JEnv::array_type JEnv::GetStaticArrayField(JClass const& cls, jfieldID id)
 
     auto r = make_shared<JArray>();
     r->_reset(o, sz);
+    const_cast<JArray::VT&>(r->vt) = (JArray::VT)jarraytype;
     tls_env->DeleteLocalRef(o);
 
     return r;
@@ -378,7 +379,7 @@ JEnv::string_type JEnv::GetStringField(JObject const& obj, jfieldID fid)
     return r;
 }
 
-JEnv::array_type JEnv::GetArrayField(JObject const& obj, jfieldID fid)
+JEnv::array_type JEnv::GetArrayField(JObject const& obj, jfieldID fid, int jarraytype)
 {
     auto jo = (jobjectArray)tls_env->GetObjectField(obj._obj, fid);
     if (!jo)
@@ -387,6 +388,7 @@ JEnv::array_type JEnv::GetArrayField(JObject const& obj, jfieldID fid)
 
     auto r = make_shared<JArray>();
     r->_reset(jo, sz);
+    const_cast<JArray::VT&>(r->vt) = (JArray::VT)jarraytype;
     tls_env->DeleteLocalRef(jo);
 
     return r;
@@ -577,7 +579,8 @@ JEnv::string_type JEnv::CallStaticStringMethod(JClass const& cls, jmethodID id, 
     return r;
 }
 
-JEnv::array_type JEnv::CallStaticArrayMethod(JClass const& cls, jmethodID id, JValues const& vals)
+JEnv::array_type
+JEnv::CallStaticArrayMethod(JClass const& cls, jmethodID id, JValues const& vals, int jarraytype)
 {
     auto o =
         (jobjectArray)tls_env->CallStaticObjectMethodA((jclass)cls._clazz._obj, id, vals._args());
@@ -587,6 +590,7 @@ JEnv::array_type JEnv::CallStaticArrayMethod(JClass const& cls, jmethodID id, JV
 
     auto r = make_shared<JArray>();
     r->_reset(o, sz);
+    const_cast<JArray::VT&>(r->vt) = (JArray::VT)jarraytype;
     tls_env->DeleteLocalRef(o);
 
     return r;
@@ -663,7 +667,8 @@ JEnv::string_type JEnv::CallStringMethod(JObject const& obj, jmethodID id, JValu
     return r;
 }
 
-JEnv::array_type JEnv::CallArrayMethod(JObject const& obj, jmethodID id, JValues const& vals)
+JEnv::array_type
+JEnv::CallArrayMethod(JObject const& obj, jmethodID id, JValues const& vals, int jarraytype)
 {
     auto o = (jobjectArray)tls_env->CallObjectMethodA(obj._obj, id, vals._args());
     if (!o)
@@ -672,6 +677,7 @@ JEnv::array_type JEnv::CallArrayMethod(JObject const& obj, jmethodID id, JValues
 
     auto r = make_shared<JArray>();
     r->_reset(o, sz);
+    const_cast<JArray::VT&>(r->vt) = (JArray::VT)jarraytype;
     tls_env->DeleteLocalRef(o);
 
     return r;
