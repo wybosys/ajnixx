@@ -12,15 +12,13 @@ USE_CROSS;
 AJNI_IMP_LOADED({})
 AJNI_IMP_UNLOADED({})
 
-class Info : public kotlin::JClass
-{
+class Info : public kotlin::JClass {
 public:
 
     Info()
-        : kotlin::JClass(CLASSPATH),
-          fabc(*this), fcde(*this), fnul(*this),
-          proc(*this)
-    {
+            : kotlin::JClass(CLASSPATH),
+              fabc(*this), fcde(*this), fnul(*this),
+              proc(*this) {
         fabc.name = "abc";
         fabc.stype = TypeSignature::STRING;
 
@@ -42,16 +40,14 @@ public:
 
 const JClassPath Info::CLASSPATH = "com/nnt/ajnixx/Info";
 
-class Test : public kotlin::JClass
-{
+class Test : public kotlin::JClass {
 public:
 
     Test()
-        : kotlin::JClass(CLASSPATH),
-          test0(*this), ftest0(*this),
-          Test0(*this), fTest0(*this),
-          finfo(*this), fvalueasync(*this), finfoasync(*this), fnullasync(*this)
-    {
+            : kotlin::JClass(CLASSPATH),
+              test0(*this), ftest0(*this),
+              Test0(*this), fTest0(*this),
+              finfo(*this), fvalueasync(*this), finfoasync(*this), fnullasync(*this) {
         test0.name = "test0";
         test0.sreturn = TypeSignature::STRING;
 
@@ -89,27 +85,20 @@ public:
 
 const JClassPath Test::CLASSPATH = "com/nnt/ajnixx/Test";
 
-void Test0(::std::ostringstream& oss)
-{
+void Test0(::std::ostringstream &oss) {
     shared_ptr<JClass> cls;
     cls = make_shared<JClass>("java/lang/Integer");
-    if (!cls)
-    {
+    if (!cls) {
         oss << "没有找到 Int 类对象" << endl;
-    }
-    else
-    {
+    } else {
         oss << "找到 Int 类对象" << endl;
     }
 
     cls = Env.context().register_class<Test>();
-    if (!cls)
-    {
+    if (!cls) {
         oss << "没找到 Test 类" << endl;
         return;
-    }
-    else
-    {
+    } else {
         oss << "找到 Test 类" << endl;
     }
 
@@ -132,29 +121,30 @@ void Test0(::std::ostringstream& oss)
     obj_info->fabc(obj_info, "modified abc");
     oss << obj_info->fabc(obj_info) << endl;
 
-    obj->finfoasync(obj, (JVariant)[&](arg_type const& v0) -> return_type
-    {
+    obj->finfoasync(obj, (JVariant) [&](arg_type const &v0) -> return_type {
         JEntry<Info> info(v0);
         auto v = info->fnul(info);
         oss << "收到异步回调数据 " << info->fabc(info) << " " << info->fcde(info) << info->fnul(info)
             << endl;
         return nullptr;
-    }, "xxxxxxxxxxxxxxx", (JVariant)[&]() -> return_type
-    {
+    }, "xxxxxxxxxxxxxxx", (JVariant) [&]() -> return_type {
+        return nullptr;
+    });
+
+    obj->finfoasync(obj, (JVariant) [&](arg_type const &v0) -> return_type {
+        oss << "收到异步回调数据 " << v0.toString() << endl;
         return nullptr;
     });
 
     // 测试异步
-    obj->fvalueasync(obj, (JVariant)[&](arg_type const& v0, arg_type const& v1) -> return_type
-    {
+    obj->fvalueasync(obj, (JVariant) [&](arg_type const &v0, arg_type const &v1) -> return_type {
         ostringstream oss;
         oss << "收到异步回调数据 " << v0 << " " << v1 << endl;
         Logger::Info(oss.str());
         return nullptr;
     });
 
-    obj->fnullasync(obj, (JVariant)[&](arg_type const& v0) -> return_type
-    {
+    obj->fnullasync(obj, (JVariant) [&](arg_type const &v0) -> return_type {
         if (!v0.isnil())
             oss << "应该为nil但是收到不为nil" << endl;
         return nullptr;
@@ -176,24 +166,21 @@ void Test0(::std::ostringstream& oss)
     oss << mtf() << endl;
 }
 
-void Test1()
-{
+void Test1() {
     // 测试将Java类拿到手上不释放等待回调再释放
     JEntry<Test> t(*Test().construct());
     JEntry<Info> f(*t->finfo(t));
     // 增加引用计数，防止f被gc掉
     f.grab();
     // 放到timer中过一会再执行
-    Timer::SetTimeout(5, [=]()
-    {
+    Timer::SetTimeout(5, [=]() {
         f->proc(f, "C++延迟调用Java对象的方法");
         // 释放
         f.drop();
     });
 }
 
-AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv* env, jobject thiz)
-{
+AJNI_API(jstring) AJNI_COMPANION_FUNC(Test, Test)(JNIEnv *env, jobject thiz) {
     ostringstream oss;
     Test0(oss);
     Test1();

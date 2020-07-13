@@ -5,8 +5,7 @@ class Info {
     var cde: Int = 123
     var nul: Any? = null
 
-    fun proc(msg: String)
-    {
+    fun proc(msg: String) {
         println("Info::Proc " + msg)
     }
 }
@@ -47,6 +46,10 @@ class Test {
         info.abc = "cde"
         info.cde = 456
         cb(info)
+    }
+
+    fun info_async(cb: Callback) {
+        cb("0")
     }
 
     companion object {

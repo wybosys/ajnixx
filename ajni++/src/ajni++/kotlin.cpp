@@ -109,7 +109,7 @@ return_type JStaticMethod::invoke(args_type const& args) const
     }
     case TypeSignature::TS::BYTEARRAY:
     {
-        auto v = Env.CallArrayMethod(obj$, mid, jvals);
+        auto v = Env.CallArrayMethod(obj$, mid, jvals, (int)JArray::VT::BYTE);
         if (!v)
         {
             if (ExceptionGuard::Check())

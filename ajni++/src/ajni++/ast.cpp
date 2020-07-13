@@ -56,7 +56,7 @@ return_type JStaticField::operator()() const
     }
     case TypeSignature::TS::BYTEARRAY:
     {
-        auto v = Env.GetStaticArrayField(_clazz, fid);
+        auto v = Env.GetStaticArrayField(_clazz, fid, (int)JArray::VT::BYTE);
         if (!v)
             return nullptr;
         return _V(v->toString());
@@ -178,7 +178,7 @@ return_type JMemberField::operator()(JObject& obj) const
     }
     case TypeSignature::TS::BYTEARRAY:
     {
-        auto arr = Env.GetArrayField(obj, fid);
+        auto arr = Env.GetArrayField(obj, fid, (int)JArray::VT::BYTE);
         return arr ? _V(arr->toString()) : nullptr;
     }
     case TypeSignature::TS::VOID:
@@ -551,7 +551,7 @@ return_type JStaticMethod::invoke(args_type const& args) const
     }
     case TypeSignature::TS::BYTEARRAY:
     {
-        auto v = Env.CallStaticArrayMethod(_clazz, mid, jvals);
+        auto v = Env.CallStaticArrayMethod(_clazz, mid, jvals, (int)JArray::VT::BYTE);
         if (v == nullptr)
         {
             if (!nullable)
@@ -655,7 +655,7 @@ return_type JMemberMethod::invoke(JObject& obj, args_type const& args) const
     }
     case TypeSignature::TS::BYTEARRAY:
     {
-        auto v = Env.CallArrayMethod(obj, mid, jvals);
+        auto v = Env.CallArrayMethod(obj, mid, jvals, (int)JArray::VT::BYTE);
         if (v == nullptr)
         {
             if (!nullable)
