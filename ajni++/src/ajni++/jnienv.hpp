@@ -241,6 +241,8 @@ public:
     jsize GetStringUTFLength(jstring);
     string GetStringUTFChars(jstring);
     jstring NewStringUTF(string const&);
+    jbyteArray NewByteArray(size_t);
+    void ByteArrayCopyFrom(jbyteArray, size_t offset, size_t len, void const* buf);
 
     void ExceptionClear();
 };

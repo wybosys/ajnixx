@@ -205,6 +205,13 @@ JArray::JArray()
     // pass
 }
 
+JArray::JArray(const void *buf, size_t bufsz) {
+    jbyteArray t = Env.NewByteArray(bufsz);
+    Env.ByteArrayCopyFrom(t, 0, bufsz, buf);
+    _reset(t, bufsz);
+    Env.DeleteLocalRef(t);
+}
+
 JArray::~JArray()
 {
     // pass
@@ -321,6 +328,10 @@ shared_ptr<JArray::bytes_type> JArray::toBytes() const
         return r;
     }
     return nullptr;
+}
+
+jbyteArray JArray::asReturn() const {
+    return (jbyteArray)_arr.asReturn();
 }
 
 JValue::JValue(JValue const& r)

@@ -768,6 +768,14 @@ jstring JEnv::NewStringUTF(string const& str)
     return tls_env->NewStringUTF(str.c_str());
 }
 
+jbyteArray JEnv::NewByteArray(size_t sz) {
+    return tls_env->NewByteArray(sz);
+}
+
+void JEnv::ByteArrayCopyFrom(jbyteArray dest, size_t offset, size_t len, const void *buf) {
+    tls_env->SetByteArrayRegion(dest, offset, len, (jbyte const*)buf);
+}
+
 void JEnv::ExceptionClear()
 {
     tls_env->ExceptionClear();

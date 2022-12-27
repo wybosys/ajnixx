@@ -158,6 +158,8 @@ public:
 
     JArray();
 
+    JArray(void const*, size_t);
+
     ~JArray();
 
     // 获取数组长度
@@ -168,6 +170,9 @@ public:
 
     // array转换成string
     string toString() const;
+
+    // 作为程序返回值输出
+    jbyteArray asReturn() const;
 
     typedef ::COMXX_NS::Variant<>::bytes_type bytes_type;
 
