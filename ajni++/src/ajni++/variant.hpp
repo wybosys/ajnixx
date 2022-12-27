@@ -54,6 +54,8 @@ public:
 
     JObject& operator=(JObject const&);
 
+    inline operator jobject() { return _obj; }
+
 protected:
 
     // 只允许特殊情况使用
@@ -90,6 +92,8 @@ protected:
 
     friend class JClass;
 
+    friend class JString;
+
     friend class JArray;
 
     friend class JVariant;
@@ -119,6 +123,8 @@ public:
 
     // 作为程序返回值输出
     jstring asReturn() const;
+
+    shared_ptr<JObject> toObject() const;
 
 protected:
 

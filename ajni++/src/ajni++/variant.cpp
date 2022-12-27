@@ -192,6 +192,14 @@ jstring JString::asReturn() const
     return Env.NewStringUTF(_str);
 }
 
+shared_ptr<JObject> JString::toObject() const {
+    auto r = make_shared<JObject>();
+    auto t = Env.NewStringUTF(_str);
+    r->_reset(t);
+    Env.DeleteLocalRef(t);
+    return r;
+}
+
 JArray::JArray()
 {
     // pass
